@@ -55,7 +55,7 @@ const SidebarComponent = () => {
     <Sidebar>
       <SidebarHeader>
         <SidebarMenuItem>
-          <div className=" flex justify-between items-center pr-2">
+          <div className=" flex  items-center pr-2">
             <Link href="/">
               <Image
                 className=" invert dark:block hidden"
@@ -71,9 +71,6 @@ const SidebarComponent = () => {
                 width={120}
                 height={40}
               />
-            </Link>
-            <Link href="/">
-              <SidebarClose size={18} strokeWidth={1} />
             </Link>
           </div>
         </SidebarMenuItem>
