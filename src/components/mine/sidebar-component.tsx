@@ -24,6 +24,17 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useHasActiveSubscription } from "@/hooks/use-subscriptions";
+
 const menuItems = [
   {
     title: "Workflows",
@@ -49,10 +60,21 @@ const menuItems = [
 
 const SidebarComponent = () => {
   const router = useRouter();
-  const parthname = usePathname();
+  const pathname = usePathname();
+  const { setTheme } = useTheme();
+  const { hasActiveSubscription, subscription, isLoading, isError } =
+    useHasActiveSubscription();
+
+  console.log(
+    "Subscription status:",
+    hasActiveSubscription,
+    subscription,
+    isLoading,
+    isError
+  );
 
   return (
-    <Sidebar>
+    <Sidebar className=" border-dashed">
       <SidebarHeader>
         <SidebarMenuItem>
           <div className=" flex  items-center pr-2">
@@ -86,8 +108,8 @@ const SidebarComponent = () => {
               <SidebarMenuButton
                 isActive={
                   item.url === "/"
-                    ? parthname === "/"
-                    : parthname.startsWith(item.url)
+                    ? pathname === "/"
+                    : pathname.startsWith(item.url)
                 }
                 key={item.title}
                 asChild
@@ -108,23 +130,49 @@ const SidebarComponent = () => {
       </SidebarContent>
       <SidebarFooter className=" gap-2">
         <SidebarMenuItem>
-          <SidebarMenuButton className=" gap-4" tooltip={"Update to Pro"}>
-            <MoonIcon />
-            <span>Dark mode</span>
-          </SidebarMenuButton>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton className=" w-full">
+                <Sun className="h-[1.2rem] w-[1.2rem] scale-100 block transition-all dark:hidden dark:-rotate-90" />
+                <Moon className=" h-[1.2rem] w-[1.2rem] hidden rotate-90 transition-all dark:block dark:rotate-0" />
+                <span>Toggle theme</span>
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setTheme("light")}>
+                Light
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("dark")}>
+                Dark
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setTheme("system")}>
+                System
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </SidebarMenuItem>
-        <SidebarMenuItem>
-          <SidebarMenuButton className=" gap-4" tooltip={"Update to Pro"}>
-            <StarIcon />
-            <span>upgrade to pro</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        {/* {!hasActiveSubscription && !isLoading && (
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={() => {
+                authClient.checkout({
+                  slug: "orcha-pro",
+                });
+              }}
+              className=" gap-4"
+              tooltip={"Update to Pro"}
+            >
+              <StarIcon />
+              <span>upgrade to pro</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        )}
         <SidebarMenuItem>
           <SidebarMenuButton className=" gap-4" tooltip={"Billing portal"}>
             <CreditCard />
             <span>Billing Portal </span>
           </SidebarMenuButton>
-        </SidebarMenuItem>
+        </SidebarMenuItem> */}
         <SidebarMenuItem>
           <SidebarMenuButton
             className=" gap-4"
