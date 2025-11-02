@@ -1,4 +1,4 @@
-import React from "react";
+import ReactFlowCanvas from "@/components/canvas/reactflow-canvas";
 
 interface PageProps {
   params: {
@@ -8,7 +8,14 @@ interface PageProps {
 
 const Page = async ({ params }: PageProps) => {
   const { workflowId } = await params;
-  return <div>Execution Id: {workflowId}</div>;
+  return (
+    <div>
+      <p className="  absolute bottom-0 right-0 z-50">
+        Execution Id: {workflowId}
+      </p>
+      <ReactFlowCanvas />
+    </div>
+  );
 };
 
 export default Page;

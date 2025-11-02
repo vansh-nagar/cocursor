@@ -11,7 +11,6 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-  CreditCard,
   FolderOpenIcon,
   KeyIcon,
   LogOutIcon,
