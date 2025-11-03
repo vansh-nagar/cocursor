@@ -73,7 +73,7 @@ const SidebarComponent = () => {
   );
 
   return (
-    <Sidebar className=" border-dashed">
+    <Sidebar className=" border-dashed rounded-br-2xl  overflow-hidden">
       <SidebarHeader>
         <SidebarMenuItem>
           <div className=" flex  items-center pr-2">

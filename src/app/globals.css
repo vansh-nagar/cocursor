@@ -191,3 +191,23 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.pattern-bg {
+  background-image: radial-gradient(#2a2a2aa1 1px, transparent 1px);
+  background-size: 25px 25px; /* spacing between dots */
+}
+
+.dark .pattern-bg {
+  background-image: radial-gradient(#f0f0f065 1px, transparent 1px);
+}
+
+/* remove all scrollbars */
+
+* {
+  scrollbar-width: none !important;
+}
+
+*::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}

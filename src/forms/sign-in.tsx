@@ -17,7 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { authClient } from "@/lib/auth-client";
+import { authClient, signInWithGoogle } from "@/lib/auth-client";
 import { toast } from "sonner";
 import Image from "next/image";
 
@@ -84,7 +84,12 @@ export default function SignInForm() {
         </div>
 
         <div className="mt-6">
-          <Button type="button" variant="outline" className="w-full">
+          <Button
+            onClick={signInWithGoogle}
+            type="button"
+            variant="outline"
+            className="w-full"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="0.98em"
