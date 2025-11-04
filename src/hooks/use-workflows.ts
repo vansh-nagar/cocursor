@@ -11,7 +11,7 @@ export const useWorkflows = () => {
   const trpc = useTRPC();
 
   return useSuspenseQuery(trpc.Workflows.getMany.queryOptions());
-};
+};``
 
 export const useCreateWorkflow = () => {
   const router = useRouter();

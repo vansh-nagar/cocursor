@@ -5,8 +5,7 @@ import { useTheme } from "next-themes";
 export default function NavBar() {
   const { theme, setTheme } = useTheme();
   return (
-    
-    <div className=" fixed  top-0 inset-x-0 z-50 border-b bg-background/10 backdrop-blur-xs h-14 flex justify-between items-center px-40">
+    <div className=" fixed  top-0 inset-x-0 z-50 border-b bg-background/10 backdrop-blur-xs h-16 flex justify-between items-center px-4 sm:px-32 ">
       <p>
         <img
           src="/logo/only-logo.svg"
@@ -25,7 +24,6 @@ export default function NavBar() {
           className="dark:hidden  block w-10"
         />
       </p>
-      <p className=" text-accent-foreground text-sm">LINKS</p>
     </div>
   );
 }

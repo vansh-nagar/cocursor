@@ -8,6 +8,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { EllipsisVertical } from "lucide-react";
+import { SiNotion, SiOpenai, SiSlack } from "react-icons/si";
 
 dayjs.extend(relativeTime);
 
@@ -21,11 +22,27 @@ export const WorkFlows = () => {
           {workflows.data.map((workflow) => (
             <Link key={workflow.id} href={`workflows/${workflow.id}`}>
               <div className=" border rounded-xl  p-4 flex justify-between items-center">
-                <div className=" leading-4">
-                  <span>{workflow.name}</span> <br />
-                  <span className=" text-muted-foreground text-xs">
+                <div>
+                  <div className=" flex gap-2">
+                    <SiNotion
+                      className="text-slate-700 dark:text-slate-200"
+                      size={20}
+                    />
+                    <SiSlack
+                      className="text-slate-700 dark:text-slate-200"
+                      size={20}
+                    />
+                    <SiOpenai
+                      className="text-slate-700 dark:text-slate-200"
+                      size={20}
+                    />
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    {workflow.name}
+                  </div>
+                  <div className=" text-muted-foreground text-xs">
                     {dayjs(workflow.createdAt).fromNow()}
-                  </span>
+                  </div>
                 </div>
                 <EllipsisVertical />
               </div>

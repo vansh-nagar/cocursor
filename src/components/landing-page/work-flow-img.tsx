@@ -1,11 +1,16 @@
-export default function WorkFlowImage() {
+import React from "react";
+import DemoCanvas from "./demo-canvas";
+
+const WorkflowImage = () => {
   return (
-    <div className=" flex  justify-center  ">
-      <img
-        src="https://n8niostorageaccount.blob.core.windows.net/n8nio-strapi-blobs-prod/assets/Home_ITO_Ps_5a5aac3fda.webp"
-        alt=""
-        className=" w-[80vw]  rounded-2xl overflow-hidden border h-[70vh] object-cover"
-      />
+    <div className=" flex justify-center">
+      <div className="relative m-3 sm:mt-0 w-7xl">
+        <div className=" h-[70vh] relative rounded-2xl bg-background border border-dashed shadow-inner  ">
+          <DemoCanvas />
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default WorkflowImage;
