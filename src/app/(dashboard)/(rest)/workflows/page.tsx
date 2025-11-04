@@ -1,3 +1,4 @@
+import { Spinner } from "@/components/ui/spinner";
 import { WorkFlows } from "@/features/workflows/component/workflows";
 import { prefetchWorkflows } from "@/features/workflows/servers/prefetch";
 import { requireAuth } from "@/lib/auth-utils";
@@ -13,7 +14,13 @@ const Page = async () => {
   return (
     <HydrateClient>
       <ErrorBoundary fallback={<div>Something went wrong</div>}>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className=" flex justify-center items-center h-full w-full">
+              <Spinner />
+            </div>
+          }
+        >
           <WorkFlows />
         </Suspense>
       </ErrorBoundary>

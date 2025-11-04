@@ -8,10 +8,10 @@ import {
 } from "@/components/logos";
 import { cn } from "@/lib/utils";
 
-export default function IntegrationsSection() {
+export default function IntegrationsSection5() {
   return (
-    <main className=" flex justify-center  my-10 m-3 overflow-hidden">
-      <section className=" bg-background rounded-3xl w-7xl border shadow-inner ">
+    <main className=" flex justify-center   m-3 overflow-hidden">
+      <section className=" bg-background rounded-3xl w-7xl border shadow ">
         <div className="py-24 ">
           <div className="mx-auto max-w-5xl ">
             <div className="aspect-16/10 group relative mx-auto flex max-w-[22rem] items-center justify-between sm:max-w-sm">

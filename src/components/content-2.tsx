@@ -3,51 +3,55 @@ import DemoCanvas from "./landing-page/demo-canvas";
 
 export default function ContentSection() {
   return (
-    <section className="py-16 md:py-32 flex justify-center">
-      <div className=" grid max-w-7xl sm:grid-cols-2 grid-cols-1 items-end gap-4 m-3 ">
+    <section className=" flex justify-center">
+      <div className=" grid max-w-7xl sm:grid-cols-2 grid-cols-1 items-end gap-4 mx-3 ">
         <div>
-          <h2 className="relative z-10 max-w-xl text-4xl font-medium lg:text-5xl">
-            The Lyra ecosystem brings together our models.
+          <h2 className="relative z-10 max-w-xl text-4xl font-medium lg:text-5xl mb-3">
+            The Orcha ecosystem brings automation together.
           </h2>
           <div>
             <div className="relative space-y-4">
               <p className="text-muted-foreground">
-                Gemini is evolving to be more than just the models.{" "}
+                Orcha isn’t just a workflow tool.{" "}
                 <span className="text-accent-foreground font-bold">
-                  It supports an entire ecosystem
+                  It’s a complete automation ecosystem
                 </span>{" "}
-                — from products innovate.
+                — built to connect apps, automate tasks and reduce manual work.
               </p>
               <p className="text-muted-foreground">
-                It supports an entire ecosystem — from products to the APIs and
-                platforms helping developers and businesses innovate
+                From visual workflows to APIs and integrations, Lyra helps
+                developers and teams create powerful automations with zero
+                complexity.
               </p>
 
               <div className="grid grid-cols-2 gap-3 pt-6 sm:gap-4">
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Zap className="size-4" />
-                    <h3 className="text-sm font-medium">Faaast</h3>
+                    <h3 className="text-sm font-medium">Fast Automation</h3>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    It supports an entire helping developers and innovate.
+                    Build workflows in minutes with a clean visual editor and
+                    instant execution.
                   </p>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Cpu className="size-4" />
-                    <h3 className="text-sm font-medium">Powerful</h3>
+                    <h3 className="text-sm font-medium">Powerful Engine</h3>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    It supports an entire helping developers and businesses.
+                    Execute complex logic, conditional branches, webhooks and
+                    background jobs with high reliability.
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <div className="relative mt-6 sm:mt-0">
-          <div className=" aspect-67/34 relative rounded-2xl bg-background border border-dashed shadow-inner  ">
+          <div className=" aspect-67/34 relative rounded-2xl bg-background border border-dashed shadow  ">
             <DemoCanvas />
           </div>
         </div>

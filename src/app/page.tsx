@@ -1,19 +1,24 @@
 "use client";
 import ContentSection from "@/components/content-2";
 import FooterSection from "@/components/footer";
-import IntegrationsSection from "@/components/integrations-5";
+import IntegrationsSection1 from "@/components/integrations-1";
+import IntegrationsSection5 from "@/components/integrations-5";
 import HeroSection from "@/components/landing-page/hero-section";
 import NavBar from "@/components/landing-page/nav-bar";
-import WorkflowImage from "@/components/landing-page/work-flow-img";
+import Pricing from "@/components/pricing";
+import Testimonials from "@/components/testimonials";
 
 const Page = () => {
   return (
-    <div className="pattern-bg">
+    <div className="pattern-bg flex  flex-col gap-10 sm:pb-3 pb-10">
       <NavBar />
       <HeroSection />
-      <WorkflowImage />
+
       <ContentSection />
-      <IntegrationsSection />
+      <IntegrationsSection5 />
+      <Pricing />
+      <IntegrationsSection1 />
+      <Testimonials />
       <FooterSection />
     </div>
   );
