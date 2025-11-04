@@ -1,5 +1,5 @@
 import { Cpu, Zap } from "lucide-react";
-import DemoCanvas from "./landing-page/demo-canvas";
+import DemoCanvas from "./demo-canvas";
 
 export default function ContentSection() {
   return (

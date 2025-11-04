@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import DemoCanvas from "./demo-canvas";
 
 export default function HeroSection() {
   return (
     <div className="  w-full h-screen pt-14 flex  flex-col justify-center items-center overflow-hidden">
-      <p className="text-5xl sm:text-7xl md:text-9xl font-bold">ORHCA</p>
+      <p className="text-5xl sm:text-7xl md:text-9xl font-bold uppercase">
+        Orcha
+      </p>
       <p className=" text-sm text-muted-foreground   text-center mt-2 ">
         Low-code platform to build and automate workflows with a visual editor.
       </p>

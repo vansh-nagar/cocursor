@@ -9,22 +9,18 @@ export default function Testimonials() {
           <Card className="grid grid-rows-[auto_1fr] gap-8 sm:col-span-2 sm:p-6 lg:row-span-2">
             <CardHeader>
               <img
-                className="h-6 w-fit dark:invert"
-                src="https://html.tailus.io/blocks/customers/nike.svg"
+                className="w-12 dark:invert"
+                src="/logo/only-logo.svg"
                 alt="Nike Logo"
-                height="24"
-                width="auto"
               />
             </CardHeader>
             <CardContent>
               <blockquote className="grid h-full grid-rows-[1fr_auto] gap-6">
                 <p className="text-xl font-medium">
-                  Tailus has transformed the way I develop web applications.
-                  Their extensive collection of UI components, blocks, and
-                  templates has significantly accelerated my workflow. The
-                  flexibility to customize every aspect allows me to create
-                  unique user experiences. Tailus is a game-changer for modern
-                  web development
+                  Orcha has transformed the way we automate tasks. The
+                  drag-and-drop workflow builder feels faster and cleaner than
+                  n8n. I automated lead collection, CRM updates, and email
+                  notifications in just minutes—without touching code.
                 </p>
 
                 <div className="grid grid-cols-[auto_1fr] items-center gap-3">
@@ -40,12 +36,8 @@ export default function Testimonials() {
                   </Avatar>
 
                   <div>
-                    <cite className="text-sm font-medium">
-                      Shekinah Tshiokufila
-                    </cite>
-                    <span className="text-muted-foreground block text-sm">
-                      Software Ingineer
-                    </span>
+                    <cite>Rishabh Mehta</cite>
+                    <span>Automation Engineer, Freelancer</span>
                   </div>
                 </div>
               </blockquote>
@@ -55,8 +47,10 @@ export default function Testimonials() {
             <CardContent className="h-full pt-6">
               <blockquote className="grid h-full grid-rows-[1fr_auto] gap-6">
                 <p className="text-xl font-medium">
-                  Tailus is really extraordinary and very practical, no need to
-                  break your head. A real gold mine.
+                  We switched from Zapier and n8n to Orcha for most of our
+                  internal workflows. The speed, UI, and node flexibility are
+                  insanely smooth. Even non-developers on our team now build
+                  automations on their own.
                 </p>
 
                 <div className="grid grid-cols-[auto_1fr] items-center gap-3">
@@ -73,7 +67,7 @@ export default function Testimonials() {
                   <div>
                     <cite className="text-sm font-medium">Jonathan Yombo</cite>
                     <span className="text-muted-foreground block text-sm">
-                      Software Ingineer
+                      Product Manager, SaaS Startup{" "}
                     </span>
                   </div>
                 </div>
@@ -84,8 +78,9 @@ export default function Testimonials() {
             <CardContent className="h-full pt-6">
               <blockquote className="grid h-full grid-rows-[1fr_auto] gap-6">
                 <p>
-                  Great work on tailfolio template. This is one of the best
-                  personal website that I have seen so far!
+                  Orcha makes complex workflows feel simple. The real-time
+                  execution logs and error debugging saved us hours every week.
+                  It’s like n8n but more polished and easier to scale.
                 </p>
 
                 <div className="grid items-center gap-3 [grid-template-columns:auto_1fr]">
@@ -104,7 +99,7 @@ export default function Testimonials() {
                       Yucel Faruksahan
                     </cite>
                     <span className="text-muted-foreground block text-sm">
-                      Creator, Tailkits
+                      CTO, NovaTech{" "}
                     </span>
                   </div>
                 </div>
@@ -115,8 +110,9 @@ export default function Testimonials() {
             <CardContent className="h-full pt-6">
               <blockquote className="grid h-full grid-rows-[1fr_auto] gap-6">
                 <p>
-                  Great work on tailfolio template. This is one of the best
-                  personal website that I have seen so far!
+                  I connected Notion, Slack, Stripe, and Google Sheets in one
+                  single flow using Orcha. No scripts, no APIs—just drag, drop,
+                  and publish. This is the future of automation.
                 </p>
 
                 <div className="grid grid-cols-[auto_1fr] gap-3">
@@ -133,7 +129,7 @@ export default function Testimonials() {
                   <div>
                     <p className="text-sm font-medium">Rodrigo Aguilar</p>
                     <span className="text-muted-foreground block text-sm">
-                      Creator, TailwindAwesome
+                      Founder, Indie Automations
                     </span>
                   </div>
                 </div>

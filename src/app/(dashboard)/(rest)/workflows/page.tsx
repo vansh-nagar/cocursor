@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { Spinner } from "@/components/ui/spinner";
 import { WorkFlows } from "@/features/workflows/component/workflows";
 import { prefetchWorkflows } from "@/features/workflows/servers/prefetch";
@@ -7,8 +9,6 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 const Page = async () => {
-  requireAuth();
-
   prefetchWorkflows();
 
   return (

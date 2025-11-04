@@ -1,12 +1,13 @@
 "use client";
-import ContentSection from "@/components/content-2";
-import FooterSection from "@/components/footer";
-import IntegrationsSection1 from "@/components/integrations-1";
-import IntegrationsSection5 from "@/components/integrations-5";
+
+import ContentSection from "@/components/landing-page/content-2";
+import Footer from "@/components/landing-page/footer";
 import HeroSection from "@/components/landing-page/hero-section";
+import IntegrationsSection1 from "@/components/landing-page/integrations-1";
+import IntegrationsSection5 from "@/components/landing-page/integrations-5";
 import NavBar from "@/components/landing-page/nav-bar";
-import Pricing from "@/components/pricing";
-import Testimonials from "@/components/testimonials";
+import Pricing from "@/components/landing-page/pricing";
+import Testimonials from "@/components/landing-page/testimonials";
 
 const Page = () => {
   return (
@@ -19,7 +20,7 @@ const Page = () => {
       <Pricing />
       <IntegrationsSection1 />
       <Testimonials />
-      <FooterSection />
+      <Footer />
     </div>
   );
 };

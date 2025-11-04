@@ -19,11 +19,11 @@ export default function IntegrationsSection1() {
         <div className=" max-w-7xl  mx-3">
           <div className="text-center">
             <h2 className="text-balance text-3xl font-bold md:text-5xl">
-              Integrate with your favorite tools
+              Connect your app to multiple tools in just 3 clicks
             </h2>
             <p className="text-muted-foreground mt-3">
-              Connect seamlessly with popular platforms and services to enhance
-              your workflow.
+              Seamlessly integrate with your favorite platforms and automate
+              workflows without any complexity.
             </p>
           </div>
 
