@@ -24,8 +24,6 @@ export default function ReactFlowCanvas({
 }) {
   const { data: workflows, isLoading } = useWorkFlowsDetails(workflowId || "");
 
-  console.log("workflows", workflows);
-
   const [nodes, setNodes] = useState(workflows.nodes);
   const [edges, setEdges] = useState(workflows.edges);
 
@@ -68,7 +66,9 @@ export default function ReactFlowCanvas({
           hideAttribution: true,
         }}
         nodes={nodes}
+        // edges={edges}
         onNodesChange={onNodesChange}
+        // onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
       >
