@@ -215,3 +215,12 @@ body {
 .bg-diagonal-grid {
   @apply dark:bg-[repeating-linear-gradient(135deg,#1a1a1a_0px,#1a1a1a_1px,transparent_1px,transparent_8px)] bg-[repeating-linear-gradient(135deg,#e5e5e5_0px,#e5e5e5_1px,transparent_1px,transparent_8px)];
 }
+
+@layer components {
+  .shadow-interactive {
+    @apply shadow-inner transition-all duration-1000;
+  }
+  .shadow-interactive:hover {
+    @apply shadow;
+  }
+}

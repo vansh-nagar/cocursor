@@ -1,8 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { SiBox, SiDropbox, SiGoogledrive, SiSlack } from "react-icons/si";
+import {
+  SiGoogle,
+  SiGoogledrive,
+  SiNotion,
+  SiSlack,
+  SiSpotify,
+} from "react-icons/si";
 
 const Connections = [
+  {
+    name: "Google",
+    icon: SiGoogle,
+    color: "",
+    connected: false,
+  },
   {
     name: "Slack",
     icon: SiSlack,
@@ -15,16 +27,16 @@ const Connections = [
     color: "#4285F4",
     connected: true,
   },
+
   {
-    name: "Dropbox",
-    icon: SiDropbox,
+    name: "Notion",
+    icon: SiNotion,
     color: "#0061FF",
     connected: false,
   },
-
   {
-    name: "Box",
-    icon: SiBox,
+    name: "Spotify",
+    icon: SiSpotify,
     color: "#0061FF",
     connected: false,
   },

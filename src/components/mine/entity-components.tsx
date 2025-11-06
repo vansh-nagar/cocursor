@@ -25,10 +25,12 @@ export const EntityHeader = ({
   newButtonHref,
 }: entityHeaderProps) => {
   return (
-    <div className=" flex flex-row  items-center  justify-between gap-4">
+    <div className=" flex flex-row  items-center  flex-wrap justify-between gap-4">
       <div className=" flex flex-col ">
-        <h1 className=" text-2xl font-medium ">{title}</h1>
-        <p className=" text-sm text-muted-foreground ">{description}</p>
+        <h1 className=" text-2xl font-medium line-clamp-1 ">{title}</h1>
+        <p className=" text-sm text-muted-foreground line-clamp-2 ">
+          {description}
+        </p>
       </div>
       <div className=" flex flex-row ">
         {!onNew && newButtonHref && (

@@ -17,15 +17,15 @@ import { ReactNode } from "react";
 
 const Footer = () => {
   return (
-    <div className=" flex justify-center ">
+    <div className=" flex justify-center relative ">
       <section className=" w-7xl mx-4 ">
         <div className="  grid md:grid-cols-[350px_1fr]  grid-cols-1 gap-3">
           <img
-            className=" rounded-xl border object-cover h-full w-full  shadow"
-            src="https://res.cloudinary.com/dz12pywzs/image/upload/v1761390178/photo_2025-10-18_16-44-46_w5ybit.jpg"
+            className=" rounded-xl border object-cover h-full w-full  shadow z-30"
+            src="https://res.cloudinary.com/dz12pywzs/image/upload/v1762336185/Gemini_Generated_Image_qxos2hqxos2hqxos_rlosmn.png"
             alt="Vansh Nagar"
           />
-          <Card className=" h-full  bg-background flex justify-between  ">
+          <Card className=" h-full  bg-background flex justify-between relative  z-30">
             <CardHeader>
               {" "}
               <div className=" text-4xl font-medium"> Vansh Nagar</div>

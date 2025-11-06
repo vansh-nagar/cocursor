@@ -8,39 +8,32 @@ import {
   Background,
   Controls,
   MiniMap,
-  Node,
   Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import CustomNode from "./custom-node";
 import { useWorkFlowsDetails } from "@/hooks/use-workflows";
 import InitialNode from "./initial-node";
-import { Spinner } from "../ui/spinner";
+
+// const initialNodes = [
+//   {
+//     id: "n3",
+//     type: "InitialNode",
+//     position: { x: 400, y: 200 },
+//     data: { label: "Node 2" },
+//   },
+// ];
+// const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
 
 export default function ReactFlowCanvas({
   workflowId,
 }: {
   workflowId?: string;
 }) {
-  const { data: workflows, isLoading } = useWorkFlowsDetails(workflowId || "");
+  const { data } = useWorkFlowsDetails(workflowId || "");
 
-  const [nodes, setNodes] = useState(workflows.nodes);
-  const [edges, setEdges] = useState(workflows.edges);
-
-  useEffect(() => {
-    if (workflows) {
-      setNodes(workflows.nodes as Node[]);
-      setEdges(workflows.edges as Edge[]);
-    }
-  }, [workflows]);
-
-  if (isLoading) {
-    return (
-      <div>
-        <Spinner />
-      </div>
-    );
-  }
+  const [nodes, setNodes] = useState(data.edges);
+  const [edges, setEdges] = useState(data.nodes);
 
   const nodeTypes = {
     CustomNode,
@@ -50,6 +43,11 @@ export default function ReactFlowCanvas({
   const onNodesChange = useCallback(
     (changes: any) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    []
+  );
+  const onEdgesChange = useCallback(
+    (changes: any) =>
+      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     []
   );
 
@@ -66,15 +64,18 @@ export default function ReactFlowCanvas({
           hideAttribution: true,
         }}
         nodes={nodes}
-        // edges={edges}
+        edges={edges}
         onNodesChange={onNodesChange}
-        // onEdgesChange={onEdgesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
       >
         <Background />
         <Controls />
-        <MiniMap />
+        <MiniMap
+          pannable // allow dragging the viewport from the minimap
+          zoomable // allow zooming by scroll inside the minimap
+        />
       </ReactFlow>
     </div>
   );

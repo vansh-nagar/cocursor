@@ -87,6 +87,8 @@ model Workflows {
   nodes     Node[]
   edge      Edge[]
 
+
+
   userId   String
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -134,6 +136,9 @@ model Edge {
 
   toNodeId  String
   toNode    Node     @relation("EdgeToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  data        Json @default("{}")
+  label       String?
 
 
   fromOutput  String @default("main")

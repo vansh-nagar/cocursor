@@ -14,6 +14,7 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
+  WorkflowIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { SiNotion, SiOpenai, SiSlack } from "react-icons/si";
@@ -26,7 +27,7 @@ export const WorkFlows = () => {
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
-  const { data } = useGetWorkflows({ page, pageSize: 4, search });
+  const { data } = useGetWorkflows({ page, pageSize: 6, search });
 
   const handleSearch = () => {
     setSearch(searchInput);
@@ -34,10 +35,10 @@ export const WorkFlows = () => {
   };
 
   return (
-    <div>
+    <div className=" relative mt-14 overflow-hidden  ">
       <WorkFlowsContainer>
-        <div className="  flex gap-2 justify-end">
-          <ButtonGroup className=" mb-5">
+        <div className="  flex gap-2 justify-end mb-5">
+          <ButtonGroup>
             <Input
               onChange={(e) => {
                 setSearchInput(e.target.value);
@@ -51,31 +52,21 @@ export const WorkFlows = () => {
           </ButtonGroup>
         </div>
 
-        <div className="flex flex-col gap-2 min-h-[60vh]">
+        <div className="flex flex-col gap-3 mask-b-from-90% pb-5">
           {data.items.map((workflow) => (
             <Link key={workflow.id} href={`workflows/${workflow.id}`}>
-              <div className="border rounded-xl p-4 flex justify-between items-center shadow">
-                <div>
-                  <div className="flex gap-2">
-                    <SiNotion
-                      className="text-slate-700 dark:text-slate-200"
-                      size={24}
-                    />
-                    <SiSlack
-                      className="text-slate-700 dark:text-slate-200"
-                      size={24}
-                    />
-                    <SiOpenai
-                      className="text-slate-700 dark:text-slate-200"
-                      size={24}
-                    />
+              <div className=" border rounded-xl py-4 px-6 flex justify-between  items-center ">
+                <div className=" flex items-center gap-6">
+                  <div>
+                    <WorkflowIcon strokeWidth={1.5} />
                   </div>
-                  <div className="flex items-center gap-2 mt-2">
-                    {workflow.name}
-                  </div>
-                  <div className="text-muted-foreground text-xs">
-                    Created {dayjs(workflow.createdAt).fromNow()}
-                  </div>
+                  <div>
+                    <div className=" line-clamp-1 ">{workflow.name}</div>
+                    <div className="text-muted-foreground text-xs line-clamp-1">
+                      Updated {dayjs(workflow.updatedAt).fromNow()} || Created{" "}
+                      {dayjs(workflow.createdAt).fromNow()}
+                    </div>
+                  </div>{" "}
                 </div>
                 <EllipsisVertical />
               </div>
@@ -84,8 +75,8 @@ export const WorkFlows = () => {
         </div>
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4 border-t pt-4">
-          <div className="text-sm text-muted-foreground">
+        <div className="flex items-center justify-between mt-4 border-t py-4 sticky  bottom-0 inset-x-0 bg-background gap-2">
+          <div className="text-sm text-muted-foreground line-clamp-1">
             Page {page} of {data.totalPages} ({data.totalCount} total)
           </div>
           <div className="flex gap-2">
@@ -96,7 +87,7 @@ export const WorkFlows = () => {
               disabled={!data.hasPrevPage}
             >
               <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous
+              <span className=" max-sm:hidden">Previous</span>
             </Button>
             <Button
               variant="outline"
@@ -104,7 +95,7 @@ export const WorkFlows = () => {
               onClick={() => setPage(page + 1)}
               disabled={!data.haveNextPage}
             >
-              Next
+              <span className=" max-sm:hidden">Next</span>
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>

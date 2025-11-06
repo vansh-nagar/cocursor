@@ -41,6 +41,8 @@ export default function Pricing() {
                     "Second advantage weekly",
                     "Third advantage donate to project",
                     "Fourth, access to all components weekly",
+                    "Fifth, priority support",
+                    "Sixth, advanced security features",
                   ].map((item, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <Check className="size-3" />
@@ -48,40 +50,6 @@ export default function Pricing() {
                     </li>
                   ))}
                 </ul>
-                <p className="text-muted-foreground mt-6 text-sm">
-                  Team can be any size, and you can add or switch members as
-                  needed. Companies using our platform include:
-                </p>
-                <div className="mt-12 flex flex-wrap items-center justify-between gap-6">
-                  <img
-                    className="h-5 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                    alt="Nvidia Logo"
-                    height="20"
-                    width="auto"
-                  />
-                  <img
-                    className="h-4 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/column.svg"
-                    alt="Column Logo"
-                    height="16"
-                    width="auto"
-                  />
-                  <img
-                    className="h-4 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/github.svg"
-                    alt="GitHub Logo"
-                    height="16"
-                    width="auto"
-                  />
-                  <img
-                    className="h-5 w-fit dark:invert"
-                    src="https://html.tailus.io/blocks/customers/nike.svg"
-                    alt="Nike Logo"
-                    height="20"
-                    width="auto"
-                  />
-                </div>
               </div>
             </div>
           </div>

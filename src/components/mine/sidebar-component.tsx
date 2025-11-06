@@ -1,5 +1,4 @@
 "use client";
-import React from "react";
 import Link from "next/link";
 import {
   Sidebar,
@@ -14,10 +13,7 @@ import {
   FolderOpenIcon,
   KeyIcon,
   LogOutIcon,
-  MoonIcon,
   RefreshCcwIcon,
-  SidebarClose,
-  StarIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -73,7 +69,7 @@ const SidebarComponent = () => {
   );
 
   return (
-    <Sidebar className=" border-dashed rounded-br-2xl  overflow-hidden">
+    <Sidebar className=" border-dashed overflow-hidden">
       <SidebarHeader>
         <SidebarMenuItem>
           <div className=" flex  items-center pr-2">
@@ -99,7 +95,7 @@ const SidebarComponent = () => {
       <SidebarContent>
         {menuItems.map((group) => (
           <SidebarGroup
-            className=" gap-2"
+            className=" gap-2 "
             key={group.title}
             title={group.title}
           >
@@ -113,6 +109,11 @@ const SidebarComponent = () => {
                 key={item.title}
                 asChild
                 tooltip={item.title}
+                className={` shadow-inner transition-all duration-300 hover:shadow  ${
+                  item.url === pathname || pathname.startsWith(item.url)
+                    ? "shadow-lg"
+                    : ""
+                }`}
               >
                 <Link
                   prefetch
@@ -131,7 +132,7 @@ const SidebarComponent = () => {
         <SidebarMenuItem>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton className=" w-full">
+              <SidebarMenuButton className=" w-full shadow-inner transition-all duration-300 hover:shadow ">
                 <Sun className="h-[1.2rem] w-[1.2rem] scale-100 block transition-all dark:hidden dark:-rotate-90" />
                 <Moon className=" h-[1.2rem] w-[1.2rem] hidden rotate-90 transition-all dark:block dark:rotate-0" />
                 <span>Toggle theme</span>
@@ -174,7 +175,7 @@ const SidebarComponent = () => {
         </SidebarMenuItem> */}
         <SidebarMenuItem>
           <SidebarMenuButton
-            className=" gap-4"
+            className=" gap-4 shadow-inner transition-all duration-300 hover:shadow "
             tooltip={"Billing portal"}
             onClick={() =>
               authClient.signOut({

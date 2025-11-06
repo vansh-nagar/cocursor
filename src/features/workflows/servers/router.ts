@@ -5,8 +5,6 @@ import type { Edge, Node } from "@xyflow/react";
 import z from "zod";
 import { PAGINATION } from "@/config/constant";
 
-import { NodeType } from "@prisma/client";
-
 export const workFlowsRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
     return prisma.workflows.create({
@@ -15,7 +13,7 @@ export const workFlowsRouter = createTRPCRouter({
         userId: ctx.auth.user.id,
         nodes: {
           create: {
-            type: NodeType.INPUT,
+            type: "DEFAULT",
             name: "Start Node",
             position: { x: 0, y: 0 },
           },
@@ -35,6 +33,7 @@ export const workFlowsRouter = createTRPCRouter({
       });
     }),
 
+  //TODO: Update Name
   updateName: protectedProcedure
     .input(z.object({ id: z.string(), name: z.string() }))
     .mutation(({ ctx, input }) => {
@@ -49,6 +48,7 @@ export const workFlowsRouter = createTRPCRouter({
       });
     }),
 
+  //TODO: include nodes and edges
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -70,14 +70,18 @@ export const workFlowsRouter = createTRPCRouter({
         type: node.type,
       })) as Node[];
 
-      const edges: Edge[] = workflow?.edge.map((edge) => ({
-        id: edge.id,
-        source: edge.fromNodeId,
-        target: edge.toNodeId,
-        sourceHandle: edge.fromOutput,
-        targetHandle: edge.toInput,
-        type: "default",
-      })) as Edge[];
+      const edges: Edge[] =
+        workflow?.edge.map((edge) => {
+          return {
+            id: edge.id,
+            source: edge.fromNodeId,
+            target: edge.toNodeId,
+            sourceHandle: edge.fromOutput || undefined,
+            targetHandle: edge.toInput || undefined,
+            type: "InitialNode",
+            data: {}, // required by React Flow
+          } as Edge;
+        }) || [];
 
       return {
         id: workflow?.id,

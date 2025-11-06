@@ -11,7 +11,7 @@ import Testimonials from "@/components/landing-page/testimonials";
 
 const Page = () => {
   return (
-    <div className="pattern-bg flex  flex-col gap-52 sm:pb-24 pb-10">
+    <div className="pattern-bg flex  flex-col sm:gap-52 gap-10  sm:pb-24 pb-3 relative overflow-hidden">
       <NavBar />
       <HeroSection />
 
@@ -21,6 +21,9 @@ const Page = () => {
       <IntegrationsSection1 />
       <Testimonials />
       <Footer />
+      <span className=" absolute   -bottom-60 right-1/2  font-extrabold text-[30vw] z-50 translate-x-1/2 text-primary opacity-10  pointer-events-none ">
+        ORCHA
+      </span>
     </div>
   );
 };
