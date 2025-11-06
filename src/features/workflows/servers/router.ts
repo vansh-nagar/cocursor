@@ -76,6 +76,7 @@ export const workFlowsRouter = createTRPCRouter({
         target: edge.toNodeId,
         sourceHandle: edge.fromOutput,
         targetHandle: edge.toInput,
+        type: "default",
       })) as Edge[];
 
       return {

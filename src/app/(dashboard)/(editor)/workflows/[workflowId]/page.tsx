@@ -9,7 +9,7 @@ interface PageProps {
 const Page = async ({ params }: PageProps) => {
   const { workflowId } = await params;
   return (
-    <div className=" border h-full">
+    <div className=" h-full">
       <ReactFlowCanvas workflowId={workflowId} />
     </div>
   );

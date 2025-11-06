@@ -7,10 +7,20 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export const useWorkflows = () => {
+export const useGetWorkflows = (params?: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}) => {
   const trpc = useTRPC();
 
-  return trpc.Workflows.getMany.queryOptions({});
+  return useSuspenseQuery(
+    trpc.Workflows.getMany.queryOptions({
+      page: params?.page ?? 1,
+      pageSize: params?.pageSize ?? 5,
+      search: params?.search ?? "",
+    })
+  );
 };
 
 export const useCreateWorkflow = () => {
@@ -35,7 +45,9 @@ export const useCreateWorkflow = () => {
 export const useWorkFlowsDetails = (workflowId: string) => {
   const trpc = useTRPC();
 
-  return trpc.Workflows.getOne.queryOptions({
-    id: workflowId,
-  });
+  return useSuspenseQuery(
+    trpc.Workflows.getOne.queryOptions({
+      id: workflowId,
+    })
+  );
 };
