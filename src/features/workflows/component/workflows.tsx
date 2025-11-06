@@ -7,48 +7,59 @@ import { useCreateWorkflow, useWorkflows } from "@/hooks/use-workflows";
 import Link from "next/link";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { EllipsisVertical } from "lucide-react";
+import { EllipsisVertical, Search } from "lucide-react";
 import { SiNotion, SiOpenai, SiSlack } from "react-icons/si";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { useEffect } from "react";
+import { trpc } from "@/trpc/server";
 
 dayjs.extend(relativeTime);
 
 export const WorkFlows = () => {
-  const workflows = useWorkflows();
-
   return (
     <div>
       <WorkFlowsContainer>
-        <div className=" flex flex-col gap-2">
-          {workflows.data.map((workflow) => (
+        <div className="  flex justify-end">
+          <ButtonGroup className=" mb-5">
+            <Input placeholder="Search workflows..." />
+            <Button size={"icon"}>
+              <Search />
+            </Button>
+          </ButtonGroup>
+        </div>
+        {/* <div className=" flex flex-col gap-2 h-[100vh]">
+          {items.map((workflow) => (
             <Link key={workflow.id} href={`workflows/${workflow.id}`}>
-              <div className=" border rounded-xl  p-4 flex justify-between items-center">
+              <div className=" border rounded-xl  p-4 flex justify-between items-center shadow">
                 <div>
                   <div className=" flex gap-2">
                     <SiNotion
                       className="text-slate-700 dark:text-slate-200"
-                      size={20}
+                      size={24}
                     />
                     <SiSlack
                       className="text-slate-700 dark:text-slate-200"
-                      size={20}
+                      size={24}
                     />
                     <SiOpenai
                       className="text-slate-700 dark:text-slate-200"
-                      size={20}
+                      size={24}
                     />
                   </div>
                   <div className="flex items-center gap-2 mt-2">
                     {workflow.name}
                   </div>
                   <div className=" text-muted-foreground text-xs">
-                    {dayjs(workflow.createdAt).fromNow()}
+                    Created {dayjs(workflow.createdAt).fromNow()}
                   </div>
                 </div>
                 <EllipsisVertical />
               </div>
             </Link>
           ))}{" "}
-        </div>
+        </div> */}
       </WorkFlowsContainer>
     </div>
   );

@@ -6,28 +6,27 @@ import {
   applyEdgeChanges,
   addEdge,
   Background,
+  Controls,
+  MiniMap,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import CustomNode from "./custom-node";
+import { useWorkFlowsDetails } from "@/hooks/use-workflows";
+import InitialNode from "./initial-node";
 
-const initialNodes = [
-  { id: "n1", position: { x: 0, y: 0 }, data: { label: "Node 1" } },
-  { id: "n2", position: { x: 0, y: 100 }, data: { label: "Node 2" } },
-  {
-    id: "n3",
-    type: "CustomNode",
-    position: { x: 0, y: 100 },
-    data: { label: "Node 2" },
-  },
-];
-const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
+export default function ReactFlowCanvas({
+  workflowId,
+}: {
+  workflowId?: string;
+}) {
+  const { data: workflows } = useWorkFlowsDetails(workflowId || "");
 
-export default function ReactFlowCanvas() {
-  const [nodes, setNodes] = useState(initialNodes);
-  const [edges, setEdges] = useState(initialEdges);
+  const [nodes, setNodes] = useState(workflows.nodes);
+  const [edges, setEdges] = useState(workflows.edges);
 
   const nodeTypes = {
     CustomNode,
+    InitialNode,
   };
 
   const onNodesChange = useCallback(
@@ -47,7 +46,7 @@ export default function ReactFlowCanvas() {
   );
 
   return (
-    <div className="  h-screen ">
+    <div className="  h-full  ">
       <ReactFlow
         proOptions={{
           hideAttribution: true,
@@ -60,6 +59,8 @@ export default function ReactFlowCanvas() {
         nodeTypes={nodeTypes}
       >
         <Background />
+        <Controls />
+        <MiniMap />
       </ReactFlow>
     </div>
   );

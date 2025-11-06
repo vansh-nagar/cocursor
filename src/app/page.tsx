@@ -11,7 +11,7 @@ import Testimonials from "@/components/landing-page/testimonials";
 
 const Page = () => {
   return (
-    <div className="pattern-bg flex  flex-col gap-10 sm:pb-3 pb-10">
+    <div className="pattern-bg flex  flex-col gap-52 sm:pb-24 pb-10">
       <NavBar />
       <HeroSection />
 

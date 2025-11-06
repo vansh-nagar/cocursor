@@ -1,5 +1,4 @@
 import { auth } from "@/lib/auth";
-import { polarClient } from "@polar-sh/better-auth";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
 import { cache } from "react";

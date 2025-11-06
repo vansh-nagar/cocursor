@@ -9,7 +9,7 @@ import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 
 const Page = async () => {
-  prefetchWorkflows();
+  prefetchWorkflows({ cursor: null, limit: 10 });
 
   return (
     <HydrateClient>
