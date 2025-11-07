@@ -1,7 +1,9 @@
 import InitialNode from "@/components/canvas/initial-node";
-import { NodeType } from "@prisma/client";
-
 import type { NodeTypes } from "@xyflow/react";
+
+export enum NodeType {
+  DEFAULT = "DEFAULT",
+}
 
 export const nodeComponents = {
   [NodeType.DEFAULT]: InitialNode,
