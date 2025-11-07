@@ -69,14 +69,14 @@ export default function SignInForm() {
             className=" invert dark:block hidden"
             src="/logo/only-logo.svg"
             alt="ORHCA"
-            width={120}
+            width={40}
             height={40}
           />
           <Image
             className="dark:hidden block"
             src="/logo/only-logo.svg"
             alt="ORHCA"
-            width={120}
+            width={40}
             height={40}
           />
           <h1 className="mb-1 mt-4 text-xl font-semibold">Sign In to ORCHA</h1>

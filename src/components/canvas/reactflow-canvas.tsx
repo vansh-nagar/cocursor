@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import {
   ReactFlow,
   applyNodeChanges,
@@ -10,12 +10,14 @@ import {
   MiniMap,
   Edge,
   Node,
+  Panel,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import CustomNode from "./custom-node";
 import { useWorkFlowsDetails } from "@/hooks/use-workflows";
-import InitialNode from "./initial-node";
 import { nodeComponents } from "@/config/node-components";
+import { Button } from "../ui/button";
+import { Plus } from "lucide-react";
+import NodeSelector from "./node-selector";
 
 // const initialNodes = [
 //   {
@@ -37,6 +39,8 @@ export default function ReactFlowCanvas({
   const [nodes, setNodes] = useState<Node[]>(data.nodes as Node[]);
   const [edges, setEdges] = useState<Edge[]>(data.edges as Edge[]);
 
+  const [open, setOpen] = useState(false);
+
   const onNodesChange = useCallback(
     (changes: any) =>
       setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
@@ -55,7 +59,7 @@ export default function ReactFlowCanvas({
   );
 
   return (
-    <div className="  h-full  ">
+    <div className="  h-full  pt-14 ">
       <ReactFlow
         proOptions={{
           hideAttribution: true,
@@ -70,10 +74,24 @@ export default function ReactFlowCanvas({
       >
         <Background />
         <Controls />
+
         <MiniMap
           pannable // allow dragging the viewport from the minimap
           zoomable // allow zooming by scroll inside the minimap
         />
+        <Panel position="top-right">
+          <NodeSelector open={open} onOpenChange={() => {}}>
+            <Button
+              onClick={() => {
+                setOpen(true);
+              }}
+              variant="outline"
+              size="icon"
+            >
+              <Plus />
+            </Button>
+          </NodeSelector>
+        </Panel>
       </ReactFlow>
     </div>
   );

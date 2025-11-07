@@ -1,12 +1,13 @@
 import InitialNode from "@/components/canvas/initial-node";
 import type { NodeTypes } from "@xyflow/react";
-
-export enum NodeType {
-  DEFAULT = "DEFAULT",
-}
+import { NodeType } from "@prisma/client";
+import { HttpRequestNode } from "@/features/execution/components/http-request/node";
+import ManualTriggerNode from "@/features/execution/components/manual-trigger/node";
 
 export const nodeComponents = {
-  [NodeType.DEFAULT]: InitialNode,
+  [NodeType.INITIAL]: InitialNode,
+  [NodeType.MANUAL_TRIGGER]: ManualTriggerNode,
+  [NodeType.HTTP_REQUEST]: HttpRequestNode,
 } as const satisfies NodeTypes;
 
-export type ResgisteredNodeTypes = keyof typeof nodeComponents;
+export type RegisteredNodeTypes = keyof typeof nodeComponents;

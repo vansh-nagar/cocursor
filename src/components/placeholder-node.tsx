@@ -25,8 +25,8 @@ export const PlaceholderNode = forwardRef<HTMLDivElement, PlaceholderNodeProps>(
 
       setEdges((edges) =>
         edges.map((edge) =>
-          edge.target === id ? { ...edge, animated: false } : edge,
-        ),
+          edge.target === id ? { ...edge, animated: false } : edge
+        )
       );
 
       setNodes((nodes) => {
@@ -49,7 +49,7 @@ export const PlaceholderNode = forwardRef<HTMLDivElement, PlaceholderNodeProps>(
     return (
       <BaseNode
         ref={ref}
-        className="w-[150px] border-dashed border-gray-400 bg-card p-2 text-center text-gray-400 shadow-none"
+        className=" border-dashed border-gray-400 bg-card p-2 text-center text-gray-400 shadow-none"
         onClick={handleClick}
       >
         {children}
@@ -67,7 +67,7 @@ export const PlaceholderNode = forwardRef<HTMLDivElement, PlaceholderNodeProps>(
         />
       </BaseNode>
     );
-  },
+  }
 );
 
 PlaceholderNode.displayName = "PlaceholderNode";

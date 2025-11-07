@@ -1,17 +1,7 @@
-import { MousePointer2, Plus, Slack } from "lucide-react";
-import { PlaceholderNode } from "@/components/placeholder-node";
-
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { MousePointer2, Plus, Slack, Workflow } from "lucide-react";
+import WorkFlowNode from "./workflow-node";
+import NodeSelector from "./node-selector";
+import { useState } from "react";
 
 const options = [
   {
@@ -27,40 +17,20 @@ const options = [
 ];
 
 const InitialNode = ({ id, data }: any) => {
+  const [selectorOpen, setSelectorOpen] = useState(false);
   return (
-    <Drawer direction="right">
-      <DrawerTrigger asChild>
-        <PlaceholderNode>
-          <div className=" flex  justify-center items-center  cursor-pointer">
-            <Plus className="  size-4" />
-          </div>
-        </PlaceholderNode>
-      </DrawerTrigger>{" "}
-      <DrawerContent>
-        <DrawerClose />
-        <DrawerHeader className="text-left">
-          <DrawerTitle className=" text-xl">Add Node</DrawerTitle>
-          <DrawerDescription className="text-xs">
-            Make changes to your node here. Click save when you&apos;re done.
-          </DrawerDescription>
-        </DrawerHeader>
-        <div className="grid w-full max-w-xl items-start gap-3 p-3">
-          {options.map((option) => (
-            <DrawerClose className=" cursor-pointer" asChild>
-              <div className="  border  flex gap-3 p-3 rounded-xl">
-                <option.icon size={30} strokeWidth={1} />
-                <div>
-                  <AlertTitle className=" text-sm">{option.title}</AlertTitle>
-                  <AlertDescription className="text-xs">
-                    {option.description}
-                  </AlertDescription>
-                </div>
-              </div>
-            </DrawerClose>
-          ))}
+    <NodeSelector open={selectorOpen} onOpenChange={() => {}}>
+      <WorkFlowNode>
+        <div
+          onClick={() => {
+            setSelectorOpen(true);
+          }}
+          className=" p-3 border rounded-md  cursor-pointer "
+        >
+          <Plus className="  size-4 " />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </WorkFlowNode>
+    </NodeSelector>
   );
 };
 

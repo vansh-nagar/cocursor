@@ -97,10 +97,9 @@ model Workflows {
 
 
 enum NodeType {
-DEFAULT
-INPUT
-OUTPUT
-GROUP 
+  INITIAL
+  MANUAL_TRIGGER
+  HTTP_REQUEST
 }
 
 
