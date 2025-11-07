@@ -9,7 +9,7 @@ const AppHeader = () => {
 
   return (
     <div>
-      <header className="  flex h-14 items-center gap-2 bg-[#f3f4f6] dark:bg-background border-dashed border-b px-2 z-50 fixed top-0 left-64 right-0 ">
+      <header className="  flex h-14 items-center gap-2 bg-[#f3f4f6] dark:bg-background border-dashed border-b px-2 z-50 fixed top-0 md:left-64 left-0 right-0 ">
         <SidebarTrigger />
         <h1 className="  text-sm  ">
           {pathname

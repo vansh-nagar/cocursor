@@ -15,6 +15,7 @@ import {
   ChevronLeft,
   ChevronRight,
   WorkflowIcon,
+  PackageOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { SiNotion, SiOpenai, SiSlack } from "react-icons/si";
@@ -34,6 +35,8 @@ export const WorkFlows = () => {
     setPage(1); // Reset to page 1 when searching
   };
 
+  const createWorkflowMutation = useCreateWorkflow();
+
   return (
     <div className=" relative mt-14 overflow-hidden  ">
       <WorkFlowsContainer>
@@ -52,30 +55,53 @@ export const WorkFlows = () => {
           </ButtonGroup>
         </div>
 
-        <div className="flex flex-col gap-3 mask-b-from-90% pb-5">
-          {data.items.map((workflow) => (
-            <Link key={workflow.id} href={`workflows/${workflow.id}`}>
-              <div className=" border rounded-xl py-4 px-6 flex justify-between  items-center ">
-                <div className=" flex items-center gap-6">
-                  <div>
-                    <WorkflowIcon strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <div className=" line-clamp-1 ">{workflow.name}</div>
-                    <div className="text-muted-foreground text-xs line-clamp-1">
-                      Updated {dayjs(workflow.updatedAt).fromNow()} || Created{" "}
-                      {dayjs(workflow.createdAt).fromNow()}
+        {data.items.length ? (
+          <div className="flex flex-col gap-3 mask-b-from-90% pb-14">
+            {data.items.map((workflow) => (
+              <Link key={workflow.id} href={`workflows/${workflow.id}`}>
+                <div className=" border rounded-xl py-4 px-6 flex justify-between  items-center ">
+                  <div className=" flex items-center gap-6">
+                    <div>
+                      <WorkflowIcon strokeWidth={1.5} />
                     </div>
-                  </div>{" "}
+                    <div>
+                      <div className=" line-clamp-1 ">{workflow.name}</div>
+                      <div className="text-muted-foreground text-xs line-clamp-1">
+                        Updated {dayjs(workflow.updatedAt).fromNow()} || Created{" "}
+                        {dayjs(workflow.createdAt).fromNow()}
+                      </div>
+                    </div>{" "}
+                  </div>
+                  <EllipsisVertical />
                 </div>
-                <EllipsisVertical />
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="  flex justify-center items-center  border-dashed  mt-20  pb-14 ">
+            <div className=" border py-10 flex justify-center flex-col w-md items-center rounded-xl">
+              <PackageOpen size={50} strokeWidth={1} />
+              <span className=" pt-4">No workflows found :(</span>
+              <span className=" text-xs text-muted-foreground text-center mt-2">
+                You haven't created any workflows yet. Get <br /> started by
+                creating your first workflow{" "}
+              </span>
+
+              <Button
+                className=" mt-20"
+                disabled={createWorkflowMutation.isPending}
+                onClick={() => {
+                  createWorkflowMutation.mutate();
+                }}
+              >
+                Create Workflow
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Pagination Controls */}
-        <div className="flex items-center justify-between mt-4 border-t py-4 sticky  bottom-0 inset-x-0 bg-background gap-2">
+        <div className="flex items-center justify-between mt-4 border-t p-4   fixed bottom-0 right-0 md:left-64 left-0 bg-background gap-2">
           <div className="text-sm text-muted-foreground line-clamp-1">
             Page {page} of {data.totalPages} ({data.totalCount} total)
           </div>

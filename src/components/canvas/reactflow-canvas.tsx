@@ -9,11 +9,13 @@ import {
   Controls,
   MiniMap,
   Edge,
+  Node,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import CustomNode from "./custom-node";
 import { useWorkFlowsDetails } from "@/hooks/use-workflows";
 import InitialNode from "./initial-node";
+import { nodeComponents } from "@/config/node-components";
 
 // const initialNodes = [
 //   {
@@ -32,13 +34,8 @@ export default function ReactFlowCanvas({
 }) {
   const { data } = useWorkFlowsDetails(workflowId || "");
 
-  const [nodes, setNodes] = useState(data.edges);
-  const [edges, setEdges] = useState(data.nodes);
-
-  const nodeTypes = {
-    CustomNode,
-    InitialNode,
-  };
+  const [nodes, setNodes] = useState<Node[]>(data.nodes as Node[]);
+  const [edges, setEdges] = useState<Edge[]>(data.edges as Edge[]);
 
   const onNodesChange = useCallback(
     (changes: any) =>
@@ -68,7 +65,8 @@ export default function ReactFlowCanvas({
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
-        nodeTypes={nodeTypes}
+        nodeTypes={nodeComponents}
+        fitView
       >
         <Background />
         <Controls />

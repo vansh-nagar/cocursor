@@ -1,6 +1,6 @@
-import { Handle, Position } from "@xyflow/react";
 import { MousePointer2, Plus, Slack } from "lucide-react";
-import { AlertCircleIcon, CheckCircle2Icon, PopcornIcon } from "lucide-react";
+import { PlaceholderNode } from "@/components/placeholder-node";
+
 import {
   Drawer,
   DrawerClose,
@@ -29,10 +29,12 @@ const options = [
 const InitialNode = ({ id, data }: any) => {
   return (
     <Drawer direction="right">
-      <DrawerTrigger>
-        <div className=" hover:scale-105 transition-all duration-300 flex items-center justify-center  p-4  rounded-md  bg-background cursor-pointer border border-dashed">
-          <Plus />
-        </div>
+      <DrawerTrigger asChild>
+        <PlaceholderNode>
+          <div className=" flex  justify-center items-center  cursor-pointer">
+            <Plus className="  size-4" />
+          </div>
+        </PlaceholderNode>
       </DrawerTrigger>{" "}
       <DrawerContent>
         <DrawerClose />

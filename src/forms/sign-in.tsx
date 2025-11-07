@@ -67,14 +67,14 @@ export default function SignInForm() {
         <div>
           <Image
             className=" invert dark:block hidden"
-            src="/logo/logo1.svg"
+            src="/logo/only-logo.svg"
             alt="ORHCA"
             width={120}
             height={40}
           />
           <Image
             className="dark:hidden block"
-            src="/logo/logo1.svg"
+            src="/logo/only-logo.svg"
             alt="ORHCA"
             width={120}
             height={40}
