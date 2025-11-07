@@ -16,7 +16,7 @@ import "@xyflow/react/dist/style.css";
 import { useWorkFlowsDetails } from "@/hooks/use-workflows";
 import { nodeComponents } from "@/config/node-components";
 import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
+import { Plus, SaveIcon } from "lucide-react";
 import NodeSelector from "./node-selector";
 
 // const initialNodes = [
@@ -80,17 +80,22 @@ export default function ReactFlowCanvas({
           zoomable // allow zooming by scroll inside the minimap
         />
         <Panel position="top-right">
-          <NodeSelector open={open} onOpenChange={() => {}}>
-            <Button
-              onClick={() => {
-                setOpen(true);
-              }}
-              variant="outline"
-              size="icon"
-            >
-              <Plus />
+          <div className="  flex gap-2">
+            <Button>
+              <SaveIcon /> Save
             </Button>
-          </NodeSelector>
+            <NodeSelector open={open} onOpenChange={() => {}}>
+              <Button
+                onClick={() => {
+                  setOpen(true);
+                }}
+                variant="outline"
+                size="icon"
+              >
+                <Plus />
+              </Button>
+            </NodeSelector>
+          </div>
         </Panel>
       </ReactFlow>
     </div>

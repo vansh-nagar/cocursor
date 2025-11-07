@@ -2,7 +2,7 @@ import InitialNode from "@/components/canvas/initial-node";
 import type { NodeTypes } from "@xyflow/react";
 import { NodeType } from "@prisma/client";
 import { HttpRequestNode } from "@/features/execution/components/http-request/node";
-import ManualTriggerNode from "@/features/execution/components/manual-trigger/node";
+import ManualTriggerNode from "@/features/trigger/component/manual-trigger/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
