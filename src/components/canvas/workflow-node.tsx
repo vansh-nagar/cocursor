@@ -2,6 +2,16 @@ import { NodeToolbar, Position } from "@xyflow/react";
 import React from "react";
 import { Button } from "../ui/button";
 import { Settings, Trash } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const WorkFlowNode = ({
   children,
@@ -11,7 +21,8 @@ const WorkFlowNode = ({
   onSetting,
   onDoubleClick,
   onDelete,
-}: {
+}: // status,
+{
   children: React.ReactNode;
   name?: string;
   description?: string;
@@ -31,11 +42,11 @@ const WorkFlowNode = ({
         )}
       </NodeToolbar>
       <NodeToolbar position={Position.Top} isVisible>
+        <Button onClick={onSetting} size={"sm"} variant={"ghost"}>
+          <Settings />
+        </Button>
         <Button onClick={onDelete} size={"sm"} variant={"ghost"}>
           <Trash />
-        </Button>
-        <Button size={"sm"} variant={"ghost"}>
-          <Settings />
         </Button>
       </NodeToolbar>
       {children}

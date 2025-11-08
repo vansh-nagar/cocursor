@@ -2,15 +2,19 @@ import { NodeProps, Position, useReactFlow } from "@xyflow/react";
 import React from "react";
 import { Icon, PiIcon } from "lucide-react";
 import WorkFlowNode from "@/components/canvas/workflow-node";
-import { BaseNode, BaseNodeContent } from "@/components/base-node";
-import { BaseHandle } from "@/components/base-handle";
+import { BaseHandle } from "@/components/canvas/base-handle";
+import {
+  type NodeStatus,
+  NodeStatusIndicator,
+} from "@/components/canvas/node-status-indicator";
+import { BaseNode, BaseNodeContent } from "@/components/canvas/base-node";
 
 interface BaseExecutionNodeProps extends NodeProps {
   icon: React.ComponentType<any>;
   name: string;
   description?: string;
   children?: React.ReactNode;
-
+  status?: NodeStatus;
   onSetting?: () => void;
   onDoubleClick?: () => void;
 }
@@ -21,7 +25,7 @@ const BaseTriggerNode = ({
   name,
   description,
   onSetting,
-  //   status,
+  status = "initial",
   onDoubleClick,
 }: BaseExecutionNodeProps) => {
   const { setNodes, setEdges } = useReactFlow();
@@ -46,15 +50,30 @@ const BaseTriggerNode = ({
       onDoubleClick={onDoubleClick}
       onDelete={handleDelete}
     >
-      <BaseNode
-        className="  rounded-r-sm cursor-pointer rounded-l-xl"
-        onDoubleClick={onDoubleClick}
+      <NodeStatusIndicator
+        className=" rounded-l-2xl"
+        status={status}
+        variant="border"
       >
-        <BaseNodeContent>
-          <Icon size={20} strokeWidth={1.4} className="text-muted-foreground" />
-          <BaseHandle id={"source1"} type="source" position={Position.Right} />
-        </BaseNodeContent>
-      </BaseNode>
+        <BaseNode
+          status={status}
+          className="  cursor-pointer rounded-l-xl"
+          onDoubleClick={onDoubleClick}
+        >
+          <BaseNodeContent>
+            <Icon
+              size={15}
+              strokeWidth={1.4}
+              className="text-muted-foreground"
+            />
+            <BaseHandle
+              id={"source1"}
+              type="source"
+              position={Position.Right}
+            />
+          </BaseNodeContent>
+        </BaseNode>
+      </NodeStatusIndicator>
     </WorkFlowNode>
   );
 };

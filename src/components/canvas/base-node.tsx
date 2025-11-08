@@ -1,28 +1,48 @@
 import { cn } from "@/lib/utils";
 import { forwardRef, type HTMLAttributes } from "react";
+import { type NodeStatus } from "./node-status-indicator";
+import { CheckCircle, Loader2, XCircleIcon } from "lucide-react";
 
-export const BaseNode = forwardRef<
-  HTMLDivElement,
-  HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "relative  border bg-card text-card-foreground",
-      "hover:ring-1",
-      // React Flow displays node elements inside of a `NodeWrapper` component,
-      // which compiles down to a div with the class `react-flow__node`.
-      // When a node is selected, the class `selected` is added to the
-      // `react-flow__node` element. This allows us to style the node when it
-      // is selected, using Tailwind's `&` selector.
-      "[.react-flow\\_\\_node.selected_&]:border-muted-foreground",
-      "[.react-flow\\_\\_node.selected_&]:shadow-lg",
-      className
-    )}
-    tabIndex={0}
-    {...props}
-  />
-));
+interface BaseNodeProps extends HTMLAttributes<HTMLDivElement> {
+  status?: NodeStatus;
+}
+
+export const BaseNode = forwardRef<HTMLDivElement, BaseNodeProps>(
+  ({ className, status, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "relative rounded-sm hover:bg-accent  border  bg-card text-card-foreground",
+        className
+      )}
+      tabIndex={0}
+      {...props}
+    >
+      {props.children}
+      {status === "error" && (
+        <XCircleIcon
+          size={8}
+          strokeWidth={1.5}
+          className=" text-destructive absolute right-0.5  bottom-0.5"
+        />
+      )}
+      {status === "success" && (
+        <CheckCircle
+          size={8}
+          strokeWidth={1.5}
+          className=" text-green-500 absolute right-0.5   bottom-0.5"
+        />
+      )}
+      {status === "loading" && (
+        <Loader2
+          size={8}
+          strokeWidth={2}
+          className="  absolute -right-0.5  -bottom-0.5 animate-spin text-blue-700"
+        />
+      )}
+    </div>
+  )
+);
 BaseNode.displayName = "BaseNode";
 
 /**

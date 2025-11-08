@@ -117,6 +117,11 @@ export default function ReactFlowCanvas({
         onConnect={onConnect}
         nodeTypes={nodeComponents}
         fitView
+        snapGrid={[10, 10]}
+        snapToGrid={true}
+        panOnScroll
+        panOnDrag={false}
+        selectionOnDrag={true}
       >
         <Background />
         <Controls />

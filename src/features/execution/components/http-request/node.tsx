@@ -30,6 +30,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
         description={description}
         onSetting={() => {}}
         onDoubleClick={() => {}}
+        status="error"
       ></BaseExecutionNode>
     </>
   );

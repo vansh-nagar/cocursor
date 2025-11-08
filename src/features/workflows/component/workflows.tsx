@@ -78,10 +78,10 @@ export const WorkFlows = () => {
             ))}
           </div>
         ) : (
-          <div className="  flex justify-center items-center  border-dashed  mt-20  pb-14 ">
-            <div className=" border py-10 flex justify-center flex-col w-md items-center rounded-xl">
+          <div className="  flex justify-center items-center  border-dashed  mt-20  pb-14  ">
+            <div className=" border py-10 flex justify-center flex-col w-md items-center rounded-xl ">
               <PackageOpen size={50} strokeWidth={1} />
-              <span className=" pt-4">No workflows found :(</span>
+              <span className=" pt-4">No workflows found</span>
               <span className=" text-xs text-muted-foreground text-center mt-2">
                 You haven't created any workflows yet. Get <br /> started by
                 creating your first workflow{" "}
