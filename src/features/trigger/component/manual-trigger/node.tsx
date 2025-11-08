@@ -19,7 +19,7 @@ const ManualTriggerNode = (props: NodeProps) => {
         icon={MousePointer2}
         description={"Trigger workflow manually"}
         onSetting={handleOpenDialog}
-        onDoubleClick={() => {}}
+        onDoubleClick={handleOpenDialog}
         status={nodeStatus}
       />
     </>

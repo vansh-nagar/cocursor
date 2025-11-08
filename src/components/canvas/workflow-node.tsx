@@ -2,16 +2,6 @@ import { NodeToolbar, Position } from "@xyflow/react";
 import React from "react";
 import { Button } from "../ui/button";
 import { Settings, Trash } from "lucide-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 const WorkFlowNode = ({
   children,

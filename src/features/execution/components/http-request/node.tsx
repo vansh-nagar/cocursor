@@ -1,9 +1,12 @@
 "use client";
 
-import type { Node, NodeProps, useReactFlow } from "@xyflow/react";
-import { Globe, GlobeIcon } from "lucide-react";
+import { Node, NodeProps, useReactFlow } from "@xyflow/react";
+import { GlobeIcon } from "lucide-react";
 
 import BaseExecutionNode from "@/features/execution/base-excecution-node";
+import { HTTPRequestDialog } from "./dilog";
+import { useEffect, useState } from "react";
+import { FormType } from "./dilog";
 
 type HttpRequestNodeData = {
   endpoint: string;
@@ -15,21 +18,54 @@ type HttpRequestNodeData = {
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
 
 export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { setNodes, setEdges } = useReactFlow();
+
   const nodeData = props.data as HttpRequestNodeData;
   const description = nodeData?.endpoint
     ? ` ${nodeData.method || "GET"} : ${nodeData.endpoint}`
     : "HTTP Request Node";
 
+  const handleOpenSettings = () => {
+    setIsOpen(true);
+  };
+
+  const handleSubmit = (values: FormType) => {
+    setNodes((currentNodes) => {
+      currentNodes.map((node) => {
+        if (node.id === props.id) {
+          node.data = {
+            ...node.data,
+            endpoint: values.endpoint,
+            method: values.method,
+            body: values.body,
+          };
+        }
+        console.log("Updated node data:", node.data);
+        return node;
+      });
+      return currentNodes;
+    });
+  };
+
   return (
     <>
+      <HTTPRequestDialog
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        onSubmit={handleSubmit}
+        defaultBody={nodeData.body}
+        defaultEndpoint={nodeData.endpoint}
+        defaultMethod={nodeData.method}
+      />
       <BaseExecutionNode
         {...props}
         id={props.id}
         name="HTTP Request"
-        icon={Globe}
+        icon={GlobeIcon}
         description={description}
-        onSetting={() => {}}
-        onDoubleClick={() => {}}
+        onSetting={handleOpenSettings}
+        onDoubleClick={handleOpenSettings}
         status="error"
       ></BaseExecutionNode>
     </>
