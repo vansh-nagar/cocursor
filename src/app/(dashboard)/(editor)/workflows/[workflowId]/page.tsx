@@ -1,4 +1,5 @@
 import ReactFlowCanvas from "@/components/canvas/reactflow-canvas";
+import { ReactFlowProvider } from "@xyflow/react";
 
 interface PageProps {
   params: {
@@ -10,7 +11,9 @@ const Page = async ({ params }: PageProps) => {
   const { workflowId } = await params;
   return (
     <div className=" h-full">
-      <ReactFlowCanvas workflowId={workflowId} />
+      <ReactFlowProvider>
+        <ReactFlowCanvas workflowId={workflowId} />
+      </ReactFlowProvider>
     </div>
   );
 };

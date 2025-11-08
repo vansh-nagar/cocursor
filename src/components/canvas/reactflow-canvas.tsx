@@ -11,6 +11,7 @@ import {
   Edge,
   Node,
   Panel,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useWorkFlowsDetails } from "@/hooks/use-workflows";
@@ -18,28 +19,43 @@ import { nodeComponents } from "@/config/node-components";
 import { Button } from "../ui/button";
 import { Plus, SaveIcon } from "lucide-react";
 import NodeSelector from "./node-selector";
-
-// const initialNodes = [
-//   {
-//     id: "n3",
-//     type: "InitialNode",
-//     position: { x: 400, y: 200 },
-//     data: { label: "Node 2" },
-//   },
-// ];
-// const initialEdges = [{ id: "n1-n2", source: "n1", target: "n2" }];
+import { useUpdateWorkflow } from "@/hooks/use-workflows";
 
 export default function ReactFlowCanvas({
   workflowId,
 }: {
   workflowId?: string;
 }) {
+  const updateWorkflow = useUpdateWorkflow();
   const { data } = useWorkFlowsDetails(workflowId || "");
 
-  const [nodes, setNodes] = useState<Node[]>(data.nodes as Node[]);
-  const [edges, setEdges] = useState<Edge[]>(data.edges as Edge[]);
+  // map server DTOs → ReactFlow Node/Edge
+  const initialNodes: Node[] =
+    (data.nodes || []).map((n: any) => ({
+      id: n.id,
+      position: n.position,
+      data: {
+        ...n.data,
+        label: n.data?.label ?? n.name ?? n.type ?? "Untitled",
+      },
+      type: (n.type ?? undefined) as string | undefined,
+    })) ?? [];
+
+  const initialEdges: Edge[] =
+    (data.edges || []).map((e: any) => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle,
+      targetHandle: e.targetHandle,
+      data: e.data ?? {},
+    })) ?? [];
+
+  const [nodes, setNodes] = useState<Node[]>(initialNodes);
+  const [edges, setEdges] = useState<Edge[]>(initialEdges);
 
   const [open, setOpen] = useState(false);
+  const { getNodes, getEdges } = useReactFlow();
 
   const onNodesChange = useCallback(
     (changes: any) =>
@@ -58,6 +74,36 @@ export default function ReactFlowCanvas({
     []
   );
 
+  const handleSave = () => {
+    const currentNodes = getNodes();
+    const currentEdges = getEdges();
+
+    // 🔧 convert ReactFlow nodes → your schema format
+    const formattedNodes = currentNodes.map((n) => ({
+      id: n.id,
+      type: (n.type as string) ?? "DEFAULT", // use enum default
+      name: n.data?.label ?? "Untitled Node", // optional
+      data: n.data ?? {},
+      position: n.position,
+    }));
+
+    // 🔧 convert edges to prisma format
+    const formattedEdges = currentEdges.map((e) => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle ?? "main",
+      targetHandle: e.targetHandle ?? "main",
+      data: e.data ?? {},
+    }));
+
+    updateWorkflow.mutate({
+      id: workflowId || "",
+      nodes: formattedNodes,
+      edges: formattedEdges,
+    });
+  };
+  ``;
   return (
     <div className="  h-full  pt-14 ">
       <ReactFlow
@@ -81,7 +127,7 @@ export default function ReactFlowCanvas({
         />
         <Panel position="top-right">
           <div className="  flex gap-2">
-            <Button>
+            <Button disabled={updateWorkflow.isPending} onClick={handleSave}>
               <SaveIcon /> Save
             </Button>
             <NodeSelector open={open} onOpenChange={() => {}}>

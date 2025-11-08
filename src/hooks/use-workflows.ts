@@ -51,3 +51,9 @@ export const useWorkFlowsDetails = (workflowId: string) => {
     })
   );
 };
+
+export const useUpdateWorkflow = () => {
+  const trpc = useTRPC();
+
+  return useMutation(trpc.Workflows.update.mutationOptions());
+};

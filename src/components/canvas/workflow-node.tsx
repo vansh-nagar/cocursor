@@ -10,6 +10,7 @@ const WorkFlowNode = ({
   icon: Icon,
   onSetting,
   onDoubleClick,
+  onDelete,
 }: {
   children: React.ReactNode;
   name?: string;
@@ -17,6 +18,7 @@ const WorkFlowNode = ({
   icon?: React.ComponentType<any>;
   onSetting?: () => void;
   onDoubleClick?: () => void;
+  onDelete?: () => void;
 }) => {
   return (
     <div>
@@ -29,7 +31,7 @@ const WorkFlowNode = ({
         )}
       </NodeToolbar>
       <NodeToolbar position={Position.Top} isVisible>
-        <Button size={"sm"} variant={"ghost"}>
+        <Button onClick={onDelete} size={"sm"} variant={"ghost"}>
           <Trash />
         </Button>
         <Button size={"sm"} variant={"ghost"}>

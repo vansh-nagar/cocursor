@@ -1,9 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import prisma from "@/lib/prisma";
-import type { Edge, Node } from "@xyflow/react";
-
 import z from "zod";
 import { PAGINATION } from "@/config/constant";
+import { NodeType } from "@prisma/client";
 
 export const workFlowsRouter = createTRPCRouter({
   create: protectedProcedure.mutation(({ ctx }) => {
@@ -63,25 +62,25 @@ export const workFlowsRouter = createTRPCRouter({
         },
       });
 
-      const nodes: Node[] = workflow?.nodes.map((node) => ({
-        id: node.id,
-        position: node.position as { x: number; y: number },
-        data: node.data,
-        type: node.type,
-      })) as Node[];
+      // Serializable DTOs only (no JSX / ReactNode types)
+      const nodes =
+        workflow?.nodes.map((node) => ({
+          id: node.id,
+          position: node.position as { x: number; y: number },
+          data: node.data ?? {},
+          type: node.type,
+          name: node.name,
+        })) ?? [];
 
-      const edges: Edge[] =
-        workflow?.edge.map((edge) => {
-          return {
-            id: edge.id,
-            source: edge.fromNodeId,
-            target: edge.toNodeId,
-            sourceHandle: edge.fromOutput || undefined,
-            targetHandle: edge.toInput || undefined,
-            type: "InitialNode",
-            data: {}, // required by React Flow
-          } as Edge;
-        }) || [];
+      const edges =
+        workflow?.edge.map((edge) => ({
+          id: edge.id,
+          source: edge.fromNodeId,
+          target: edge.toNodeId,
+          sourceHandle: edge.fromOutput ?? undefined,
+          targetHandle: edge.toInput ?? undefined,
+          data: edge.data ?? {},
+        })) ?? [];
 
       return {
         id: workflow?.id,
@@ -142,5 +141,65 @@ export const workFlowsRouter = createTRPCRouter({
         items,
         totalCount,
       };
+    }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        nodes: z.array(
+          z.object({
+            id: z.string(),
+            type: z.string(),
+            position: z.any(),
+            data: z.any(),
+          })
+        ),
+        edges: z.array(
+          z.object({
+            id: z.string(),
+            source: z.string(),
+            target: z.string(),
+            sourceHandle: z.string().optional(),
+            targetHandle: z.string().optional(),
+            data: z.any().optional(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      await prisma.workflows.update({
+        where: {
+          userId: ctx.auth.user.id,
+          id: input.id,
+        },
+        data: {
+          nodes: {
+            deleteMany: {}, // remove old ones
+            createMany: {
+              data: input.nodes.map((n) => ({
+                id: n.id,
+                type: n.type as NodeType,
+                name: n.data?.label ?? "Untitled",
+                position: n.position,
+                data: n.data,
+              })),
+            },
+          },
+          edge: {
+            deleteMany: {},
+            createMany: {
+              data: input.edges.map((e) => ({
+                id: e.id,
+                fromNodeId: e.source,
+                toNodeId: e.target,
+                fromOutput: e.sourceHandle ?? "main",
+                toInput: e.targetHandle ?? "main",
+                data: e.data ?? {},
+              })),
+            },
+          },
+        },
+      });
     }),
 });

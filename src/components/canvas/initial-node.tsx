@@ -21,12 +21,7 @@ const InitialNode = ({ id, data }: any) => {
   return (
     <NodeSelector open={selectorOpen} onOpenChange={() => {}}>
       <WorkFlowNode>
-        <div
-          onClick={() => {
-            setSelectorOpen(true);
-          }}
-          className=" p-3 border rounded-md  cursor-pointer "
-        >
+        <div className=" p-3 border border-dashed rounded-md  cursor-pointer bg-background hover:scale-105 active:scale-95 tracking-all duration-200">
           <Plus className="  size-4 " />
         </div>
       </WorkFlowNode>

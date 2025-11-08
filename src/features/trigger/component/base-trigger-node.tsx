@@ -1,4 +1,4 @@
-import { NodeProps, Position } from "@xyflow/react";
+import { NodeProps, Position, useReactFlow } from "@xyflow/react";
 import React from "react";
 import { Icon, PiIcon } from "lucide-react";
 import WorkFlowNode from "@/components/canvas/workflow-node";
@@ -24,9 +24,19 @@ const BaseTriggerNode = ({
   //   status,
   onDoubleClick,
 }: BaseExecutionNodeProps) => {
+  const { setNodes, setEdges } = useReactFlow();
   const handleDelete = () => {
-    console.log("Delete node:", id);
-    // Implement deletion logic here
+    setNodes((currentNodes) => {
+      const updatedNodes = currentNodes.filter((node) => node.id !== id);
+      return updatedNodes;
+    });
+
+    setEdges((currentEdges) => {
+      const updatedEdges = currentEdges.filter(
+        (edge) => edge.source !== id && edge.target !== id
+      );
+      return updatedEdges;
+    });
   };
   return (
     <WorkFlowNode
@@ -34,6 +44,7 @@ const BaseTriggerNode = ({
       description={description}
       onSetting={onSetting}
       onDoubleClick={onDoubleClick}
+      onDelete={handleDelete}
     >
       <BaseNode
         className="  rounded-r-sm cursor-pointer rounded-l-xl"
