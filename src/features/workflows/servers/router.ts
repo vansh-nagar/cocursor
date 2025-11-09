@@ -20,6 +20,7 @@ export const workFlowsRouter = createTRPCRouter({
         name: "workflows/execute.workflow",
         data: {
           id: input?.id,
+          initalData:{}
         },
       });
 

@@ -67,15 +67,15 @@ export const HTTPRequestDialog = ({
     },
   });
 
-  useEffect(() => {
-    if (isOpen) {
-      form.reset({
-        endpoint: defaultEndpoint,
-        method: defaultMethod,
-        body: defaultBody,
-      });
-    }
-  }, [isOpen, defaultEndpoint, defaultBody, defaultMethod, form]);
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     form.reset({
+  //       endpoint: defaultEndpoint,
+  //       method: defaultMethod,
+  //       body: defaultBody,
+  //     });
+  //   }
+  // }, [isOpen, defaultEndpoint, defaultBody, defaultMethod, form]);
 
   const watchMethod = form.watch("method");
   const showBodyField = ["POST", "PUT"].includes(watchMethod);
@@ -167,7 +167,7 @@ export const HTTPRequestDialog = ({
               />
             )}
             <Button type="submit" className=" w-full mt-4">
-              Send Request
+              Save Settings
             </Button>
           </form>
         </Form>
