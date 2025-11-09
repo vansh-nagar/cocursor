@@ -132,7 +132,7 @@ export const NodeSelector = ({
   );
   return (
     <Drawer onOpenChange={onOpenChange} direction="right">
-      <DrawerTrigger>{children}</DrawerTrigger>
+      <DrawerTrigger asChild>{children}</DrawerTrigger>
       <DrawerContent
         className="   w-full "
         onPointerDownOutside={() => onOpenChange(false)} // close on click outside

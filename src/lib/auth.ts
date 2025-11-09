@@ -16,22 +16,4 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     },
   },
-  // plugins: [
-  //   polar({
-  //     client: polarClient,
-  //     createCustomerOnSignUp: true,
-  //     use: [
-  //       checkout({
-  //         products: [
-  //           {
-  //             productId: "af18fe48-a58f-4c9f-910e-0e9e7e1ac4c1",
-  //             slug: "orcha-pro", // Custom slug for easy reference in Checkout URL, e.g. /checkout/orcha-pro
-  //           },
-  //         ],
-  //         successUrl: process.env.POLAR_SUCCESS_URL,
-  //         authenticatedUsersOnly: true,
-  //       }),
-  //     ],
-  //   }),
-  // ],
 });

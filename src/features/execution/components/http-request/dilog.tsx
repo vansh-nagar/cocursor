@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Settings } from "lucide-react";
 import z from "zod";
@@ -42,7 +41,7 @@ const formSchema = z.object({
   body: z.string().optional(),
 });
 
-export type HTTPFormValues = z.infer<typeof formSchema>;
+export type HTTPFormType = z.infer<typeof formSchema>;
 
 export const HTTPRequestDialog = ({
   isOpen,

@@ -8,10 +8,7 @@ export const createTRPCContext = cache(async () => {
    */
   return { userId: "user_123" };
 });
-// Avoid exporting the entire t-object
-// since it's not very descriptive.
-// For instance, the use of a t variable
-// is common in i18n libraries.
+
 const t = initTRPC.create({
   /**
    * @see https://trpc.io/docs/server/data-transformers
@@ -27,7 +24,7 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
     headers: await headers(),
   });
 
-  if (!session) {
+  if (!session || !session.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",
       message: "You must be logged in to access this resource.",

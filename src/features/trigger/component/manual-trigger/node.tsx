@@ -9,7 +9,7 @@ const ManualTriggerNode = (props: NodeProps) => {
   const handleOpenDialog = () => {
     setIsOpen(true);
   };
-  const nodeStatus = "loading";
+  const nodeStatus = "initial";
   return (
     <>
       <ManualTriggerDialog isOpen={IsOpen} onClose={() => setIsOpen(false)} />
