@@ -6,6 +6,7 @@ type HttpRequestData = {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   body?: any;
+  variableName?: string;
 };
 
 export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
@@ -26,6 +27,9 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
 
     if (["POST", "PUT"].includes(method) && data.body) {
       options.body = data.body;
+      options.headers = {
+        "Content-Type": "application/json",
+      };
     }
 
     const res = await ky(endpoint, options);
@@ -44,8 +48,23 @@ export const httpRequestExecutor: NodeExecutor<HttpRequestData> = async ({
     };
   });
 
+  const reqPayload = {
+    httpResponse: {
+      status: result.httpResponse.status,
+      statusText: result.httpResponse.statusText,
+      data: result.httpResponse.data,
+    },
+  };
+
+  if (!data.variableName) {
+    return {
+      ...context,
+      ...reqPayload,
+    };
+  }
+
   return {
     ...context,
-    result,
+    [data.variableName]: reqPayload,
   };
 };

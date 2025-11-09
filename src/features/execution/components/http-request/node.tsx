@@ -11,6 +11,7 @@ type HttpRequestNodeData = {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   body: string;
+  variableName?: string;
 };
 
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
@@ -40,6 +41,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
         console.log("Updated node data:", node.data);
         return node;
       });
+      setIsOpen(false);
       return currentNodes;
     });
   };
@@ -53,6 +55,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
         defaultBody={nodeData.body}
         defaultEndpoint={nodeData.endpoint}
         defaultMethod={nodeData.method}
+        variableName={nodeData.variableName}
       />
       <BaseExecutionNode
         {...props}
