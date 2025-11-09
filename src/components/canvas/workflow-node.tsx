@@ -26,7 +26,7 @@ const WorkFlowNode = ({
       <NodeToolbar position={Position.Bottom} isVisible>
         <p className="text-center">{name}</p>
         {description && (
-          <p className=" text-center text-xs text-muted-foreground">
+          <p className=" text-center text-xs text-muted-foreground truncate max-w-40">
             {description}
           </p>
         )}

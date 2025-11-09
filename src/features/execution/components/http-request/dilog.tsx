@@ -166,7 +166,7 @@ export const HTTPRequestDialog = ({
                 )}
               />
             )}
-            <Button type="submit" className=" w-full mt-4">
+            <Button onClick={onClose} type="submit" className=" w-full mt-4">
               Save Settings
             </Button>
           </form>
