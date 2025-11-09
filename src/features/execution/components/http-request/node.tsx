@@ -6,7 +6,6 @@ import { GlobeIcon } from "lucide-react";
 import BaseExecutionNode from "@/features/execution/base-excecution-node";
 import { HTTPRequestDialog } from "./dilog";
 import { useEffect, useState } from "react";
-import { HTTPFormValues } from "./dilog";
 
 type HttpRequestNodeData = {
   endpoint: string;
@@ -29,7 +28,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
     setIsOpen(true);
   };
 
-  const handleSubmit = (values: HTTPFormValues) => {
+  const handleSubmit = (values: any) => {
     setNodes((currentNodes) => {
       currentNodes.map((node) => {
         if (node.id === props.id) {
