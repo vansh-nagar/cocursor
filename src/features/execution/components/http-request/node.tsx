@@ -65,7 +65,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
         description={description}
         onSetting={handleOpenSettings}
         onDoubleClick={handleOpenSettings}
-        status="initial"
+        status="loading"
       ></BaseExecutionNode>
     </>
   );
