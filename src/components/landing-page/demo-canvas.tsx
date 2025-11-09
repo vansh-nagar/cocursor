@@ -8,7 +8,6 @@ import {
   Background,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { NodeType } from "@prisma/client";
 import { nodeComponents } from "@/config/node-components";
 
 const initialNodes = [
