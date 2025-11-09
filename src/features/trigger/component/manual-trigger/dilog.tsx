@@ -27,6 +27,7 @@ export const ManualTriggerDialog = ({
             Configure settings for the Manual Trigger here.
           </DialogDescription>
         </DialogHeader>
+        <div>No settings available for Manual Trigger.</div>
       </DialogContent>
     </Dialog>
   );

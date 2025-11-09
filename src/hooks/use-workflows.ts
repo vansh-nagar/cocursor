@@ -55,5 +55,29 @@ export const useWorkFlowsDetails = (workflowId: string) => {
 export const useUpdateWorkflow = () => {
   const trpc = useTRPC();
 
-  return useMutation(trpc.Workflows.update.mutationOptions());
+  return useMutation(
+    trpc.Workflows.update.mutationOptions({
+      onSuccess: () => {
+        toast.success("Workflow updated");
+      },
+      onError: () => {
+        toast.error("Failed to update workflow");
+      },
+    })
+  );
+};
+
+export const useExecuteWorkflow = () => {
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.Workflows.execute.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Workflow ${data?.name} execution started`);
+      },
+      onError: () => {
+        toast.error("Failed to start workflow execution");
+      },
+    })
+  );
 };

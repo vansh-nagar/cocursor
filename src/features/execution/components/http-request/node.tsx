@@ -6,13 +6,12 @@ import { GlobeIcon } from "lucide-react";
 import BaseExecutionNode from "@/features/execution/base-excecution-node";
 import { HTTPRequestDialog } from "./dilog";
 import { useEffect, useState } from "react";
-import { FormType } from "./dilog";
+import { HTTPFormValues } from "./dilog";
 
 type HttpRequestNodeData = {
   endpoint: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
   body: string;
-  [key: string]: unknown;
 };
 
 type HttpRequestNodeType = Node<HttpRequestNodeData>;
@@ -30,15 +29,13 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
     setIsOpen(true);
   };
 
-  const handleSubmit = (values: FormType) => {
+  const handleSubmit = (values: HTTPFormValues) => {
     setNodes((currentNodes) => {
       currentNodes.map((node) => {
         if (node.id === props.id) {
           node.data = {
             ...node.data,
-            endpoint: values.endpoint,
-            method: values.method,
-            body: values.body,
+            ...values,
           };
         }
         console.log("Updated node data:", node.data);
@@ -66,7 +63,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
         description={description}
         onSetting={handleOpenSettings}
         onDoubleClick={handleOpenSettings}
-        status="error"
+        status="initial"
       ></BaseExecutionNode>
     </>
   );

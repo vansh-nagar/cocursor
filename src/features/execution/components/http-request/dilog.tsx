@@ -32,7 +32,6 @@ import {
 } from "@/components/ui/select";
 
 import { Textarea } from "@/components/ui/textarea";
-import { methodFilterFromJSON } from "@polar-sh/sdk/models/operations/paymentslist.js";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
@@ -43,7 +42,7 @@ const formSchema = z.object({
   body: z.string().optional(),
 });
 
-export type FormType = z.infer<typeof formSchema>;
+export type HTTPFormValues = z.infer<typeof formSchema>;
 
 export const HTTPRequestDialog = ({
   isOpen,
@@ -77,7 +76,7 @@ export const HTTPRequestDialog = ({
         body: defaultBody,
       });
     }
-  }, [isOpen, defaultEndpoint, defaultBody, defaultMethod, form ]);
+  }, [isOpen, defaultEndpoint, defaultBody, defaultMethod, form]);
 
   const watchMethod = form.watch("method");
   const showBodyField = ["POST", "PUT"].includes(watchMethod);

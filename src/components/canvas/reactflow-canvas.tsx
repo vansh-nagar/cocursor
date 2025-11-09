@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   ReactFlow,
   applyNodeChanges,
@@ -20,6 +20,8 @@ import { Button } from "../ui/button";
 import { Plus, SaveIcon } from "lucide-react";
 import NodeSelector from "./node-selector";
 import { useUpdateWorkflow } from "@/hooks/use-workflows";
+import { NodeType } from "@prisma/client";
+import ExecuteWorkflowButton from "./execute-worflow-button";
 
 export default function ReactFlowCanvas({
   workflowId,
@@ -103,7 +105,11 @@ export default function ReactFlowCanvas({
       edges: formattedEdges,
     });
   };
-  ``;
+
+  const hasManualTrigger = useMemo(() => {
+    return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER);
+  }, [nodes]);
+
   return (
     <div className="  h-full  pt-14 ">
       <ReactFlow
@@ -148,6 +154,11 @@ export default function ReactFlowCanvas({
             </NodeSelector>
           </div>
         </Panel>
+        {hasManualTrigger && (
+          <Panel position="bottom-center">
+            <ExecuteWorkflowButton workflowId={workflowId || ""} />
+          </Panel>
+        )}
       </ReactFlow>
     </div>
   );
