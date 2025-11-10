@@ -23,7 +23,7 @@ export const BaseNode = forwardRef<HTMLDivElement, BaseNodeProps>(
         <XCircleIcon
           size={8}
           strokeWidth={1.5}
-          className=" text-destructive absolute right-0.5  bottom-0.5"
+          className=" text-red-400 absolute right-0.5  bottom-0.5"
         />
       )}
       {status === "success" && (

@@ -6,6 +6,9 @@ import { GlobeIcon } from "lucide-react";
 import BaseExecutionNode from "@/features/execution/base-excecution-node";
 import { HTTPRequestDialog } from "./dilog";
 import { useEffect, useState } from "react";
+import { useNodeStatus } from "../../hooks/use-node-status";
+import { httpRequestChannel } from "@/inngest/chanels/http-request";
+import { fetchHttpRequestRealtimeToken } from "./action";
 
 type HttpRequestNodeData = {
   endpoint: string;
@@ -28,6 +31,13 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
   const handleOpenSettings = () => {
     setIsOpen(true);
   };
+
+  const nodeStatus = useNodeStatus({
+    nodeId: props.id,
+    channel: httpRequestChannel().name,
+    topic: "status",
+    refreshToken: fetchHttpRequestRealtimeToken,
+  });
 
   const handleSubmit = (values: any) => {
     setNodes((currentNodes) => {
@@ -65,7 +75,7 @@ export const HttpRequestNode = (props: NodeProps<HttpRequestNodeType>) => {
         description={description}
         onSetting={handleOpenSettings}
         onDoubleClick={handleOpenSettings}
-        status="loading"
+        status={nodeStatus}
       ></BaseExecutionNode>
     </>
   );
