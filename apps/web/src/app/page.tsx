@@ -10,12 +10,12 @@ const type = [
   },
   {
     icon: <FolderDown size={16} />,
-    name: "Clone Repo",
+    name: "Create With Prompt",
     link: "/editor",
   },
   {
     icon: <FolderDown size={16} />,
-    name: "Create With Prompt",
+    name: "Collab with friends",
     link: "/editor",
   },
 ];
