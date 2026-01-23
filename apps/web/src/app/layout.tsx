@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+
 import {
   ClerkProvider,
   SignInButton,
@@ -10,6 +12,9 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
+import { ConvexProvider } from "convex/react";
+import { QueryProvider } from "@/providers/query-provider";
+import { ClientConvexProvider } from "@/providers/convex-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,7 +68,12 @@ export default function RootLayout({
                 <UserButton />
               </SignedIn>
             </header>
-            {children}
+            <QueryProvider>
+              <ClientConvexProvider>
+                {children}
+                <ReactQueryDevtools initialIsOpen={false} />
+              </ClientConvexProvider>
+            </QueryProvider>
           </ThemeProvider>
         </body>
       </html>
