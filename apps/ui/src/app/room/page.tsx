@@ -1,13 +1,10 @@
 "use client";
 import Editor from "@/components/mine/editor";
-import { Button } from "@/components/ui/button";
 import { useIDEStore } from "@/stores/ideStore";
-// import { wsRtcConnectionHook } from "@/hooks/rtc-ws";
-import React, { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { StateEffect } from "@codemirror/state";
+import { useEffect, useRef } from "react";
 
 const page = () => {
-  const { editorRef, editorView } = useIDEStore();
   const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
@@ -41,23 +38,13 @@ const page = () => {
     };
   }, []);
 
-  const sendFileContent = () => {
+  const sendFileContent = ({ content }: { content: string }) => {
     if (ws.current === null) return;
-    const Eview = useIDEStore.getState().editorView;
-
-    if (!Eview) {
-      toast.error("Editor view is not ready");
-      return;
-    }
-
-    const fileContent = Eview.state.doc.toString();
-
-    console.log("Sending file content:", fileContent);
 
     ws.current.send(
       JSON.stringify({
         type: "FileContent",
-        FileContent: fileContent,
+        FileContent: content,
         roomId: "example-room-id",
       }),
     );
@@ -65,18 +52,17 @@ const page = () => {
 
   return (
     <div>
-      <Button
-        onClick={() => {
-          setInterval(() => {
-            sendFileContent();
-          }, 100);
-        }}
-      >
-        Send File
-      </Button>
-      <Editor ws={ws.current} />
+      <Editor ws={ws.current} sendFileContent={sendFileContent} />
     </div>
   );
 };
 
 export default page;
+
+// cursorEffects.ts
+
+export const setRemoteCursor = StateEffect.define<{
+  clientId: string;
+  pos: number;
+  name?: string;
+}>();

@@ -16,7 +16,13 @@ import {
 import { indentWithTab } from "@codemirror/commands";
 import { useIDEStore } from "@/stores/ideStore";
 
-function Editor({ ws }: { ws: WebSocket | null }) {
+function Editor({
+  ws,
+  sendFileContent,
+}: {
+  ws: WebSocket | null;
+  sendFileContent: ({ content }: { content: string }) => void;
+}) {
   const { editorRef, setEditorRef, setEditorView, editorView } = useIDEStore();
 
   useEffect(() => {
@@ -37,11 +43,29 @@ function hello() {
         drawSelection(),
         dropCursor(),
         rectangularSelection(),
+
         EditorView.lineWrapping,
         keymap.of([indentWithTab]),
         EditorView.theme({
           "&": { height: "100%" },
           ".cm-scroller": { overflow: "auto" },
+        }),
+        EditorView.updateListener.of((update) => {
+          if (
+            !update.transactions.some(
+              (tr) =>
+                tr.isUserEvent("input") ||
+                tr.isUserEvent("delete") ||
+                tr.isUserEvent("paste"),
+            )
+          )
+            return;
+
+          if (update.docChanged) {
+            console.log("Document changed");
+            const content = update.state.doc.toString();
+            sendFileContent({ content: content });
+          }
         }),
       ],
     });

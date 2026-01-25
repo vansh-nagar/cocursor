@@ -19,6 +19,7 @@ wss.on("connection", function connection(ws: any) {
             JSON.stringify({
               type: "FileContent",
               FileContent: message.FileContent,
+              pos: message.CursorPos,
             }),
           );
         }
