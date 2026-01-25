@@ -1,0 +1,148 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  userWorkflows Workflows[]
+
+  @@unique([email])
+  @@map("user")
+
+
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+
+
+model Workflows {
+  id       String   @id @default(cuid())
+  name     String
+
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+
+  nodes     Node[]
+  edge      Edge[]
+
+
+
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+
+enum NodeType {
+  INITIAL
+  MANUAL_TRIGGER
+  HTTP_REQUEST
+}
+
+
+model Node {
+  id          String   @id @default(cuid())
+  workflowId  String
+  
+  workflow    Workflows @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  
+  type        NodeType
+  name        String
+  data        Json @default("{}")
+  position    Json
+
+
+  outputConnection  Edge[] @relation("EdgeFromNode")
+  inputConnection   Edge[] @relation("EdgeToNode")
+
+
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model Edge {
+  id          String   @id @default(cuid())
+  workflowId  String
+  workflow    Workflows @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+
+  fromNodeId  String
+  fromNode    Node     @relation("EdgeFromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+
+  toNodeId  String
+  toNode    Node     @relation("EdgeToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  data        Json @default("{}")
+  label       String?
+
+
+  fromOutput  String @default("main")
+  toInput     String @default("main")
+
+  @@unique([fromNodeId, toNodeId , fromOutput, toInput])
+}
+
