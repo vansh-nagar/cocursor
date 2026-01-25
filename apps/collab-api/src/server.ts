@@ -9,6 +9,24 @@ wss.on("connection", function connection(ws: any) {
   ws.on("message", function (data: any) {
     const message = JSON.parse(data.toString());
 
+    if (message.type === "FileContent") {
+      const clients = rooms.get(message.roomId);
+      if (clients === undefined) return;
+      console.log("FileContent received");
+      clients.forEach((client) => {
+        if (client !== ws && client.readyState === 1) {
+          client.send(
+            JSON.stringify({
+              type: "FileContent",
+              FileContent: message.FileContent,
+            }),
+          );
+        }
+      });
+      console.log("FileContent forwarded");
+      return;
+    }
+
     if (message.type === "join") {
       if (!rooms.has(message.roomId)) {
         rooms.set(message.roomId, []);
@@ -61,53 +79,53 @@ wss.on("connection", function connection(ws: any) {
       }
     }
 
-    if (message.type === "offer") {
-      console.log("offer received");
-      const clients = rooms.get(message.roomId);
-      if (clients === undefined) return;
+    // if (message.type === "offer") {
+    //   console.log("offer received");
+    //   const clients = rooms.get(message.roomId);
+    //   if (clients === undefined) return;
 
-      clients.forEach((client) => {
-        if (client !== ws && client.readyState === 1) {
-          client.send(
-            JSON.stringify({
-              type: "offer",
-              offer: message.offer,
-              roomId: message.roomId,
-            }),
-          );
-        }
-      });
-      console.log("offer forwarded");
-    }
-    if (message.type === "answer") {
-      const clients = rooms.get(message.roomId);
-      if (clients === undefined) return;
+    //   clients.forEach((client) => {
+    //     if (client !== ws && client.readyState === 1) {
+    //       client.send(
+    //         JSON.stringify({
+    //           type: "offer",
+    //           offer: message.offer,
+    //           roomId: message.roomId,
+    //         }),
+    //       );
+    //     }
+    //   });
+    //   console.log("offer forwarded");
+    // }
+    // if (message.type === "answer") {
+    //   const clients = rooms.get(message.roomId);
+    //   if (clients === undefined) return;
 
-      console.log("answer received");
-      clients.forEach((client) => {
-        if (client !== ws && client.readyState === 1) {
-          client.send(
-            JSON.stringify({ type: "answer", answer: message.answer }),
-          );
-        }
-      });
-      console.log("answer forwarded");
-    }
-    if (message.type === "candidate") {
-      console.log("candidate received");
+    //   console.log("answer received");
+    //   clients.forEach((client) => {
+    //     if (client !== ws && client.readyState === 1) {
+    //       client.send(
+    //         JSON.stringify({ type: "answer", answer: message.answer }),
+    //       );
+    //     }
+    //   });
+    //   console.log("answer forwarded");
+    // }
+    // if (message.type === "candidate") {
+    //   console.log("candidate received");
 
-      const clients = rooms.get(message.roomId);
-      if (clients === undefined) return;
+    //   const clients = rooms.get(message.roomId);
+    //   if (clients === undefined) return;
 
-      clients.forEach((client) => {
-        if (client !== ws && client.readyState === 1) {
-          client.send(
-            JSON.stringify({ type: "candidate", candidate: message.candidate }),
-          );
-        }
-      });
-      console.log("candidate forwarded");
-    }
+    //   clients.forEach((client) => {
+    //     if (client !== ws && client.readyState === 1) {
+    //       client.send(
+    //         JSON.stringify({ type: "candidate", candidate: message.candidate }),
+    //       );
+    //     }
+    //   });
+    //   console.log("candidate forwarded");
+    // }
   });
 
   ws.on("close", () => {
