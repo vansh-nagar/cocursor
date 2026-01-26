@@ -1,0 +1,14 @@
+[33mc63b140[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33mab1045d[m HEAD@{1}: commit: feat: add IDE components including Chat, FolderPreview, NavBar, and AiChat
+[33mc63b140[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{2}: commit: feat: enhance collaborative editing by sending cursor position and file content updates
+[33me3a5b7f[m HEAD@{3}: commit: feat: implement collaborative code editor with WebSocket support and CodeMirror integration
+[33m3948bd1[m HEAD@{4}: commit: refactor: remove unused UI components and execution logic
+[33m63ecd66[m HEAD@{5}: commit (merge): merge remote history
+[33m6ee9220[m HEAD@{6}: commit: feat(ui): add new components including Skeleton, Slider, Sonner, Spinner, Switch, Table, Tabs, Textarea, Toggle Group, Toggle, Tooltip, and custom hooks for mobile detection
+[33me1c0dde[m HEAD@{7}: commit: Implemented stripe ✿
+[33mccf0112[m HEAD@{8}: commit: feat: integrate Convex for server-side functionality and add query provider
+[33m55795e2[m HEAD@{9}: commit: feat(auth): integrate Clerk for authentication with middleware and UI components
+[33m4197abe[m HEAD@{10}: commit: feat: add web preview component with navigation, URL input, and console
+[33m7b1bccd[m HEAD@{11}: commit: feat(ui): add various UI components including Skeleton, Slider, Sonner, Spinner, Switch, Table, Tabs, Textarea, Toggle Group, Toggle, Tooltip, and utility hooks
+[33m7af6375[m HEAD@{12}: Branch: renamed refs/heads/main to refs/heads/main
+[33m7af6375[m HEAD@{14}: commit (initial): Initial commit from create-turbo
