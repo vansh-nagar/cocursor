@@ -87,7 +87,7 @@ function hello() {
     };
   }, []);
 
-  return <div ref={editorRef} className="h-screen w-full bg-black" />;
+  return <div ref={editorRef} className=" h-full w-full bg-black" />;
 }
 
 export default Editor;
