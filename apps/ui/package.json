@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/groq": "^3.0.15",
     "@ai-sdk/react": "^3.0.51",
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-javascript": "^6.2.4",

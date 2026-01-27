@@ -31,6 +31,7 @@
       "name": "ui",
       "version": "0.1.0",
       "dependencies": {
+        "@ai-sdk/groq": "^3.0.15",
         "@ai-sdk/react": "^3.0.51",
         "@codemirror/commands": "^6.10.1",
         "@codemirror/lang-javascript": "^6.2.4",
@@ -161,6 +162,8 @@
   ],
   "packages": {
     "@ai-sdk/gateway": ["@ai-sdk/gateway@3.0.23", "", { "dependencies": { "@ai-sdk/provider": "3.0.5", "@ai-sdk/provider-utils": "4.0.9", "@vercel/oidc": "3.1.0" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-hievGeM4cXkKvEbaHvlfVDubyp+XiTZmd0f2uvzBEMKfA98lDw0Fg/RKvNwQE6DQjRADkvVJNhSaHmlZRZeh3g=="],
+
+    "@ai-sdk/groq": ["@ai-sdk/groq@3.0.15", "", { "dependencies": { "@ai-sdk/provider": "3.0.5", "@ai-sdk/provider-utils": "4.0.9" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-tvxaM3RNmbDxoI9fktngyd8bdn35RF09FxQT5y7P4Pfcgu0LlyGQ6EtmfWGb2ke1ZLKLXFyr7jN3uX5Y3L3kbA=="],
 
     "@ai-sdk/provider": ["@ai-sdk/provider@3.0.5", "", { "dependencies": { "json-schema": "^0.4.0" } }, "sha512-2Xmoq6DBJqmSl80U6V9z5jJSJP7ehaJJQMy2iFUqTay06wdCqTnPVBBQbtEL8RCChenL+q5DC5H5WzU3vV3v8w=="],
 

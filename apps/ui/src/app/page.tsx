@@ -1,3 +1,4 @@
+import Logo from "@/components/mine/logo";
 import { link } from "fs";
 import { Folder, FolderDown, FolderOpen } from "lucide-react";
 import Link from "next/link";
@@ -6,17 +7,17 @@ const type = [
   {
     icon: <FolderOpen size={16} />,
     name: "Start new Project",
-    link: "/editor",
+    link: "/room",
   },
   {
     icon: <FolderDown size={16} />,
     name: "Create With Prompt",
-    link: "/editor",
+    link: "/room",
   },
   {
     icon: <FolderDown size={16} />,
     name: "Collab with friends",
-    link: "/editor",
+    link: "/room",
   },
 ];
 
@@ -32,7 +33,8 @@ const Page = () => {
   return (
     <div className="flex justify-center items-center h-screen w-full bg-background">
       <div className="flex flex-col justify-center items-start  ">
-        <div className=" font-extrabold text-3xl">COCURSOR</div>
+        <Logo />
+
         <div className="flex  gap-4 mt-4">
           {type.map((item, index) => (
             <Link key={index} href={item.link}>

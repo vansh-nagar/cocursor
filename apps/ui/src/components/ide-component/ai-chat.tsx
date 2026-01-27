@@ -19,17 +19,19 @@ import {
 } from "../ai-elements/prompt-input";
 import { PromptInputToolbar } from "../ai-elements/prompt-input copy";
 import { Response } from "../ai-elements/response";
+import { DefaultChatTransport } from "ai";
+import { Separator } from "../ui/separator";
 
 const AiChat = () => {
   const [chatPrompt, setChatPrompt] = useState("");
 
-  const { DefaultChatTransport } = require("ai");
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({
-      api: "/api/v1/build-my-portfolio/ai-call",
+      api: "/api/ai-call",
     }),
     onError: (err) => {
-      toast.error(err.message || "Something went wrong");
+      toast.error("Something went wrong");
+      console.log("AI Chat Error:", err.message);
     },
   });
 
@@ -79,15 +81,15 @@ const AiChat = () => {
 
         <ConversationScrollButton />
       </Conversation>
-
       <PromptInput
         onSubmit={(_message, event) => {
           event.preventDefault();
           handlePromptSubmit();
         }}
       >
-        <PromptInputBody>
+        <PromptInputBody className="">
           <PromptInputTextarea
+            className=" "
             placeholder="Type your message..."
             value={chatPrompt}
             onChange={(e) => setChatPrompt(e.target.value)}
