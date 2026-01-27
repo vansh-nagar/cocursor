@@ -16,7 +16,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { Check, Plus, RefreshCw } from "lucide-react";
+import {
+  Bot,
+  Check,
+  File,
+  Github,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+  Terminal,
+  UserRound,
+} from "lucide-react";
 
 import Editor from "@/components/mine/editor";
 import FolderPreview from "@/components/ide-component/FolderPreview";
@@ -126,6 +137,33 @@ const IDEComponent = () => {
       <div className=" h-screen flex-1 ">
         <div className="flex-1 flex flex-col h-full">
           <ResizablePanelGroup direction="horizontal" className="h-full">
+            <div className="bg-accent p-2 z-50 flex flex-col justify-between ">
+              <div className="flex flex-col gap-2">
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <File />
+                </Button>
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <Search />
+                </Button>
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <Bot />
+                </Button>
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <Github />
+                </Button>
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <Terminal />
+                </Button>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <UserRound />
+                </Button>{" "}
+                <Button variant={"ghost"} size={"icon"} className="">
+                  <Settings />
+                </Button>
+              </div>
+            </div>
             {/* Explorer */}
             {showExplorer && (
               <>
@@ -209,13 +247,13 @@ const IDEComponent = () => {
                             </h3>
                           </div>
                         )
-                      ) : currentTab ? (
+                      ) : currentTab || true ? (
                         <div className="h-full relative">
                           <Editor
                             ws={wsRef.current}
                             sendFileContent={sendFileContent}
                           />
-
+                          {/* 
                           {currentTab.isDirty && (
                             <div className="absolute top-4 right-4">
                               <Badge variant="secondary" className="gap-2">
@@ -230,7 +268,7 @@ const IDEComponent = () => {
                                 </Button>
                               </Badge>
                             </div>
-                          )}
+                          )} */}
                         </div>
                       ) : (
                         <div className="flex items-center justify-center h-full">
