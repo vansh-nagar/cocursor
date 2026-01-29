@@ -27,6 +27,8 @@ import FolderPreview from "@/components/ide-component/FolderPreview";
 import NavBar from "@/components/ide-component/NavBar";
 import TerminalComponent from "@/components/ide-component/terminal";
 import CodeEditor from "@/components/ide-component/code-editor";
+import PreviewFrame from "@/components/ide-component/PreviewFrame";
+import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { useIDEStore } from "@/stores/ideStore";
 import { useTopbar } from "@/hooks/topbar";
@@ -42,6 +44,8 @@ const IDEComponent = () => {
     isLoading,
     loadingMessage,
     isContainerBooted,
+    previewDevice,
+    setPreviewDevice,
   } = useIDEStore();
 
   const { openTabs, setOpenTabs, currentTabId, setCurrentTabId, handleCloseTab } = useTopbar();
@@ -223,56 +227,65 @@ const IDEComponent = () => {
                   liveUrl={liveUrl}
                   activeTab={activeTab}
                   setActiveTab={setActiveTab}
+                  previewDevice={previewDevice}
+                  setPreviewDevice={setPreviewDevice}
                 />
 
                 <ResizablePanelGroup direction="vertical" className="flex-1">
                   <ResizablePanel defaultSize={showTerminal ? 70 : 100}>
                     <div className="h-full overflow-hidden bg-background">
-                      {activeTab === "preview" ? (
-                        liveUrl ? (
-                          <iframe
-                            src={liveUrl}
-                            className="w-full h-full border-0"
-                            title="Preview"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <div className="text-center">
-                              <h3 className="text-lg font-semibold mb-2">
-                                Server Not Running
-                              </h3>
-                              <p className="text-sm text-muted-foreground mb-4">
-                                Run these commands in the terminal:
-                              </p>
-                              <pre className="bg-muted p-4 rounded-lg text-left text-sm">
-                                cd vanilla-web-app{"\n"}
-                                npm install{"\n"}
-                                npm run dev
-                              </pre>
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={activeTab}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                          className="h-full w-full"
+                        >
+                          {activeTab === "preview" ? (
+                            liveUrl ? (
+                              <PreviewFrame url={liveUrl} device={previewDevice} />
+                            ) : (
+                              <div className="flex items-center justify-center h-full">
+                                <div className="text-center">
+                                  <h3 className="text-lg font-semibold mb-2">
+                                    Server Not Running
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground mb-4">
+                                    Run these commands in the terminal:
+                                  </p>
+                                  <pre className="bg-muted p-4 rounded-lg text-left text-sm">
+                                    cd vanilla-web-app{"\n"}
+                                    npm install{"\n"}
+                                    npm run dev
+                                  </pre>
+                                </div>
+                              </div>
+                            )
+                          ) : currentTab ? (
+                            <div className="h-full relative">
+                              <CodeEditor
+                                key={currentTab.id}
+                                fileContent={currentTab.content}
+                                filePath={currentTab.path}
+                                onChange={handleEditorChange}
+                              />
                             </div>
-                          </div>
-                        )
-                      ) : currentTab ? (
-                        <div className="h-full relative">
-                          <CodeEditor
-                            key={currentTab.id}
-                            fileContent={currentTab.content}
-                            filePath={currentTab.path}
-                            onChange={handleEditorChange}
-                          />
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <div className="text-center">
-                            <h3 className="text-lg font-semibold mb-2">
-                              No File Open
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              Select a file from the explorer to start editing
-                            </p>
-                          </div>
-                        </div>
-                      )}
+                          ) : (
+                            <div className="flex items-center justify-center h-full">
+                              <div className="text-center">
+                                <h3 className="text-lg font-semibold mb-2">
+                                  No File Open
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                  Select a file from the explorer to start editing
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
                   </ResizablePanel>
 

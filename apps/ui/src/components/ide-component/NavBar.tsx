@@ -8,14 +8,14 @@ import {
 import {
   File,
   X,
-  BotMessageSquare,
-  Folders,
-  TerminalIcon,
   Eye,
   Code,
-  RotateCcw,
+  Monitor,
+  Tablet,
+  Smartphone,
 } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
+import { motion } from "motion/react";
 
 interface TabInfo {
   id: string;
@@ -40,6 +40,8 @@ interface NavBarProps {
   liveUrl: string | null;
   activeTab?: "code" | "preview";
   setActiveTab?: (tab: "code" | "preview") => void;
+  previewDevice?: "desktop" | "tablet" | "mobile";
+  setPreviewDevice?: (device: "desktop" | "tablet" | "mobile") => void;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -57,16 +59,24 @@ const NavBar: React.FC<NavBarProps> = ({
   liveUrl,
   activeTab = "code",
   setActiveTab = () => {},
+  previewDevice = "desktop",
+  setPreviewDevice = () => {},
 }) => {
+  const devices = [
+    { id: "desktop", icon: Monitor, label: "Desktop" },
+    { id: "tablet", icon: Tablet, label: "Tablet" },
+    { id: "mobile", icon: Smartphone, label: "Mobile" },
+  ] as const;
+
   return (
     <div className="flex items-center justify-between pr-2 bg-muted/30 h-[49px] border-b">
-      <div className="flex items-center overflow-x-auto flex-1 h-full hide-scrollbar mask-r-from-98%">
+      <div className="flex items-center overflow-x-auto flex-1 h-full hide-scrollbar">
         {openTabs.length === 0
           ? ""
           : openTabs.map((tab) => (
               <div
                 key={tab.id}
-                className={`flex items-center gap-2 px-3 h-full text-sm cursor-pointer transition-colors  ${
+                className={`flex items-center gap-2 px-3 h-full text-sm cursor-pointer transition-colors ${
                   currentTabId === tab.id
                     ? "bg-background border-primary"
                     : "bg-transparent border-transparent hover:bg-accent"
@@ -90,36 +100,6 @@ const NavBar: React.FC<NavBarProps> = ({
             ))}
       </div>
       <div className="flex items-center gap-2 ml-2 h-full">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={showExplorer ? "secondary" : "ghost"}
-              size="icon"
-              className="h-8 w-8 flex-shrink-0 border"
-              onClick={() => setShowExplorer((prev: boolean) => !prev)}
-            >
-              <Folders className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Toggle Explorer (Ctrl+Shift+E)</p>
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={showTerminal ? "secondary" : "ghost"}
-              size="icon"
-              className="h-8 w-8 flex-shrink-0 border"
-              onClick={() => setShowTerminal((prev: boolean) => !prev)}
-            >
-              <TerminalIcon className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Toggle Terminal (Ctrl + `)</p>
-          </TooltipContent>
-        </Tooltip>
         <ButtonGroup className="border rounded-md overflow-hidden">
           <Button
             variant="ghost"
@@ -144,29 +124,44 @@ const NavBar: React.FC<NavBarProps> = ({
             Code
           </Button>
         </ButtonGroup>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => {
-                if (liveUrl) {
-                  window.location.reload();
-                }
-              }}
-            >
-              <RotateCcw className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Reload Preview</p>
-          </TooltipContent>
-        </Tooltip>
+
+        {activeTab === "preview" && (
+          <div className="flex items-center border rounded-md overflow-hidden h-8">
+            {devices.map((device) => {
+              const Icon = device.icon;
+              const isActive = previewDevice === device.id;
+              return (
+                <Tooltip key={device.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={() => setPreviewDevice(device.id)}
+                      className={`relative px-2 h-full transition-colors flex items-center justify-center ${
+                        isActive ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 relative z-10" />
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeDevicePill"
+                          className="absolute inset-0 bg-accent z-0"
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{device.label}</p>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            })}
+          </div>
+        )}
+
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="outline" className="h-8">
-              Export to github
+              Export To Github
             </Button>
           </TooltipTrigger>
           <TooltipContent>

@@ -32,6 +32,8 @@ interface IDEStore {
   setLoadingMessage: (message: string) => void;
   isContainerBooted: boolean;
   setIsContainerBooted: (booted: boolean) => void;
+  previewDevice: "desktop" | "tablet" | "mobile";
+  setPreviewDevice: (device: "desktop" | "tablet" | "mobile") => void;
 }
 
 const createIDEStore = () =>
@@ -60,6 +62,8 @@ const createIDEStore = () =>
     setLoadingMessage: (message) => set({ loadingMessage: message }),
     isContainerBooted: false,
     setIsContainerBooted: (booted) => set({ isContainerBooted: booted }),
+    previewDevice: "desktop",
+    setPreviewDevice: (device) => set({ previewDevice: device }),
   }));
 
 export const useIDEStore =
