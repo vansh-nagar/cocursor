@@ -1,170 +1,164 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-
 import {
-  Bot,
-  Check,
   File,
-  Github,
   Plus,
   RefreshCw,
   Search,
   Settings,
   Terminal,
   UserRound,
+  Loader2,
 } from "lucide-react";
-
-import Editor from "@/components/mine/editor";
 import FolderPreview from "@/components/ide-component/FolderPreview";
 import NavBar from "@/components/ide-component/NavBar";
-import Chat from "@/components/ide-component/Chat";
 import TerminalComponent from "@/components/ide-component/terminal";
+import CodeEditor from "@/components/ide-component/code-editor";
+import { toast } from "sonner";
 import { useIDEStore } from "@/stores/ideStore";
 import { useTopbar } from "@/hooks/topbar";
 import { useExplorer } from "@/hooks/explorer";
 import { useKeyShortcutListeners } from "@/hooks/key-shortcut-listners";
+import { useWebContainer } from "@/hooks/webcontainer";
 
 const IDEComponent = () => {
-  const wsRef = useRef<WebSocket | null>(null);
-  const { liveUrl } = useIDEStore();
-  const { activeTab } = useIDEStore();
-
-  const { openTabs, currentTabId, setCurrentTabId, handleCloseTab } =
-    useTopbar();
-
   const {
-    toggleFolder,
+    liveUrl,
+    activeTab,
+    setActiveTab,
+    isLoading,
+    loadingMessage,
+    isContainerBooted,
+  } = useIDEStore();
+
+  const { openTabs, setOpenTabs, currentTabId, setCurrentTabId, handleCloseTab } = useTopbar();
+  
+  const {
     fileStructure,
     expandedFolders,
     selectedFile,
+    toggleFolder,
     handleFileClick,
     handleSaveCurrentFile,
+    handleFileContentChange,
   } = useExplorer({
     currentTabId,
     openTabs,
+    setOpenTabs,
     setCurrentTabId,
   });
 
   const {
-    setShowAiChat,
-    setShowTerminal,
-    setShowExplorer,
     showExplorer,
+    setShowExplorer,
     showTerminal,
+    setShowTerminal,
     showAiChat,
+    setShowAiChat,
   } = useKeyShortcutListeners({
     handleSaveCurrentFile,
     handleCloseTab,
     currentTabId,
   });
 
+  const { initializeWebContainer, webContainerRef } = useWebContainer();
+
+  const initRef = useRef(false);
+  
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+
+    initializeWebContainer().catch((error) => {
+      console.error("[IDE] Failed to initialize WebContainer:", error);
+    });
+  }, [initializeWebContainer]);
+
   const currentTab = openTabs.find((tab) => tab.id === currentTabId);
 
-  // 🌐 WebSocket Setup
-  useEffect(() => {
-    wsRef.current = new WebSocket("ws://localhost:8080");
-
-    wsRef.current.onopen = () => {
-      wsRef.current?.send(
-        JSON.stringify({
-          type: "join",
-          roomId: "example-room-id",
-        }),
-      );
-    };
-
-    wsRef.current.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      const Eview = useIDEStore.getState().editorView;
-      if (!Eview) return;
-
-      if (message.type === "FileContent") {
-        Eview.dispatch({
-          changes: {
-            from: 0,
-            to: Eview.state.doc.length,
-            insert: message.FileContent,
-          },
-        });
+  const handleEditorChange = useCallback(
+    (content: string) => {
+      if (currentTabId) {
+        handleFileContentChange(currentTabId, content);
       }
-    };
+    },
+    [currentTabId, handleFileContentChange]
+  );
 
-    return () => wsRef.current?.close();
-  }, []);
-
-  // Fix for SharedArrayBuffer: set crossOriginIsolated headers
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      if (!window.crossOriginIsolated) {
-        console.warn(
-          "This page is not crossOriginIsolated. SharedArrayBuffer may not work as expected. " +
-            "Make sure your server sets the following headers: " +
-            "Cross-Origin-Opener-Policy: same-origin and Cross-Origin-Embedder-Policy: require-corp.",
-        );
-      }
-    }
-  }, []);
-
-  const sendFileContent = ({ content }: { content: string }) => {
-    if (!wsRef.current) return;
-
-    wsRef.current.send(
-      JSON.stringify({
-        type: "FileContent",
-        FileContent: content,
-        roomId: "example-room-id",
-      }),
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-sm text-muted-foreground">{loadingMessage}</p>
+        </div>
+      </div>
     );
-  };
+  }
 
   return (
     <TooltipProvider>
-      <div className=" h-screen flex-1 ">
+      <div className="h-screen flex-1">
         <div className="flex-1 flex flex-col h-full">
           <ResizablePanelGroup direction="horizontal" className="h-full">
-            <div className="bg-accent p-2 z-50 flex flex-col justify-between ">
+            <div className="bg-accent p-2 z-50 flex flex-col justify-between">
               <div className="flex flex-col gap-2">
-                <Button variant={"ghost"} size={"icon"} className="">
-                  <File />
-                </Button>
-                <Button variant={"ghost"} size={"icon"} className="">
-                  <Search />
-                </Button>
-                <Button variant={"ghost"} size={"icon"} className="">
-                  <Bot />
-                </Button>
-                <Button variant={"ghost"} size={"icon"} className="">
-                  <Github />
-                </Button>
-                <Button variant={"ghost"} size={"icon"} className="">
-                  <Terminal />
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={showExplorer ? "secondary" : "ghost"}
+                      size="icon"
+                      onClick={() => setShowExplorer((prev) => !prev)}
+                    >
+                      <File />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Explorer (Ctrl+B)</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <Search />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Search</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={showTerminal ? "secondary" : "ghost"}
+                      size="icon"
+                      onClick={() => setShowTerminal((prev) => !prev)}
+                    >
+                      <Terminal />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Terminal (Ctrl+`)</TooltipContent>
+                </Tooltip>
               </div>
               <div className="flex flex-col gap-2">
-                <Button variant={"ghost"} size={"icon"} className="">
+                <Button variant="ghost" size="icon">
                   <UserRound />
-                </Button>{" "}
-                <Button variant={"ghost"} size={"icon"} className="">
+                </Button>
+                <Button variant="ghost" size="icon">
                   <Settings />
                 </Button>
               </div>
             </div>
-            {/* Explorer */}
+
             {showExplorer && (
               <>
                 <ResizablePanel defaultSize={20} minSize={15} maxSize={40}>
@@ -212,7 +206,6 @@ const IDEComponent = () => {
               </>
             )}
 
-            {/* Editor Section */}
             <ResizablePanel className="h-full" defaultSize={60}>
               <div className="h-full flex flex-col">
                 <NavBar
@@ -228,6 +221,8 @@ const IDEComponent = () => {
                   setShowTerminal={setShowTerminal}
                   handleSaveCurrentFile={handleSaveCurrentFile}
                   liveUrl={liveUrl}
+                  activeTab={activeTab}
+                  setActiveTab={setActiveTab}
                 />
 
                 <ResizablePanelGroup direction="vertical" className="flex-1">
@@ -242,59 +237,56 @@ const IDEComponent = () => {
                           />
                         ) : (
                           <div className="flex items-center justify-center h-full">
-                            <h3 className="text-lg font-semibold">
-                              Server Not Running
-                            </h3>
+                            <div className="text-center">
+                              <h3 className="text-lg font-semibold mb-2">
+                                Server Not Running
+                              </h3>
+                              <p className="text-sm text-muted-foreground mb-4">
+                                Run these commands in the terminal:
+                              </p>
+                              <pre className="bg-muted p-4 rounded-lg text-left text-sm">
+                                cd vanilla-web-app{"\n"}
+                                npm install{"\n"}
+                                npm run dev
+                              </pre>
+                            </div>
                           </div>
                         )
-                      ) : currentTab || true ? (
+                      ) : currentTab ? (
                         <div className="h-full relative">
-                          <Editor
-                            ws={wsRef.current}
-                            sendFileContent={sendFileContent}
+                          <CodeEditor
+                            key={currentTab.id}
+                            fileContent={currentTab.content}
+                            filePath={currentTab.path}
+                            onChange={handleEditorChange}
                           />
-                          {/* 
-                          {currentTab.isDirty && (
-                            <div className="absolute top-4 right-4">
-                              <Badge variant="secondary" className="gap-2">
-                                <span>Unsaved</span>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-4 w-4 p-0"
-                                  onClick={handleSaveCurrentFile}
-                                >
-                                  <Check className="h-3 w-3" />
-                                </Button>
-                              </Badge>
-                            </div>
-                          )} */}
                         </div>
                       ) : (
                         <div className="flex items-center justify-center h-full">
-                          <h3 className="text-lg font-semibold">
-                            No File Open
-                          </h3>
+                          <div className="text-center">
+                            <h3 className="text-lg font-semibold mb-2">
+                              No File Open
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              Select a file from the explorer to start editing
+                            </p>
+                          </div>
                         </div>
                       )}
                     </div>
                   </ResizablePanel>
 
-                  <ResizablePanel>
-                    {showTerminal && <TerminalComponent />}
-                  </ResizablePanel>
+                  {showTerminal && (
+                    <>
+                      <ResizableHandle />
+                      <ResizablePanel defaultSize={30} minSize={10}>
+                        <TerminalComponent />
+                      </ResizablePanel>
+                    </>
+                  )}
                 </ResizablePanelGroup>
               </div>
             </ResizablePanel>
-
-            <ResizableHandle />
-
-            {/* AI Chat */}
-            {showAiChat && (
-              <ResizablePanel defaultSize={25} minSize={20} maxSize={40}>
-                <Chat onClose={() => setShowAiChat(false)} />
-              </ResizablePanel>
-            )}
           </ResizablePanelGroup>
         </div>
       </div>

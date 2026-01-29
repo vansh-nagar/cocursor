@@ -1,7 +1,6 @@
-import { projectFiles } from "@/data/project-file";
 import { useIDEStore } from "@/stores/ideStore";
 import { FileSystemTree } from "@webcontainer/api";
-import { useEffect, useId, useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { TabInfo } from "./topbar";
 
@@ -10,21 +9,20 @@ export const useExplorer = ({
   openTabs,
   setOpenTabs,
   setCurrentTabId,
-}: any) => {
-  const { fileStructure, setFileStructure } = useIDEStore();
+}: {
+  currentTabId: string | null;
+  openTabs: TabInfo[];
+  setOpenTabs: (tabs: TabInfo[] | ((prev: TabInfo[]) => TabInfo[])) => void;
+  setCurrentTabId: (id: string | null) => void;
+}) => {
+  const { fileStructure, setFileStructure, setActiveTab } = useIDEStore();
 
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(
-    new Set(["src", "src/components"]),
+    new Set(["vanilla-web-app", "vanilla-web-app/public"])
   );
-
-  const { setActiveTab, activeTab } = useIDEStore();
-
-  const { webContainerRef } = useIDEStore();
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-  const { editorRef, setEditorRef, editorView } = useIDEStore();
-
-  const toggleFolder = (folderName: string) => {
+  const toggleFolder = useCallback((folderName: string) => {
     setExpandedFolders((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(folderName)) {
@@ -34,14 +32,9 @@ export const useExplorer = ({
       }
       return newSet;
     });
-  };
-
-  useEffect(() => {
-    console.log("Explorer mounted");
-    return () => console.log("Explorer unmounted");
   }, []);
 
-  const getFileContent = (path: string): string => {
+  const getFileContent = useCallback((path: string): string => {
     const parts = path.split("/");
     let current: any = fileStructure;
 
@@ -57,9 +50,9 @@ export const useExplorer = ({
     }
 
     return "";
-  };
+  }, [fileStructure]);
 
-  const setFileContent = async (path: string, content: string) => {
+  const setFileContent = useCallback((path: string, content: string) => {
     const parts = path.split("/");
 
     const updateTree = (tree: any, index: number): any => {
@@ -83,61 +76,65 @@ export const useExplorer = ({
     };
 
     setFileStructure((prev: FileSystemTree) => updateTree(prev, 0));
-  };
-  const handleSaveCurrentFile = async () => {
+  }, [setFileStructure]);
+
+  const handleSaveCurrentFile = useCallback(async () => {
     if (!currentTabId) return;
 
-    const currentTab = openTabs.find((t: any) => t.id === currentTabId);
+    const currentTab = openTabs.find((t) => t.id === currentTabId);
     if (!currentTab) return;
 
-    if (webContainerRef.current == null) {
-      toast.error("WebContainer is not initialized.");
-      return;
+    const state = useIDEStore.getState();
+    const currentEditorView = state.editorView;
+    const webContainer = state.webContainerRef.current;
+
+    let contentToSave: string;
+    
+    if (currentEditorView) {
+      contentToSave = currentEditorView.state.doc.toString();
+    } else {
+      contentToSave = currentTab.content;
     }
 
-    console.log("Current Tab Content" + currentTab.content);
+    const saveToast = toast.loading(`Saving ${currentTab.name}...`);
 
-    console.log("Saving file to WebContainer FS:", currentTab.path);
-    toast.info(`Saving ${currentTab.path}`);
-    /////////////////////////////////
+    try {
+      if (webContainer) {
+        const wcPath = `/${currentTab.path}`;
+        await webContainer.fs.writeFile(wcPath, contentToSave);
+      }
 
-    const editorView = useIDEStore.getState().editorView;
-    if (!editorView) {
-      toast.error("Editor View is not initialized.");
-      return;
+      setFileContent(currentTab.path, contentToSave);
+
+      setOpenTabs((tabs) =>
+        tabs.map((tab) =>
+          tab.id === currentTabId 
+            ? { ...tab, isDirty: false, content: contentToSave } 
+            : tab
+        )
+      );
+
+      toast.success(`Saved ${currentTab.name}`, { id: saveToast });
+    } catch (error) {
+      console.error("[Save] Error:", error);
+      toast.error("Failed to save file", { id: saveToast });
     }
-    const editorContent = editorView.state.doc.toString();
+  }, [currentTabId, openTabs, setFileContent, setOpenTabs]);
 
-    await webContainerRef.current?.fs.writeFile(
-      `/${currentTab.path}`,
-      editorContent || currentTab.content,
-    );
-
-    ////////////////////////////////////////
-    setFileContent(currentTab.path, editorContent);
-    console.log("File content after save:", getFileContent(currentTab.path));
-
-    setOpenTabs((tabs: any) =>
-      tabs.map((tab: any) =>
-        tab.id === currentTabId ? { ...tab, isDirty: false } : tab,
-      ),
-    );
-
-    // toast.success(`Saved ${currentTab.name}`);
-  };
-
-  const handleFileClick = (path: string, name: string) => {
-    const existingTab = openTabs.find((tab: any) => tab.path === path);
+  const handleFileClick = useCallback((path: string, name: string) => {
+    const existingTab = openTabs.find((tab) => tab.path === path);
 
     if (existingTab) {
       setCurrentTabId(existingTab.id);
     } else {
+      const content = getFileContent(path);
+      
       const newTab: TabInfo = {
         id: `tab-${Date.now()}`,
         name,
         path,
         isDirty: false,
-        content: getFileContent(path),
+        content,
       };
       setOpenTabs([...openTabs, newTab]);
       setCurrentTabId(newTab.id);
@@ -145,15 +142,15 @@ export const useExplorer = ({
 
     setSelectedFile(path);
     setActiveTab("code");
-  };
+  }, [openTabs, getFileContent, setOpenTabs, setCurrentTabId, setActiveTab]);
 
-  const handleFileContentChange = (tabId: string, newContent: string) => {
-    setOpenTabs((tabs: any) =>
-      tabs.map((tab: any) =>
-        tab.id === tabId ? { ...tab, content: newContent, isDirty: true } : tab,
-      ),
+  const handleFileContentChange = useCallback((tabId: string, newContent: string) => {
+    setOpenTabs((tabs: TabInfo[]) =>
+      tabs.map((tab) =>
+        tab.id === tabId ? { ...tab, content: newContent, isDirty: true } : tab
+      )
     );
-  };
+  }, [setOpenTabs]);
 
   return {
     fileStructure,
@@ -167,5 +164,6 @@ export const useExplorer = ({
     setFileContent,
     handleFileClick,
     handleSaveCurrentFile,
+    handleFileContentChange,
   };
 };

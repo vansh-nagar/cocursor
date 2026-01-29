@@ -2,9 +2,9 @@ import React from "react";
 
 const Logo = () => {
   return (
-    <div>
+    <div className="flex items-center gap-2">
       <svg
-        width="70"
+        width="40"
         height="42"
         viewBox="0 0 70 42"
         fill="none"
@@ -21,6 +21,7 @@ const Logo = () => {
           strokeWidth={2}
         />
       </svg>
+      <span className="font-semibold text-xl">COCURSOR</span>
     </div>
   );
 };

@@ -1,83 +1,114 @@
 import { projectFiles } from "@/data/project-file";
+import { useIDEStore } from "@/stores/ideStore";
 import { WebContainer } from "@webcontainer/api";
-import { useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
-export const useWebContainerRef = () => {
-  const webContainerRef = useRef<WebContainer | null>(undefined);
+export const useWebContainer = () => {
+  const { 
+    webContainerRef, 
+    setLiveUrl, 
+    setIsLoading, 
+    setLoadingMessage,
+    setIsContainerBooted,
+    isContainerBooted 
+  } = useIDEStore();
+  
+  const containerBooted = useRef(false);
+  const terminalOutputRef = useRef<((data: string) => void) | null>(null);
 
-  // const initializeWebContainer = async () => {
-  //   if (containerBooted.current) return;
-  //   containerBooted.current = true;
+  const setTerminalOutput = useCallback((callback: (data: string) => void) => {
+    terminalOutputRef.current = callback;
+  }, []);
 
-  //   const loadingToast = toast.loading("Starting WebContainer...");
+  const initializeWebContainer = useCallback(async () => {
+    if (containerBooted.current || webContainerRef.current) {
+      return webContainerRef.current;
+    }
+    
+    containerBooted.current = true;
+    const loadingToast = toast.loading("Starting WebContainer...");
 
-  //   try {
-  //     console.log("🚀 Booting WebContainer...");
-  //     const wc = await WebContainer.boot();
-  //     webContainerRef.current = wc;
-  //     toast.success("WebContainer ready", { id: loadingToast });
+    try {
+      setLoadingMessage("Booting WebContainer...");
+      const wc = await WebContainer.boot();
+      webContainerRef.current = wc;
+      
+      toast.success("WebContainer ready", { id: loadingToast });
 
-  //     await wc.mount(projectFiles);
+      setLoadingMessage("Mounting project files...");
+      await wc.mount(projectFiles);
+      
+      toast.success("Project loaded", { id: loadingToast });
 
-  //     toast.success("Project loaded", { id: loadingToast });
+      wc.on("server-ready", (port, url) => {
+        setLiveUrl(url);
+        toast.success(`Server running on port ${port} 🚀`);
+      });
 
-  //     toast.loading("Installing dependencies...", { id: loadingToast });
+      setIsContainerBooted(true);
+      setIsLoading(false);
+      
+      return wc;
+    } catch (error) {
+      console.error("WebContainer error:", error);
+      toast.error("Failed to start WebContainer", { id: loadingToast });
+      containerBooted.current = false;
+      setIsLoading(false);
+      throw error;
+    }
+  }, [webContainerRef, setLiveUrl, setIsLoading, setLoadingMessage, setIsContainerBooted]);
 
-  //     terminalRef?.current &&
-  //       (terminalRef.current.textContent += "\n$ npm install\n");
+  const runCommand = useCallback(async (command: string, args: string[], cwd?: string) => {
+    if (!webContainerRef.current) {
+      throw new Error("WebContainer not initialized");
+    }
 
-  //     const installProcess = await wc.spawn(
-  //       "npm",
-  //       ["install", "--no-fund", "--no-audit"],
-  //       { cwd: "/vanilla-web-app" },
-  //     );
+    const process = await webContainerRef.current.spawn(command, args, {
+      cwd: cwd || "/vanilla-web-app",
+    });
 
-  //     const installReader = installProcess.output.getReader();
-  //     while (true) {
-  //       const { done, value } = await installReader.read();
-  //       if (done) break;
-  //       terminalRef?.current && (terminalRef.current.textContent += value);
-  //     }
+    const reader = process.output.getReader();
+    const readOutput = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        if (terminalOutputRef.current) {
+          terminalOutputRef.current(value);
+        }
+      }
+    };
 
-  //     const installExitCode = await installProcess.exit;
-  //     if (installExitCode !== 0) {
-  //       throw new Error("npm install failed");
-  //     }
+    readOutput();
 
-  //     toast.success("Dependencies installed", { id: loadingToast });
+    return process;
+  }, [webContainerRef]);
 
-  //     // ---------------------------------------
-  //     // 5️⃣ Start dev server
-  //     // ---------------------------------------
-  //     console.log("▶️ Starting dev server...");
-  //     toast.loading("Starting server...", { id: loadingToast });
+  const writeFile = useCallback(async (path: string, content: string) => {
+    if (!webContainerRef.current) {
+      throw new Error("WebContainer not initialized");
+    }
 
-  //     const devProcess = await wc.spawn("npm", ["run", "dev"], {
-  //       cwd: "/vanilla-web-app",
-  //     });
-  //     terminalRef?.current &&
-  //       (terminalRef.current.textContent += "\n$ npm run dev\n");
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    await webContainerRef.current.fs.writeFile(normalizedPath, content);
+  }, [webContainerRef]);
 
-  //     // ---------------------------------------
-  //     // 6️⃣ Listen for server-ready
-  //     // ---------------------------------------
-  //     if (setLiveUrl)
-  //       wc.on("server-ready", (port, url) => {
-  //         setLiveUrl(url); // iframe / preview window
-  //         toast.success("Server running 🚀", { id: loadingToast });
-  //       });
+  const readFile = useCallback(async (path: string): Promise<string> => {
+    if (!webContainerRef.current) {
+      throw new Error("WebContainer not initialized");
+    }
 
-  //     terminalRef?.current &&
-  //       (terminalRef.current.textContent += "\n$ Server running\n");
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+    return await webContainerRef.current.fs.readFile(normalizedPath, "utf-8");
+  }, [webContainerRef]);
 
-  //     return wc;
-  //   } catch (error) {
-  //     console.error("❌ WebContainer error:", error);
-  //     toast.error("Failed to start WebContainer", { id: loadingToast });
-  //     containerBooted.current = false;
-  //   }
-  // };
-
-  return { webContainerRef };
+  return { 
+    webContainerRef, 
+    initializeWebContainer, 
+    runCommand,
+    writeFile,
+    readFile,
+    setTerminalOutput,
+    isContainerBooted
+  };
 };

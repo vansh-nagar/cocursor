@@ -35,7 +35,7 @@ const Page = () => {
       <div className="flex flex-col justify-center items-start  ">
         <Logo />
 
-        <div className="flex  gap-4 mt-4">
+        <div className="flex  gap-4 mt-2">
           {type.map((item, index) => (
             <Link key={index} href={item.link}>
               <div className=" flex flex-col p-4 rounded-md bg-muted w-40 hover:bg-accent-foreground/20 transition-all duration-150 cursor-pointer">

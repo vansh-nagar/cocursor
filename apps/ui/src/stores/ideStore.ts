@@ -3,49 +3,40 @@ import { FileSystemTree, WebContainer } from "@webcontainer/api";
 import { EditorView } from "@codemirror/view";
 import { projectFiles } from "@/data/project-file";
 
-interface IDEStore {
-  liveUrl: string | null;
-  setLiveUrl: (url: string | null) => void;
-
-  webContainerRef: React.MutableRefObject<WebContainer | null>;
-  setWebContainerRef: (
-    ref: React.MutableRefObject<WebContainer | null>,
-  ) => void;
-
-  editorRef: React.MutableRefObject<HTMLDivElement | null>;
-  setEditorRef: (ref: React.MutableRefObject<HTMLDivElement | null>) => void;
-
-  editorView: EditorView | null;
-  setEditorView: (view: EditorView | null) => void;
-
-  activeTab: "code" | "preview";
-  setActiveTab: (tab: "code" | "preview") => void;
-
-  fileStructure: FileSystemTree;
-  setFileStructure: (
-    updater: FileSystemTree | ((prev: FileSystemTree) => FileSystemTree),
-  ) => void;
+export interface TabInfo {
+  id: string;
+  name: string;
+  path: string;
+  isDirty: boolean;
+  content: string;
 }
 
-// 👇 THIS IS THE MAGIC
+interface IDEStore {
+  fileStructure: FileSystemTree;
+  setFileStructure: (
+    updater: FileSystemTree | ((prev: FileSystemTree) => FileSystemTree)
+  ) => void;
+  editorRef: React.MutableRefObject<HTMLDivElement | null>;
+  setEditorRef: (ref: React.MutableRefObject<HTMLDivElement | null>) => void;
+  editorView: EditorView | null;
+  setEditorView: (view: EditorView | null) => void;
+  webContainerRef: React.MutableRefObject<WebContainer | null>;
+  setWebContainerRef: (ref: React.MutableRefObject<WebContainer | null>) => void;
+  liveUrl: string | null;
+  setLiveUrl: (url: string | null) => void;
+  activeTab: "code" | "preview";
+  setActiveTab: (tab: "code" | "preview") => void;
+  isLoading: boolean;
+  setIsLoading: (loading: boolean) => void;
+  loadingMessage: string;
+  setLoadingMessage: (message: string) => void;
+  isContainerBooted: boolean;
+  setIsContainerBooted: (booted: boolean) => void;
+}
+
 const createIDEStore = () =>
   create<IDEStore>((set) => ({
-    liveUrl: null,
-    setLiveUrl: (url) => set({ liveUrl: url }),
-
-    webContainerRef: { current: null },
-    setWebContainerRef: (ref) => set({ webContainerRef: ref }),
-
-    editorRef: { current: null },
-    setEditorRef: (ref) => set({ editorRef: ref }),
-
-    editorView: null,
-    setEditorView: (view) => set({ editorView: view }),
-
-    activeTab: "preview",
-    setActiveTab: (tab) => set({ activeTab: tab }),
-
-    fileStructure: structuredClone(projectFiles),
+    fileStructure: projectFiles as unknown as FileSystemTree,
     setFileStructure: (updater) =>
       set((state) => ({
         fileStructure:
@@ -53,9 +44,24 @@ const createIDEStore = () =>
             ? updater(state.fileStructure)
             : updater,
       })),
+    editorRef: { current: null },
+    setEditorRef: (ref) => set({ editorRef: ref }),
+    editorView: null,
+    setEditorView: (view) => set({ editorView: view }),
+    webContainerRef: { current: null },
+    setWebContainerRef: (ref) => set({ webContainerRef: ref }),
+    liveUrl: null,
+    setLiveUrl: (url) => set({ liveUrl: url }),
+    activeTab: "code",
+    setActiveTab: (tab) => set({ activeTab: tab }),
+    isLoading: true,
+    setIsLoading: (loading) => set({ isLoading: loading }),
+    loadingMessage: "Initializing...",
+    setLoadingMessage: (message) => set({ loadingMessage: message }),
+    isContainerBooted: false,
+    setIsContainerBooted: (booted) => set({ isContainerBooted: booted }),
   }));
 
-// 👇 Persist across Fast Refresh
 export const useIDEStore =
-  (globalThis as any).__IDE_STORE__ ??
-  ((globalThis as any).__IDE_STORE__ = createIDEStore());
+  (globalThis as any).__IDE_STORE_V3__ ??
+  ((globalThis as any).__IDE_STORE_V3__ = createIDEStore());

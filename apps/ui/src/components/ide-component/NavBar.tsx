@@ -14,10 +14,8 @@ import {
   Eye,
   Code,
   RotateCcw,
-  Github,
 } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
-import { useIDEStore } from "@/stores/ideStore";
 
 interface TabInfo {
   id: string;
@@ -33,13 +31,15 @@ interface NavBarProps {
   setCurrentTabId: (id: string) => void;
   handleCloseTab: (id: string) => void;
   showAiChat: boolean;
-  setShowAiChat: (v: (prev: boolean) => boolean) => void;
+  setShowAiChat: (v: boolean | ((prev: boolean) => boolean)) => void;
   showExplorer: boolean;
-  setShowExplorer: (v: (prev: boolean) => boolean) => void;
+  setShowExplorer: (v: boolean | ((prev: boolean) => boolean)) => void;
   showTerminal: boolean;
-  setShowTerminal: (v: (prev: boolean) => boolean) => void;
+  setShowTerminal: (v: boolean | ((prev: boolean) => boolean)) => void;
   handleSaveCurrentFile: () => void;
   liveUrl: string | null;
+  activeTab?: "code" | "preview";
+  setActiveTab?: (tab: "code" | "preview") => void;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -55,9 +55,9 @@ const NavBar: React.FC<NavBarProps> = ({
   setShowTerminal,
   handleSaveCurrentFile,
   liveUrl,
+  activeTab = "code",
+  setActiveTab = () => {},
 }) => {
-  const { activeTab, setActiveTab } = useIDEStore();
-
   return (
     <div className="flex items-center justify-between pr-2 bg-muted/30 h-[49px] border-b">
       <div className="flex items-center overflow-x-auto flex-1 h-full hide-scrollbar mask-r-from-98%">
@@ -96,7 +96,7 @@ const NavBar: React.FC<NavBarProps> = ({
               variant={showExplorer ? "secondary" : "ghost"}
               size="icon"
               className="h-8 w-8 flex-shrink-0 border"
-              onClick={() => setShowExplorer((prev) => !prev)}
+              onClick={() => setShowExplorer((prev: boolean) => !prev)}
             >
               <Folders className="h-4 w-4" />
             </Button>
@@ -111,28 +111,13 @@ const NavBar: React.FC<NavBarProps> = ({
               variant={showTerminal ? "secondary" : "ghost"}
               size="icon"
               className="h-8 w-8 flex-shrink-0 border"
-              onClick={() => setShowTerminal((prev) => !prev)}
+              onClick={() => setShowTerminal((prev: boolean) => !prev)}
             >
               <TerminalIcon className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
             <p>Toggle Terminal (Ctrl + `)</p>
-          </TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant={showAiChat ? "secondary" : "ghost"}
-              size="icon"
-              className="h-8 w-8 border"
-              onClick={() => setShowAiChat((prev) => !prev)}
-            >
-              <BotMessageSquare className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Toggle AI Assistant (Ctrl+Shift+A)</p>
           </TooltipContent>
         </Tooltip>
         <ButtonGroup className="border rounded-md overflow-hidden">
@@ -177,7 +162,7 @@ const NavBar: React.FC<NavBarProps> = ({
           <TooltipContent>
             <p>Reload Preview</p>
           </TooltipContent>
-        </Tooltip>{" "}
+        </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
             <Button variant="outline" className="h-8">
@@ -185,7 +170,7 @@ const NavBar: React.FC<NavBarProps> = ({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Refresh</p>
+            <p>Export</p>
           </TooltipContent>
         </Tooltip>
       </div>

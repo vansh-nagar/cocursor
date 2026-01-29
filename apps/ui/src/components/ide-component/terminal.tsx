@@ -1,161 +1,200 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { WebContainer } from "@webcontainer/api";
-import { projectFiles } from "@/data/project-file";
 import { useIDEStore } from "@/stores/ideStore";
 
-const TerminalComponent = () => {
+const BLOCKED_COMMANDS = ["rm -rf /", "rm -rf /*", ":(){ :|:& };:"];
+
+const TerminalComponent: React.FC = () => {
+  const { webContainerRef, isContainerBooted } = useIDEStore();
+  
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const { webContainerRef } = useIDEStore();
-  const { setLiveUrl } = useIDEStore();
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    bootWebContainer();
+    if (isContainerBooted && webContainerRef.current) {
+      setIsReady(true);
+      reportOutput("WebContainer ready. Type 'help' for available commands.");
+    }
+  }, [isContainerBooted, webContainerRef]);
+
+  const scrollToBottom = useCallback(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+    }
   }, []);
 
-  const scrollToBottom = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop =
-        scrollContainerRef.current.scrollHeight;
-    }
-  };
-
-  const bootWebContainer = async () => {
-    reportOutput("Booting WebContainer...");
-    webContainerRef.current = await WebContainer.boot();
-    reportOutput("WebContainer booted successfully.");
-
-    await webContainerRef.current.mount(projectFiles);
-    reportOutput("Project files mounted successfully.");
-
-    webContainerRef.current.on("server-ready", (port: number, url: string) => {
-      setLiveUrl(url);
-    });
-  };
-
-  const reportOutput = (data: string) => {
+  const reportOutput = useCallback((data: string) => {
     if (terminalRef.current) {
-      terminalRef.current.textContent += "\n" + "$ " + data;
+      const lines = data.split("\n");
+      for (const line of lines) {
+        if (line.trim()) {
+          terminalRef.current.textContent += "\n" + line;
+        }
+      }
       scrollToBottom();
     }
-  };
+  }, [scrollToBottom]);
 
-  ///////////////////////////////////////////////////////////////
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const input = e.currentTarget.elements[0] as HTMLInputElement;
-    console.log("Command entered:", input.value);
+    const input = inputRef.current;
+    if (!input) return;
 
-    if (webContainerRef.current) {
-      const cmd = input.value.split(" ")[0];
-      const args = input.value.split(" ").slice(1);
-      // Clear the input after
-      runCommand({ cmd, args });
+    const command = input.value.trim();
+    if (!command) return;
+
+    setCommandHistory((prev) => [...prev, command]);
+    setHistoryIndex(-1);
+
+    if (terminalRef.current) {
+      terminalRef.current.textContent += `\n> ${command}`;
+    }
+    
+    input.value = "";
+    scrollToBottom();
+
+    if (BLOCKED_COMMANDS.some((blocked) => command.includes(blocked))) {
+      reportOutput("⚠️ This command is blocked for safety reasons.");
+      return;
     }
 
-    if (terminalRef.current)
-      terminalRef.current.textContent += "\n" + input.value;
-    scrollToBottom();
-    input.value = "";
+    const parts = command.split(" ");
+    const cmd = parts[0];
+    const args = parts.slice(1);
+
+    if (cmd === "cd") {
+      reportOutput(`Already in /vanilla-web-app - all commands run from here`);
+      return;
+    }
+
+    await runCommand(cmd, args);
   };
 
-  const runCommand = async ({ cmd, args }: { cmd: string; args: string[] }) => {
-    if (cmd === "clear") {
-      if (terminalRef.current) terminalRef.current.textContent = "";
-      return;
-    }
-    if (cmd === "help") {
-      const helpText = `
+  const runCommand = async (cmd: string, args: string[]) => {
+    switch (cmd) {
+      case "clear":
+        if (terminalRef.current) {
+          terminalRef.current.textContent = "";
+        }
+        return;
+
+      case "help":
+        reportOutput(`
 Available commands:
-- clear: Clear the terminal
-- help: Show this help message
-- ls: List files in the current directory
-- pwd: Show current directory
-- echo [text]: Print text to the terminal
-      `;
-      reportOutput(helpText);
+  clear       - Clear the terminal
+  help        - Show this help message
+  pwd         - Show current directory
+  ls [path]   - List files
+  npm         - Run npm commands
+  node        - Run Node.js
+  
+Working directory: /vanilla-web-app
 
+Quick start:
+  npm install
+  npm run dev
+        `);
+        return;
+    }
+
+    if (!webContainerRef.current) {
+      reportOutput("Error: WebContainer is not ready. Please wait...");
       return;
     }
-    if ("pwd" === cmd) {
-      if (webContainerRef.current) {
-        const pwdProcess = webContainerRef.current.spawn("pwd", [], {
-          cwd: "/vanilla-web-app",
-        });
 
-        if (!pwdProcess) return;
-        const reader = (await pwdProcess).output.getReader();
+    try {
+      reportOutput(`$ ${cmd} ${args.join(" ")}`);
+      
+      const process = await webContainerRef.current.spawn(cmd, args, {
+        cwd: "/vanilla-web-app",
+      });
+
+      const reader = process.output.getReader();
+      const readOutput = async () => {
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
           reportOutput(value);
         }
-      }
-      return;
-    }
-    if ("ls" === cmd) {
-      if (webContainerRef.current) {
-        const lsProcess = webContainerRef.current.spawn("ls", ["-la"], {
-          cwd: "/vanilla-web-app",
-        });
-        if (!lsProcess) return;
-        const reader = (await lsProcess).output.getReader();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+      };
 
-          reportOutput(value);
+      await readOutput();
+
+      const exitCode = await process.exit;
+      if (exitCode !== 0) {
+        reportOutput(`Process exited with code ${exitCode}`);
+      }
+
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      reportOutput(`Error: ${message}`);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (historyIndex < commandHistory.length - 1) {
+        const newIndex = historyIndex + 1;
+        setHistoryIndex(newIndex);
+        if (inputRef.current) {
+          inputRef.current.value = commandHistory[commandHistory.length - 1 - newIndex] || "";
         }
       }
-      return;
-    }
-
-    const outputProcess = webContainerRef.current?.spawn(cmd, args, {
-      cwd: "/vanilla-web-app",
-    });
-
-    if (!outputProcess) return;
-    const reader = (await outputProcess).output.getReader();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      reportOutput(value);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        if (inputRef.current) {
+          inputRef.current.value = commandHistory[commandHistory.length - 1 - newIndex] || "";
+        }
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1);
+        if (inputRef.current) {
+          inputRef.current.value = "";
+        }
+      }
     }
   };
 
   return (
-    <div className="w-full mx-auto overflow-hidden">
-      {/* Header */}
-      <div className=" flex items-end gap-2 px-3 py-2 border-b border-t text-xs ">
-        TERMINAL
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-t text-xs bg-accent/50">
+        <span>TERMINAL</span>
+        {!isReady && (
+          <span className="text-yellow-500 ml-2">(initializing...)</span>
+        )}
+        {isReady && (
+          <span className="text-green-500 ml-2">(ready)</span>
+        )}
       </div>
 
-      {/* Terminal */}
-      <form onSubmit={handleSubmit} className="w-full">
-        <Input
-          className=" rounded-none border-none"
-          placeholder="Enter your command"
-        />
-      </form>
       <div
         ref={scrollContainerRef}
-        className="
-    min-h-[220px]
-    max-h-[220px]
-    overflow-y-auto
-    bg-black
-  "
+        className="flex-1 overflow-y-auto bg-black min-h-0"
       >
         <div
           ref={terminalRef}
-          className="whitespace-pre-wrap px-2 py-2 text-white flex-col-reverse"
+          className="whitespace-pre-wrap px-2 py-2 text-white text-sm font-mono"
         />
       </div>
+
+      <form onSubmit={handleSubmit} className="w-full border-t border-border">
+        <Input
+          ref={inputRef}
+          className="rounded-none border-none bg-black text-white font-mono focus-visible:ring-0"
+          placeholder={isReady ? "Enter command..." : "Waiting for container..."}
+          disabled={!isReady}
+          onKeyDown={handleKeyDown}
+        />
+      </form>
     </div>
   );
 };
