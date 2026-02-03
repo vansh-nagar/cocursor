@@ -3,7 +3,6 @@ import Footer from "@/components/landing/footer";
 import HeroSection from "@/components/landing/herosection";
 import Iso from "@/components/landing/iso";
 import Navbar from "@/components/landing/navbar";
-import React from "react";
 
 const Page = () => {
   return (
