@@ -3,7 +3,7 @@ import OrangeButton, { WhiteButton } from "./button/orange-button";
 
 const Bento = () => {
   return (
-    <div className="h-screen flex justify-center items-center mt-10 mb-10 gap-10 ">
+    <div className="h-screen flex justify-center items-center gap-10 ">
       <div className="w-[75vw] h-[90vh] grid  gap-8 grid-cols-3">
         <div
           className=" rounded-[56px] border relative overflow-hidden flex flex-col justify-between"
@@ -242,8 +242,20 @@ const Bento = () => {
             }}
             className=" rounded-[56px] border relative overflow-hidden p-8 flex flex-col justify-between"
           >
+            <div
+              className="-z-20"
+              style={{
+                position: "absolute",
+                width: "173px",
+                height: "173px",
+                left: "295px",
+                top: "-15px",
+                background: "#E75900",
+                filter: "blur(107.3px)",
+              }}
+            />
             <div>
-              <div className="flex gap-3">
+              <div className="flex gap-3 z-10">
                 <img className="h-10 w-10" src="/image/pfp.png" alt="" />
                 <div className="flex gap-2 flex-col">
                   <div className="flex justify-between items-center">
@@ -258,14 +270,14 @@ const Bento = () => {
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-4">
+              <div className="flex gap-3 mt-4 z-10">
                 <img className="w-10 h-10" src="/image/cursor.png" alt="" />{" "}
                 <div className="flex gap-2 flex-col">
                   <div className="flex justify-between items-center">
                     <div className="flex gap-3 items-center">
-                      <span>Vansh Nagar</span>
+                      <span>Cocursor</span>
                     </div>
-                    <span className="text-xs">4:33</span>
+                    <span className="text-xs">4:35</span>
                   </div>
                   <OrangeButton className="text-left px-2 py-2 text-xs">
                     Started working on the pricing card component.
@@ -422,18 +434,6 @@ const Bento = () => {
                 conversation.
               </div>
             </div>
-            <div
-              style={{
-                position: "absolute",
-                width: "173px",
-                height: "173px",
-                left: "295px",
-                top: "-15px",
-                background: "#E75900",
-                filter: "blur(107.3px)",
-                zIndex: 0,
-              }}
-            />
           </div>
         </div>
         <div

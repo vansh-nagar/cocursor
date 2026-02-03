@@ -4,7 +4,7 @@ import OrangeButton, { BlackButton } from "./button/orange-button";
 
 const HeroSection = () => {
   return (
-    <div className="flex flex-col justify-center items-center h-[170vh] ">
+    <div className="flex flex-col justify-center items-center h-[165vh] ">
       <OrangePremButton className=" rounded-full px-3 py-1 text-[10px] mb-6">
         Code Together Powered by AI
       </OrangePremButton>

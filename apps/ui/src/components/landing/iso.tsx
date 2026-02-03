@@ -2,8 +2,8 @@ import React from "react";
 
 const Iso = () => {
   return (
-    <div className=" flex justify-center">
-      <div className="w-[65vw] flex justify-center items-center">
+    <div className=" flex justify-center mb-20">
+      <div className="w-[80vw] flex justify-center items-center">
         <svg
           width="1312"
           height="590"
