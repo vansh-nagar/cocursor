@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="flex justify-center items-center mt-8 ">
+    <div className="flex justify-center items-center mt-20 ">
       <div
         style={{
           boxShadow:
