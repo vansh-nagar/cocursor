@@ -1,7 +1,17 @@
+/* Hide scrollbars globally */
+html, body, * {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+
 
 @theme inline {
   --color-background: var(--background);
@@ -124,11 +134,3 @@
   }
 }
 
-
-body{
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
-}
-body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}

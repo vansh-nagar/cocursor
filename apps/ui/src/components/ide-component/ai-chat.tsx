@@ -53,7 +53,7 @@ const AiChat = () => {
   const loading = status === "streaming" || status === "submitted";
 
   return (
-    <div className="flex flex-col relative h-[calc(100%-50px)] ">
+    <div className="flex flex-col relative h-full">
       <Conversation className="w-full pb-26 mask-b-from-80% ">
         <ConversationContent className="p-2">
           {messages.length === 0 ? (
@@ -103,7 +103,7 @@ const AiChat = () => {
             onClick={handlePromptSubmit}
             disabled={!chatPrompt.trim()}
             size="icon"
-            className="bg-orange-500 hover:bg-orange-600 text-white shrink-0 m-0.5 "
+            className="bg-orange-500 hover:bg-orange-600 text-white shrink-0 m-1"
           >
             {loading ? (
               <Loader2 className="size-5 animate-spin" />

@@ -13,7 +13,7 @@ export const useKeyShortcutListeners = ({
 }) => {
   // Sidebar State
   const [showExplorer, setShowExplorer] = useState(true);
-  const [showAiChat, setShowAiChat] = useState(false);
+  const [showAiChat, setShowAiChat] = useState(true);
   const [showTerminal, setShowTerminal] = useState(true);
   const { setActiveTab, activeTab } = useIDEStore();
   // Keyboard Shortcuts

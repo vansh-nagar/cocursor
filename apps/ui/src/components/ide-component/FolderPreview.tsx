@@ -67,7 +67,7 @@ const FolderPreview: React.FC<FolderPreviewProps> = ({
           }`}
           onClick={() => onFileClick(fullPath, name)}
         >
-          <File className="h-4 w-4 text-blue-300 flex-shrink-0" />
+          <File className="h-4 w-4 text-orange-600 flex-shrink-0" />
           <span className="truncate">{name}</span>
         </div>
       );

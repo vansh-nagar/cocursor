@@ -29,13 +29,15 @@ const HeroSection = () => {
       </div>
 
       <div className="mt-16 flex gap-8">
-        <Link href="/room">
-        <OrangeButton className="py-2 px-4 cursor-pointer">Launch Cocursor</OrangeButton>
+        <Link href="/main">
+          <OrangeButton className="py-2 px-4 cursor-pointer">
+            Launch Cocursor
+          </OrangeButton>
         </Link>
         <Link href="/docs">
-        <BlackButton className="py-2 px-4 bg-black cursor-pointer">
-          See How It Works
-        </BlackButton>
+          <BlackButton className="py-2 px-4 bg-black cursor-pointer">
+            See How It Works
+          </BlackButton>
         </Link>
       </div>
 
