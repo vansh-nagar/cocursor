@@ -5,17 +5,10 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import {
-  File,
-  X,
-  Eye,
-  Code,
-  Monitor,
-  Tablet,
-  Smartphone,
-} from "lucide-react";
+import { File, X, Eye, Code, Monitor, Tablet, Smartphone } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { motion } from "motion/react";
+import OrangeButton from "../landing/button/orange-button";
 
 interface TabInfo {
   id: string;
@@ -136,7 +129,9 @@ const NavBar: React.FC<NavBarProps> = ({
                     <button
                       onClick={() => setPreviewDevice(device.id)}
                       className={`relative px-2 h-full transition-colors flex items-center justify-center ${
-                        isActive ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50"
+                        isActive
+                          ? "bg-accent text-foreground"
+                          : "text-muted-foreground hover:bg-accent/50"
                       }`}
                     >
                       <Icon className="h-4 w-4 relative z-10" />
@@ -144,7 +139,11 @@ const NavBar: React.FC<NavBarProps> = ({
                         <motion.div
                           layoutId="activeDevicePill"
                           className="absolute inset-0 bg-accent z-0"
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 300,
+                            damping: 30,
+                          }}
                         />
                       )}
                     </button>
@@ -160,9 +159,9 @@ const NavBar: React.FC<NavBarProps> = ({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" className="h-8">
+            <OrangeButton className="h-8 px-2 text-sm ">
               Export To Github
-            </Button>
+            </OrangeButton>
           </TooltipTrigger>
           <TooltipContent>
             <p>Export</p>

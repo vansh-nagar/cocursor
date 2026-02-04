@@ -22,6 +22,7 @@ import {
   Terminal,
   UserRound,
   Loader2,
+  BotMessageSquare,
 } from "lucide-react";
 import FolderPreview from "@/components/ide-component/FolderPreview";
 import NavBar from "@/components/ide-component/NavBar";
@@ -35,6 +36,7 @@ import { useTopbar } from "@/hooks/topbar";
 import { useExplorer } from "@/hooks/explorer";
 import { useKeyShortcutListeners } from "@/hooks/key-shortcut-listners";
 import { useWebContainer } from "@/hooks/webcontainer";
+import Chat from "@/components/ide-component/Chat";
 
 const IDEComponent = () => {
   const {
@@ -48,8 +50,14 @@ const IDEComponent = () => {
     setPreviewDevice,
   } = useIDEStore();
 
-  const { openTabs, setOpenTabs, currentTabId, setCurrentTabId, handleCloseTab } = useTopbar();
-  
+  const {
+    openTabs,
+    setOpenTabs,
+    currentTabId,
+    setCurrentTabId,
+    handleCloseTab,
+  } = useTopbar();
+
   const {
     fileStructure,
     expandedFolders,
@@ -81,7 +89,7 @@ const IDEComponent = () => {
   const { initializeWebContainer, webContainerRef } = useWebContainer();
 
   const initRef = useRef(false);
-  
+
   useEffect(() => {
     if (initRef.current) return;
     initRef.current = true;
@@ -99,7 +107,7 @@ const IDEComponent = () => {
         handleFileContentChange(currentTabId, content);
       }
     },
-    [currentTabId, handleFileContentChange]
+    [currentTabId, handleFileContentChange],
   );
 
   if (isLoading) {
@@ -130,7 +138,9 @@ const IDEComponent = () => {
                       <File />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">Explorer (Ctrl+B)</TooltipContent>
+                  <TooltipContent side="right">
+                    Explorer (Ctrl+B)
+                  </TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -150,7 +160,23 @@ const IDEComponent = () => {
                       <Terminal />
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent side="right">Terminal (Ctrl+`)</TooltipContent>
+                  <TooltipContent side="right">
+                    Terminal (Ctrl+`)
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={showAiChat ? "secondary" : "ghost"}
+                      size="icon"
+                      onClick={() => setShowAiChat((prev) => !prev)}
+                    >
+                      <BotMessageSquare />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    AI Chat (Ctrl+Shift+A)
+                  </TooltipContent>
                 </Tooltip>
               </div>
               <div className="flex flex-col gap-2">
@@ -210,7 +236,7 @@ const IDEComponent = () => {
               </>
             )}
 
-            <ResizablePanel className="h-full" defaultSize={60}>
+            <ResizablePanel className="h-full" defaultSize={showAiChat ? 50 : 60}>
               <div className="h-full flex flex-col">
                 <NavBar
                   openTabs={openTabs}
@@ -245,7 +271,10 @@ const IDEComponent = () => {
                         >
                           {activeTab === "preview" ? (
                             liveUrl ? (
-                              <PreviewFrame url={liveUrl} device={previewDevice} />
+                              <PreviewFrame
+                                url={liveUrl}
+                                device={previewDevice}
+                              />
                             ) : (
                               <div className="flex items-center justify-center h-full">
                                 <div className="text-center">
@@ -279,7 +308,8 @@ const IDEComponent = () => {
                                   No File Open
                                 </h3>
                                 <p className="text-sm text-muted-foreground">
-                                  Select a file from the explorer to start editing
+                                  Select a file from the explorer to start
+                                  editing
                                 </p>
                               </div>
                             </div>
@@ -300,6 +330,15 @@ const IDEComponent = () => {
                 </ResizablePanelGroup>
               </div>
             </ResizablePanel>
+
+            {showAiChat && (
+              <>
+                <ResizableHandle />
+                <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
+                  <Chat onClose={() => setShowAiChat(false)} />
+                </ResizablePanel>
+              </>
+            )}
           </ResizablePanelGroup>
         </div>
       </div>
