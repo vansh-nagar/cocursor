@@ -78,7 +78,7 @@ app.listen(PORT, "0.0.0.0", () => {
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: #0f172a;
+  background: #000000;
   color: #e5e7eb;
 }
 

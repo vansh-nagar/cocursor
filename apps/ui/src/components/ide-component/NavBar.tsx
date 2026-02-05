@@ -159,7 +159,7 @@ const NavBar: React.FC<NavBarProps> = ({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <OrangeButton className="h-8 px-2 text-sm ">
+            <OrangeButton className="h-8 px-2 text-xs ">
               Export To Github
             </OrangeButton>
           </TooltipTrigger>
