@@ -55,7 +55,10 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <meta name="application-name" content="Cocursor" />
-        <meta property="og:image" content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png" />
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
+        />
         <meta property="og:title" content="Cocursor" />
         <meta
           property="og:description"
@@ -67,7 +70,10 @@ export default function RootLayout({
           name="twitter:description"
           content="Cocursor – Collaborative Coding Platform"
         />
-        <meta name="twitter:image" content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png" />
+        <meta
+          name="twitter:image"
+          content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
