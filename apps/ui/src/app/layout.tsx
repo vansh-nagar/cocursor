@@ -27,18 +27,20 @@ export const metadata: Metadata = {
     description: "Cocursor – Collaborative Coding Platform",
     images: [
       {
-        url: "/logo/zap.png",
-        width: 512,
-        height: 512,
+        url: "https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png",
+        width: 1200,
+        height: 630,
         alt: "Cocursor Logo",
       },
     ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Cocursor",
     description: "Cocursor – Collaborative Coding Platform",
-    images: ["/logo/zap.png"],
+    images: [
+      "https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png",
+    ],
   },
 };
 
@@ -53,19 +55,19 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/favicon.ico" />
         <meta name="application-name" content="Cocursor" />
-        <meta property="og:image" content="/logo/zap.png" />
+        <meta property="og:image" content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png" />
         <meta property="og:title" content="Cocursor" />
         <meta
           property="og:description"
           content="Cocursor – Collaborative Coding Platform"
         />
-        <meta name="twitter:card" content="summary" />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Cocursor" />
         <meta
           name="twitter:description"
           content="Cocursor – Collaborative Coding Platform"
         />
-        <meta name="twitter:image" content="/logo/zap.png" />
+        <meta name="twitter:image" content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
@@ -76,7 +78,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster  />
+          <Toaster />
           {children}
         </ThemeProvider>
       </body>
