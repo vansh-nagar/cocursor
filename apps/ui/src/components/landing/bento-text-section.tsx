@@ -1,5 +1,3 @@
-import React from "react";
-
 interface BentoTextSectionProps {
   title: string;
   description: string;

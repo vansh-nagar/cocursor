@@ -1,10 +1,23 @@
 import OrangePremButton from "./button/orange-prem-buttion";
 import OrangeButton, { BlackButton } from "./button/orange-button";
 import Link from "next/link";
+import Follower1 from "./cursor-followers/follower1";
+import Follower2 from "./cursor-followers/follower2";
 
 const HeroSection = () => {
   return (
-    <div className="flex flex-col justify-center items-center sm:min-h-screen px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-32 max-sm:mt-10">
+    <div className="relative overflow-hidden flex flex-col justify-center items-center sm:min-h-screen px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-32 max-sm:mt-10">
+
+<div className="follower1 absolute top-1/4 left-1/4 z-50 pointer-events-none">
+
+      <Follower1/>
+</div>
+<div className="follower2 absolute top-1/3 right-1/4 z-50 pointer-events-none">
+
+      <Follower2/>
+</div>
+
+
       <OrangePremButton className="rounded-full px-3 py-1 text-[10px] sm:text-xs mb-4 sm:mb-6">
         Code Together Powered by AI
       </OrangePremButton>
@@ -69,9 +82,9 @@ const HeroSection = () => {
             width="3013.85"
             height="1796"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feBlend
               mode="normal"
               in="SourceGraphic"

@@ -1,5 +1,3 @@
-// Generated from SVG to Code Figma Plugin
-import React from "react";
     
 export const BentoSvg = () => (
 <svg viewBox="0 0 503 369" fill="none" xmlns="http://www.w3.org/2000/svg">

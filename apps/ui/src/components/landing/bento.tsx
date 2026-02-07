@@ -1,4 +1,3 @@
-import React from "react";
 import OrangeButton, { WhiteButton } from "./button/orange-button";
 import { BentoSvg } from "./svg/bento-svg";
 import BentoTextSection from "./bento-text-section";
