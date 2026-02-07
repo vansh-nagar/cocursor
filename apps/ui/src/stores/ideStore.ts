@@ -14,14 +14,16 @@ export interface TabInfo {
 interface IDEStore {
   fileStructure: FileSystemTree;
   setFileStructure: (
-    updater: FileSystemTree | ((prev: FileSystemTree) => FileSystemTree)
+    updater: FileSystemTree | ((prev: FileSystemTree) => FileSystemTree),
   ) => void;
   editorRef: React.MutableRefObject<HTMLDivElement | null>;
   setEditorRef: (ref: React.MutableRefObject<HTMLDivElement | null>) => void;
   editorView: EditorView | null;
   setEditorView: (view: EditorView | null) => void;
   webContainerRef: React.MutableRefObject<WebContainer | null>;
-  setWebContainerRef: (ref: React.MutableRefObject<WebContainer | null>) => void;
+  setWebContainerRef: (
+    ref: React.MutableRefObject<WebContainer | null>,
+  ) => void;
   liveUrl: string | null;
   setLiveUrl: (url: string | null) => void;
   activeTab: "code" | "preview";
