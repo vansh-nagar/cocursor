@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import OrangeButton from "./button/orange-button";
-import { SignInButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 const Navbar = () => {
@@ -34,7 +34,6 @@ const Navbar = () => {
           </svg>
         </Link>
 
-        {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/docs" className="hover:text-primary transition-colors">
             Docs
@@ -42,11 +41,23 @@ const Navbar = () => {
           <Link href="/features" className="hover:text-primary transition-colors">
             Features
           </Link>
+        <SignedOut>
           <SignInButton>
-              <OrangeButton className="py-1.5 px-4">
-                Login
-              </OrangeButton>
+            <OrangeButton className="py-1.5 px-4 cursor-pointer">
+              Login
+            </OrangeButton>
           </SignInButton>
+        </SignedOut>
+
+ <SignedIn>
+  <SignOutButton>
+    <OrangeButton className="py-1.5 px-4 cursor-pointer">
+              Logout
+            </OrangeButton>
+  </SignOutButton>
+
+</SignedIn>
+
         </div>
 
         {/* Mobile Hamburger Menu Button */}

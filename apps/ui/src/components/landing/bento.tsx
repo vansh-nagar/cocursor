@@ -12,9 +12,6 @@ const Bento = () => {
         {/* First Card - Write code at the speed of thought */}
         <div
           className="rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border relative overflow-hidden flex flex-col justify-between min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
-          style={{
-            boxShadow: "inset 0px 11px 31.8px 1px rgba(250, 96, 0, 0.25)",
-          }}
         >
           <div className="px-4 p-4 sm:px-6 sm:p-6 md:px-8 md:p-8">
             <img src="/image/bento-img1.png" className="w-full h-auto" />
@@ -32,9 +29,7 @@ const Bento = () => {
         <div className="grid grid-rows-1 md:grid-rows-2 gap-4 sm:gap-6 md:gap-8">
           {/* Your Agent That Never Sleeps */}
           <div
-            style={{
-              boxShadow: "inset 0px 11px 31.8px 1px rgba(250, 96, 0, 0.25)",
-            }}
+       
             className="rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border  relative overflow-hidden flex flex-col justify-between "
             >
               <div className=" h-10">
@@ -117,9 +112,6 @@ const Bento = () => {
 
         {/* Third Card - Code Together */}
         <div
-          style={{
-            boxShadow: "inset 0px 11px 31.8px 1px rgba(250, 96, 0, 0.25)",
-          }}
           className="border flex flex-col justify-between rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] relative pl-4 pt-4 sm:pl-6 sm:pt-6 md:pl-8 md:pt-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
         >
           <div>

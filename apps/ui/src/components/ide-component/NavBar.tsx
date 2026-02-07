@@ -9,6 +9,7 @@ import { File, X, Eye, Code, Monitor, Tablet, Smartphone } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { motion } from "motion/react";
 import OrangeButton from "../landing/button/orange-button";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 interface TabInfo {
   id: string;
@@ -167,6 +168,19 @@ const NavBar: React.FC<NavBarProps> = ({
             <p>Export</p>
           </TooltipContent>
         </Tooltip>
+
+
+<SignedIn>
+  <UserButton
+    afterSignOutUrl="/"
+    appearance={{
+      elements: {
+        userButtonAvatarBox: "w-12 h-12",
+        userButtonTrigger: "w-12 h-12"
+      }
+    }}
+  />
+</SignedIn>
       </div>
     </div>
   );
