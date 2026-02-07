@@ -27,19 +27,16 @@ export const useWebContainer = () => {
     }
     
     containerBooted.current = true;
-    const loadingToast = toast.loading("Starting WebContainer...");
 
     try {
       setLoadingMessage("Booting WebContainer...");
       const wc = await WebContainer.boot();
       webContainerRef.current = wc;
       
-      toast.success("WebContainer ready", { id: loadingToast });
 
       setLoadingMessage("Mounting project files...");
       await wc.mount(projectFiles);
       
-      toast.success("Project loaded", { id: loadingToast });
 
       wc.on("server-ready", (port, url) => {
         setLiveUrl(url);
@@ -52,7 +49,7 @@ export const useWebContainer = () => {
       return wc;
     } catch (error) {
       console.error("WebContainer error:", error);
-      toast.error("Failed to start WebContainer", { id: loadingToast });
+      toast.error("Failed to start WebContainer");
       containerBooted.current = false;
       setIsLoading(false);
       throw error;

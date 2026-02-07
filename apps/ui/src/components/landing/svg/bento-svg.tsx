@@ -15,25 +15,25 @@ export const BentoSvg = () => (
 <circle cx="87.5" cy="185.507" r="3.5" fill="#E75900"/>
 <path d="M3 185.007H260M260 185.007L502.5 321.5M260 185.007L502.5 45" stroke="#E75900"/>
 <rect x="164" y="94.0074" width="179" height="179" rx="89.5" fill="#D9D9D9"/>
-<path d="M253.5 170V157H240.5" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M273 170H234C230.411 170 227.5 172.91 227.5 176.5V202.5C227.5 206.09 230.411 209 234 209H273C276.59 209 279.5 206.09 279.5 202.5V176.5C279.5 172.91 276.59 170 273 170Z" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M221 189.5H227.5" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M279.5 189.5H286" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M263.25 186.25V192.75" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M243.75 186.25V192.75" stroke="black" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M253.5 170V157H240.5" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M273 170H234C230.411 170 227.5 172.91 227.5 176.5V202.5C227.5 206.09 230.411 209 234 209H273C276.59 209 279.5 206.09 279.5 202.5V176.5C279.5 172.91 276.59 170 273 170Z" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M221 189.5H227.5" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M279.5 189.5H286" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M263.25 186.25V192.75" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M243.75 186.25V192.75" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
 <defs>
-<filter id="filter0_f_146_4" x="59" y="0" width="369" height="369" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<filter id="filter0_f_146_4" x="59" y="0" width="369" height="369" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_146_4"/>
 </filter>
-<filter id="filter1_f_146_4" x="210.7" y="84.7074" width="15.6" height="15.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<filter id="filter1_f_146_4" x="210.7" y="84.7074" width="15.6" height="15.6" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feGaussianBlur stdDeviation="2.15" result="effect1_foregroundBlur_146_4"/>
 </filter>
-<filter id="filter2_f_146_4" x="79.7" y="177.707" width="15.6" height="15.6" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<filter id="filter2_f_146_4" x="79.7" y="177.707" width="15.6" height="15.6" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
 <feGaussianBlur stdDeviation="2.15" result="effect1_foregroundBlur_146_4"/>
 </filter>

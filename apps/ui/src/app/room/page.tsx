@@ -38,6 +38,7 @@ import { useKeyShortcutListeners } from "@/hooks/key-shortcut-listners";
 import { useWebContainer } from "@/hooks/webcontainer";
 import Chat from "@/components/ide-component/Chat";
 import Link from "next/link";
+import { SignedIn, UserButton } from "@clerk/nextjs";
 
 const IDEComponent = () => {
   const {
@@ -113,7 +114,43 @@ const IDEComponent = () => {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-full flex items-center justify-center bg-background">
+      <div className="h-screen overflow-hidden w-full flex items-center justify-center bg-background">
+         <svg
+        className=" absolute z-10 inset-0 w-full"
+        viewBox="0 0 1920 1796"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <g filter="url(#filter0_f_3_23)">
+          <path
+            d="M13.3671 760C433.367 1154 1526.03 617.5 2019.87 300L2203.87 1237.5L313.867 1496C-193.5 1081.5 -406.633 366 13.3671 760Z"
+            fill="#FA6000"
+          />
+        </g>
+        <defs>
+          <filter
+            id="filter0_f_3_23"
+            x="-509.978"
+            y="0"
+            width="3013.85"
+            height="1796"
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB"
+          >
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+            <feBlend
+              mode="normal"
+              in="SourceGraphic"
+              in2="BackgroundImageFix"
+              result="shape"
+            />
+            <feGaussianBlur
+              stdDeviation="150"
+              result="effect1_foregroundBlur_3_23"
+            />
+          </filter>
+        </defs>
+      </svg>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">{loadingMessage}</p>
@@ -208,11 +245,22 @@ const IDEComponent = () => {
 
               <div className="flex flex-col gap-2">
                 <Button variant="ghost" size="icon">
-                  <UserRound />
-                </Button>
-                <Button variant="ghost" size="icon">
                   <Settings />
                 </Button>
+              <div className=" flex justify-center items-center">
+            <SignedIn>
+              <UserButton
+                
+                afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-12 h-12",
+                    userButtonTrigger: "w-12 h-12"
+                  }
+                }}
+              />
+            </SignedIn>
+              </div>
               </div>
             </div>
 
@@ -310,10 +358,10 @@ const IDEComponent = () => {
                             width="3013.85"
                             height="1796"
                             filterUnits="userSpaceOnUse"
-                            color-interpolation-filters="sRGB"
+                            colorInterpolationFilters="sRGB"
                           >
                             <feFlood
-                              flood-opacity="0"
+                              floodOpacity="0"
                               result="BackgroundImageFix"
                             />
                             <feBlend
@@ -401,10 +449,10 @@ const IDEComponent = () => {
                                     width="3013.85"
                                     height="1796"
                                     filterUnits="userSpaceOnUse"
-                                    color-interpolation-filters="sRGB"
+                                    colorInterpolationFilters="sRGB"
                                   >
                                     <feFlood
-                                      flood-opacity="0"
+                                      floodOpacity="0"
                                       result="BackgroundImageFix"
                                     />
                                     <feBlend

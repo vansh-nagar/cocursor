@@ -1,5 +1,5 @@
 {
-  "name": "orcha",
+  "name": "cocursor",
   "private": true,
   "scripts": {
     "build": "turbo run build",

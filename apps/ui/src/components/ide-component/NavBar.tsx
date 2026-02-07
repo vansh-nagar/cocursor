@@ -170,17 +170,7 @@ const NavBar: React.FC<NavBarProps> = ({
         </Tooltip>
 
 
-<SignedIn>
-  <UserButton
-    afterSignOutUrl="/"
-    appearance={{
-      elements: {
-        userButtonAvatarBox: "w-12 h-12",
-        userButtonTrigger: "w-12 h-12"
-      }
-    }}
-  />
-</SignedIn>
+
       </div>
     </div>
   );
