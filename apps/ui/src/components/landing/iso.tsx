@@ -2,11 +2,10 @@ import React from "react";
 
 const Iso = () => {
   return (
-    <div className=" flex justify-center mb-20">
+    <div className=" flex justify-center  md:py-20">
       <div className="w-[80vw] flex justify-center items-center">
         <svg
           width="1312"
-          height="590"
           viewBox="0 0 1312 590"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"

@@ -2,34 +2,35 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="flex justify-center items-center mt-20 ">
+    <div className="flex justify-center items-center mt-0 sm:mt-16 md:mt-20 px-4 sm:px-6 mb-4 sm:mb-10 md:mb-12 lg:mb-14 lg:px-8">
       <div
         style={{
           boxShadow:
             "0.444584px 0.444584px 0.628737px -0.75px rgba(0, 0, 0, 0.26), 1.21072px 1.21072px 1.71222px -1.5px rgba(0, 0, 0, 0.247), 2.6583px 2.6583px 3.75941px -2.25px rgba(0, 0, 0, 0.23), 5.90083px 5.90083px 8.34503px -3px rgba(0, 0, 0, 0.192), -0.5px -0.5px 0px rgba(0, 0, 0, 0.686), inset 1px 1px 4px #FF4A00, inset -1px -1px 1px rgba(0, 0, 0, 0.23)",
         }}
-        className=" flex flex-col overflow-hidden  rounded-[56px] mb-14 border-b border-r"
+        className="flex flex-col overflow-hidden rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border-b border-r w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw]"
       >
         <div>
-          <div className=" w-[85vw] relative rounded-4xl p-10">
+          <div className="relative rounded-4xl p-4 sm:p-6 md:p-8 lg:p-10">
             <img
-              className=" absolute top-0 right-0 w-48"
+              className="absolute top-0 right-0 w-24 sm:w-32 md:w-40 lg:w-48 opacity-80 sm:opacity-100"
               src="/image/footer.png"
               alt=""
             />
-            <div className="text-2xl leading-7">
+            <div className="text-base sm:text-lg md:text-xl lg:text-2xl leading-tight sm:leading-6 md:leading-7 pr-20 sm:pr-24 md:pr-32 lg:pr-0">
               Cocursor is The collaborative AI workspace <br /> for modern
               builders.
             </div>
-            <div className="text-sm mt-3">Made with love By vansh</div>
+            <div className="text-xs sm:text-sm mt-2 sm:mt-3">Made with love By vansh</div>
           </div>
         </div>
-        <div className="flex justify-center mt-14">
+        <div className="flex justify-center mt-8 sm:mt-10 md:mt-12 lg:mt-14 px-2 sm:px-4">
           <svg
-            className="w-[97%]"
+            className="w-full max-w-full"
             viewBox="0 0 1667 127"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid meet"
           >
             <g filter="url(#filter0_i_16_128)">
               <path
@@ -85,5 +86,6 @@ const Footer = () => {
     </div>
   );
 };
+
 
 export default Footer;
