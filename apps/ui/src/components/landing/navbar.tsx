@@ -14,7 +14,7 @@ const Navbar = () => {
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <svg
-            className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14"
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16"
             viewBox="0 0 87 91"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,7 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6 lg:gap-8 text-sm lg:text-base">
+        <div className="hidden md:flex items-center gap-6 text-sm">
           <Link href="/docs" className="hover:text-primary transition-colors">
             Docs
           </Link>
@@ -43,7 +43,7 @@ const Navbar = () => {
             Features
           </Link>
           <SignInButton>
-              <OrangeButton className="px-4 py-2 text-sm lg:text-base">
+              <OrangeButton className="py-1.5 px-4">
                 Login
               </OrangeButton>
           </SignInButton>
@@ -90,7 +90,7 @@ const Navbar = () => {
             Features
           </Link>
           <SignInButton>
-            <OrangeButton onClick={() => setIsMenuOpen(false)} className="w-full py-2 px-4 text-base">
+            <OrangeButton onClick={() => setIsMenuOpen(false)} className="">
               Login
             </OrangeButton>
           </SignInButton>
