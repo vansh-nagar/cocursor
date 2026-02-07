@@ -7,6 +7,7 @@
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
+    "inngest": "bunx inngest-cli dev",
     "lint": "eslint"
   },
   "dependencies": {
