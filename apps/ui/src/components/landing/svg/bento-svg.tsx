@@ -1,43 +1,330 @@
-    
-export const BentoSvg = () => (
-<svg viewBox="0 0 503 369" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_f_146_4)">
-<rect x="159" y="100" width="169" height="169" rx="84.5" fill="#E75900"/>
-</g>
-<circle cx="218.5" cy="92.5074" r="3.5" fill="#E75900"/>
-<g filter="url(#filter1_f_146_4)">
-<circle cx="218.5" cy="92.5074" r="3.5" fill="#E75900"/>
-</g>
-<path d="M352 183.007C352 237.131 308.124 281.007 254 281.007C199.876 281.007 156 237.131 156 183.007C156 128.884 199.876 85.0074 254 85.0074C308.124 85.0074 352 128.884 352 183.007ZM157.851 183.007C157.851 236.109 200.898 279.157 254 279.157C307.102 279.157 350.149 236.109 350.149 183.007C350.149 129.906 307.102 86.8581 254 86.8581C200.898 86.8581 157.851 129.906 157.851 183.007Z" fill="#E75900"/>
-<g filter="url(#filter2_f_146_4)">
-<circle cx="87.5" cy="185.507" r="3.5" fill="#E75900"/>
-</g>
-<circle cx="87.5" cy="185.507" r="3.5" fill="#E75900"/>
-<path d="M3 185.007H260M260 185.007L502.5 321.5M260 185.007L502.5 45" stroke="#E75900"/>
-<rect x="164" y="94.0074" width="179" height="179" rx="89.5" fill="#D9D9D9"/>
-<path d="M253.5 170V157H240.5" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M273 170H234C230.411 170 227.5 172.91 227.5 176.5V202.5C227.5 206.09 230.411 209 234 209H273C276.59 209 279.5 206.09 279.5 202.5V176.5C279.5 172.91 276.59 170 273 170Z" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M221 189.5H227.5" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M279.5 189.5H286" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M263.25 186.25V192.75" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<path d="M243.75 186.25V192.75" stroke="black" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
-<defs>
-<filter id="filter0_f_146_4" x="59" y="0" width="369" height="369" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-<feFlood floodOpacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="50" result="effect1_foregroundBlur_146_4"/>
-</filter>
-<filter id="filter1_f_146_4" x="210.7" y="84.7074" width="15.6" height="15.6" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-<feFlood floodOpacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="2.15" result="effect1_foregroundBlur_146_4"/>
-</filter>
-<filter id="filter2_f_146_4" x="79.7" y="177.707" width="15.6" height="15.6" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-<feFlood floodOpacity="0" result="BackgroundImageFix"/>
-<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-<feGaussianBlur stdDeviation="2.15" result="effect1_foregroundBlur_146_4"/>
-</filter>
-</defs>
-</svg>
+"use client";
 
-);
+import { useRef } from "react";
+import { gsap } from "gsap";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(MotionPathPlugin);
+
+export const BentoSvg = () => {
+  const svgRef = useRef<SVGSVGElement | null>(null);
+
+  useGSAP(
+    () => {
+      gsap.set([".follower", ".follower2", ".follower3", ".follower4"], {
+        transformOrigin: "50% 50%",
+      });
+      gsap.set([".follower3", ".follower4"], { opacity: 0 });
+      gsap.set(".ai-logo", { filter: "none" });
+      gsap.set(".ai-logo path", { stroke: "#000000" });
+      gsap.set(".ai-circle", { transformOrigin: "50% 50%" });
+
+      gsap.to(".follower", {
+        motionPath: {
+          path: ".path",
+          align: ".path",
+          alignOrigin: [0.5, 0.5],
+          autoRotate: false,
+        },
+        duration: 6,
+        repeat: -1,
+        ease: "none",
+      });
+
+      const splitDelay = 2;
+
+      gsap
+        .timeline({ repeat: -1 })
+        .to(".follower2", {
+          motionPath: {
+            path: ".path2-main",
+            align: ".path2-main",
+            alignOrigin: [0.5, 0.5],
+            autoRotate: false,
+          },
+          duration: splitDelay,
+          ease: "none",
+        })
+        .addLabel("pulse", splitDelay - 0.25 + 0.2)
+        .to(
+          ".ai-logo",
+          {
+            filter:
+              "drop-shadow(0 0 8px rgba(231, 89, 0, 0.4)) drop-shadow(0 0 20px rgba(231, 89, 0, 0.2))",
+            scale: 1.05,
+            transformOrigin: "50% 50%",
+            duration: 0.85,
+            yoyo: true,
+            repeat: 1,
+            ease: "power2.inOut",
+          },
+          "pulse",
+        )
+        .to(
+          ".ai-logo path",
+          {
+            stroke: "#E75900",
+            duration: 0.85,
+            yoyo: true,
+            repeat: 1,
+            ease: "power2.inOut",
+          },
+          "pulse",
+        )
+        .to(
+          ".ai-circle",
+          {
+            keyframes: [
+              { scale: 0.75, ease: "sine.in" },
+              { scale: 1, ease: "back.out(2.5)" },
+            ],
+            duration: 1.1,
+          },
+          "pulse",
+        )
+        .set([".follower3", ".follower4"], { opacity: 1 }, splitDelay)
+        .to(
+          ".follower3",
+          {
+            motionPath: {
+              path: ".path2-branch-a",
+              align: ".path2-branch-a",
+              alignOrigin: [0.5, 0.5],
+              autoRotate: false,
+            },
+            duration: 3,
+            ease: "none",
+          },
+          splitDelay,
+        )
+        .to(
+          ".follower4",
+          {
+            motionPath: {
+              path: ".path2-branch-b",
+              align: ".path2-branch-b",
+              alignOrigin: [0.5, 0.5],
+              autoRotate: false,
+            },
+            duration: 3,
+            ease: "none",
+          },
+          splitDelay,
+        )
+        .set([".follower3", ".follower4"], { opacity: 0 })
+        .set(".follower2", { opacity: 1 });
+    },
+    { scope: svgRef },
+  );
+
+  return (
+    <svg
+      ref={svgRef}
+      viewBox="0 0 441 356"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g filter="url(#filter0_f_146_4)">
+        <rect
+          x="126"
+          y="87"
+          width="169"
+          height="169"
+          rx="84.5"
+          fill="#E75900"
+        />
+      </g>
+      <g className="follower">
+        <circle cx="185.5" cy="79.5074" r="3.5" fill="#E75900" />
+        <g filter="url(#filter1_f_146_4)">
+          <circle cx="185.5" cy="79.5074" r="3.5" fill="#E75900" />
+        </g>
+      </g>
+
+      <circle
+        className="follower2"
+        cx="54.5"
+        cy="172.507"
+        r="3.5"
+        fill="#E75900"
+      />
+      <g filter="url(#filter2_f_146_4)">
+        <circle
+          className="follower2"
+          cx="54.5"
+          cy="172.507"
+          r="3.5"
+          fill="#E75900"
+        />
+      </g>
+      <circle
+        className="follower3"
+        cx="227"
+        cy="172.007"
+        r="3.5"
+        fill="#E75900"
+      />
+      <g filter="url(#filter2_f_146_4)">
+        <circle
+          className="follower3"
+          cx="227"
+          cy="172.007"
+          r="3.5"
+          fill="#E75900"
+        />
+      </g>
+      <circle
+        className="follower4"
+        cx="227"
+        cy="172.007"
+        r="3.5"
+        fill="#E75900"
+      />
+      <g filter="url(#filter2_f_146_4)">
+        <circle
+          className="follower4"
+          cx="227"
+          cy="172.007"
+          r="3.5"
+          fill="#E75900"
+        />
+      </g>
+      <path className="path2-main" d="M-30 172.007H227" stroke="#E75900" />
+      <path
+        className="path2-branch-a"
+        d="M227 172.007L469.5 308.5"
+        stroke="#E75900"
+      />
+      <path
+        className="path2-branch-b"
+        d="M227 172.007L469.5 32"
+        stroke="#E75900"
+      />
+      <rect
+        className="ai-circle"
+        x="131"
+        y="81.0074"
+        width="179"
+        height="179"
+        rx="89.5"
+        fill="#D9D9D9"
+      />
+      <path
+        className="path"
+        d="M318.5 170.5A98 98 0 1 0 122.5 170.5A98 98 0 1 0 318.5 170.5Z"
+        stroke="#E75900"
+        fill="none"
+      />
+      <g className="ai-logo">
+        <path
+          d="M220.5 157V144H207.5"
+          stroke="black"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M240 157H201C197.411 157 194.5 159.91 194.5 163.5V189.5C194.5 193.09 197.411 196 201 196H240C243.59 196 246.5 193.09 246.5 189.5V163.5C246.5 159.91 243.59 157 240 157Z"
+          stroke="black"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M188 176.5H194.5"
+          stroke="black"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M246.5 176.5H253"
+          stroke="black"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M230.25 173.25V179.75"
+          stroke="black"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M210.75 173.25V179.75"
+          stroke="black"
+          stroke-width="4"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <filter
+          id="filter0_f_146_4"
+          x="26"
+          y="-13"
+          width="369"
+          height="369"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="50"
+            result="effect1_foregroundBlur_146_4"
+          />
+        </filter>
+        <filter
+          id="filter1_f_146_4"
+          x="177.7"
+          y="71.7074"
+          width="15.6"
+          height="15.6"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="2.15"
+            result="effect1_foregroundBlur_146_4"
+          />
+        </filter>
+        <filter
+          id="filter2_f_146_4"
+          x="46.7"
+          y="164.707"
+          width="15.6"
+          height="15.6"
+          filterUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feBlend
+            mode="normal"
+            in="SourceGraphic"
+            in2="BackgroundImageFix"
+            result="shape"
+          />
+          <feGaussianBlur
+            stdDeviation="2.15"
+            result="effect1_foregroundBlur_146_4"
+          />
+        </filter>
+      </defs>
+    </svg>
+  );
+};

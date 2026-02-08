@@ -17,11 +17,13 @@ const Footer = () => {
               src="/image/footer.png"
               alt=""
             />
-            <div className="text-base sm:text-lg md:text-xl font-medium lg:text-2xl leading-tight sm:leading-6 md:leading-7 pr-20 sm:pr-24 md:pr-32 lg:pr-0">
+            <div className="text-base sm:text-lg md:text-xl lg:text-3xl pr-20 sm:pr-24 md:pr-32 lg:pr-0">
               Cocursor is The collaborative AI workspace <br /> for modern
               builders.
             </div>
-            <div className="text-xs sm:text-sm mt-2 sm:mt-3">© 2026 Cocursor. All rights reserved.</div>
+            <div className="text-xs sm:text-sm mt-2 sm:mt-3">
+              © 2026 Cocursor. All rights reserved.
+            </div>
           </div>
         </div>
         <div className="flex justify-center mt-8 sm:mt-10 md:mt-12 lg:mt-14 px-2 sm:px-4">
@@ -86,6 +88,5 @@ const Footer = () => {
     </div>
   );
 };
-
 
 export default Footer;
