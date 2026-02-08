@@ -52,36 +52,36 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ConvexClientProvider>
-      <ClerkProvider>
-        <html lang="en" suppressHydrationWarning>
-          <head>
-            <link rel="icon" href="/favicon.ico" />
-            <link rel="apple-touch-icon" href="/favicon.ico" />
-            <meta name="application-name" content="Cocursor" />
-            <meta
-              property="og:image"
-              content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
-            />
-            <meta property="og:title" content="Cocursor" />
-            <meta
-              property="og:description"
-              content="Cocursor – Collaborative Coding Platform"
-            />
-            <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content="Cocursor" />
-            <meta
-              name="twitter:description"
-              content="Cocursor – Collaborative Coding Platform"
-            />
-            <meta
-              name="twitter:image"
-              content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
-            />
-          </head>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
-          >
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <meta name="application-name" content="Cocursor" />
+        <meta
+          property="og:image"
+          content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
+        />
+        <meta property="og:title" content="Cocursor" />
+        <meta
+          property="og:description"
+          content="Cocursor – Collaborative Coding Platform"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Cocursor" />
+        <meta
+          name="twitter:description"
+          content="Cocursor – Collaborative Coding Platform"
+        />
+        <meta
+          name="twitter:image"
+          content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
+        />
+      </head>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
+      >
+        <ConvexClientProvider>
+          <ClerkProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -91,9 +91,9 @@ export default function RootLayout({
               <Toaster />
               {children}
             </ThemeProvider>
-          </body>
-        </html>
-      </ClerkProvider>
-    </ConvexClientProvider>
+          </ClerkProvider>
+        </ConvexClientProvider>
+      </body>
+    </html>
   );
 }
