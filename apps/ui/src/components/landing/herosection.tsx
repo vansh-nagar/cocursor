@@ -6,25 +6,21 @@ import Follower2 from "./cursor-followers/follower2";
 
 const HeroSection = () => {
   return (
-    <div className="relative flex flex-col justify-center items-center sm:min-h-screen px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-32 max-sm:mt-10">
-
-<div className="follower1 absolute top-1/4 left-1/4 z-50 pointer-events-none">
-
-      <Follower1/>
-</div>
-<div className="follower2 absolute top-1/3 right-1/4 z-50 pointer-events-none">
-
-      <Follower2/>
-</div>
-
+    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 lg:px-8 py-12 sm:py-16 md:py-32 max-sm:mt-10">
+      <div className="follower1 absolute left-1/6 bottom-1/3 sm:top-1/4 z-50 pointer-events-none">
+        <Follower1 />
+      </div>
+      <div className="follower2 absolute bottom-1/4 sm:top-1/3 right-1/8 z-50 pointer-events-none">
+        <Follower2 />
+      </div>
 
       <OrangePremButton className="rounded-full px-3 py-1 text-[10px] sm:text-xs mb-4 sm:mb-6">
         Code Together Powered by AI
       </OrangePremButton>
-      <div className="text-3xl sm:text-4xl font-medium lg:text-5xl xl:text-6xl 2xl:text-7xl flex items-center flex-col text-center lg:leading-14">
+      <div className="text-3xl sm:text-4xl font-medium lg:text-5xl xl:text-6xl 2xl:text-7xl flex items-center flex-col text-center leading-7 md:leading-10 lg:leading-12 xl:leading-16">
         <span className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 whitespace-nowrap">
           <span>Build software</span>
-          <div className="w-10 h-5 sm:w-14 sm:h-7 md:w-16 md:h-8 lg:w-20 lg:h-10 xl:w-24 xl:h-10 relative">
+          <div className="w-10 max-sm:hidden h-5 sm:w-14 sm:h-7 md:w-16 md:h-8 lg:w-20 lg:h-10 xl:w-24 xl:h-10 relative">
             <img
               className="absolute -top-5 sm:-top-7 md:-top-8 lg:-top-9 xl:-top-10 right-0 inset-0 h-[80px] sm:h-[120px] md:h-[140px] lg:h-[170px] xl:h-[200px] scale-x-[2]"
               src="/logo/zap.png"
@@ -36,8 +32,9 @@ const HeroSection = () => {
         <span className="mt-2 sm:mt-3 md:mt-4">Right in your browser</span>
       </div>
       <div className="mt-4 sm:mt-6 md:mt-10 text-center text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-xs sm:max-w-md md:max-w-lg lg:max-w-none px-4">
-        A browser-based IDE where AI helps you write code, <br className=" max-sm:hidden" /> teammates
-        collaborate live, and apps run instantly.
+        A browser-based IDE where AI helps you write code,{" "}
+        <br className=" max-sm:hidden" /> teammates collaborate live, and apps
+        run instantly.
       </div>
 
       <div className="mt-8 sm:mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 md:gap-8 px-4 sm:px-0">
@@ -63,7 +60,7 @@ const HeroSection = () => {
         />
       </div>
       <svg
-        className=" absolute -z-50 inset-0 w-full"
+        className=" absolute -z-50 inset-0 w-full max-sm:hidden"
         viewBox="0 0 1920 1796"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
