@@ -80,6 +80,10 @@
         "@streamdown/code": "^1.0.1",
         "@streamdown/math": "^1.0.1",
         "@streamdown/mermaid": "^1.0.1",
+        "@tanstack/react-query": "^5.90.20",
+        "@trpc/client": "^11.9.0",
+        "@trpc/server": "^11.9.0",
+        "@trpc/tanstack-react-query": "^11.9.0",
         "@webcontainer/api": "^1.6.1",
         "@xterm/xterm": "^6.0.0",
         "@xyflow/react": "^12.10.0",
@@ -88,6 +92,7 @@
         "ansi-to-react": "^6.2.6",
         "bun": "^1.3.8",
         "class-variance-authority": "^0.7.1",
+        "client-only": "^0.0.1",
         "clsx": "^2.1.1",
         "cmdk": "^1.1.1",
         "codemirror": "^6.0.2",
@@ -110,6 +115,7 @@
         "react-hook-form": "^7.71.1",
         "react-resizable-panels": "2.0.19",
         "recharts": "2.15.4",
+        "server-only": "^0.0.1",
         "shiki": "^3.21.0",
         "sonner": "^2.0.7",
         "streamdown": "^2.1.0",
@@ -855,6 +861,12 @@
     "@traceloop/ai-semantic-conventions": ["@traceloop/ai-semantic-conventions@0.20.0", "", { "dependencies": { "@opentelemetry/api": "^1.9.0" } }, "sha512-bvivhZU6U8TW4TKktYnjdTi+7GE4WxI8epaGjawalSKDunmxaA+4UVFQ+4tSCBvp2Scby+gnYNaTZSrtABfOlQ=="],
 
     "@traceloop/instrumentation-anthropic": ["@traceloop/instrumentation-anthropic@0.20.0", "", { "dependencies": { "@opentelemetry/api": "^1.9.0", "@opentelemetry/core": "^2.0.1", "@opentelemetry/instrumentation": "^0.203.0", "@opentelemetry/semantic-conventions": "^1.36.0", "@traceloop/ai-semantic-conventions": "0.20.0", "tslib": "^2.8.1" } }, "sha512-xQcPxVrKr3yT9+ZEM3skYXikJc/ocZlGDIcsBQ3mMwL3Weq1QL7jx/uGLXvrSO2Yh0DWUjWI6Q/oiRCEUM6P8w=="],
+
+    "@trpc/client": ["@trpc/client@11.9.0", "", { "peerDependencies": { "@trpc/server": "11.9.0", "typescript": ">=5.7.2" } }, "sha512-3r4RT/GbR263QO+2gCPyrs5fEYaXua3/AzCs+GbWC09X0F+mVkyBpO3GRSDObiNU/N1YB597U7WGW3WA1d1TVw=="],
+
+    "@trpc/server": ["@trpc/server@11.9.0", "", { "peerDependencies": { "typescript": ">=5.7.2" } }, "sha512-T8gC4NOCzx8tCsQEQ5sSjf24bN+9AEqXZRfpThG+YCEmcEwXfS7RP8VVrl5Vodt1S+zGEDyQSof4YVAj1zq/mg=="],
+
+    "@trpc/tanstack-react-query": ["@trpc/tanstack-react-query@11.9.0", "", { "peerDependencies": { "@tanstack/react-query": "^5.80.3", "@trpc/client": "11.9.0", "@trpc/server": "11.9.0", "react": ">=18.2.0", "react-dom": ">=18.2.0", "typescript": ">=5.7.2" } }, "sha512-EV9/m9HTD4yrZPI051+lKbKSwvRQpoF+1fIEoYHuJ009yFtCdCovn8XOwsdcugOQu84OCs11qDDKCEmUCNXUIg=="],
 
     "@tsconfig/node10": ["@tsconfig/node10@1.0.12", "", {}, "sha512-UCYBaeFvM11aU2y3YPZ//O5Rhj+xKyzy7mvcIoAjASbigy8mHMryP5cK7dgjlz2hWxh1g5pLw084E0a/wlUSFQ=="],
 
@@ -2604,6 +2616,8 @@
 
     "tsconfig/strip-json-comments": ["strip-json-comments@2.0.1", "", {}, "sha512-4gB8na07fecVVkOI6Rs4e7T6NOTki5EmL7TUduTs6bu3EdnSycntVJ4re8kgZA+wx9IueI2Y11bfbgwtzuE0KQ=="],
 
+    "ui/@tanstack/react-query": ["@tanstack/react-query@5.90.20", "", { "dependencies": { "@tanstack/query-core": "5.90.20" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-vXBxa+qeyveVO7OA0jX1z+DeyCA4JKnThKv411jd5SORpBKgkcVnYKCiBgECvADvniBX7tobwBmg01qq9JmMJw=="],
+
     "ui/@types/node": ["@types/node@20.19.30", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-WJtwWJu7UdlvzEAUm484QNg5eAoq5QR08KDNx7g45Usrs2NtOPiX8ugDqmKdXkyL03rBqU5dYNYVQetEpBHq2g=="],
 
     "ui/typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
@@ -2631,6 +2645,8 @@
     "next/postcss/nanoid": ["nanoid@3.3.11", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w=="],
 
     "string-width/strip-ansi/ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
+
+    "ui/@tanstack/react-query/@tanstack/query-core": ["@tanstack/query-core@5.90.20", "", {}, "sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg=="],
 
     "wrap-ansi/strip-ansi/ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
 
