@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/provider/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import ConvexClientProvider from "@/provider/convex-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -51,46 +52,48 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <head>
-          <link rel="icon" href="/favicon.ico" />
-          <link rel="apple-touch-icon" href="/favicon.ico" />
-          <meta name="application-name" content="Cocursor" />
-          <meta
-            property="og:image"
-            content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
-          />
-          <meta property="og:title" content="Cocursor" />
-          <meta
-            property="og:description"
-            content="Cocursor – Collaborative Coding Platform"
-          />
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:title" content="Cocursor" />
-          <meta
-            name="twitter:description"
-            content="Cocursor – Collaborative Coding Platform"
-          />
-          <meta
-            name="twitter:image"
-            content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
-          />
-        </head>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
-        >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
+    <ConvexClientProvider>
+      <ClerkProvider>
+        <html lang="en" suppressHydrationWarning>
+          <head>
+            <link rel="icon" href="/favicon.ico" />
+            <link rel="apple-touch-icon" href="/favicon.ico" />
+            <meta name="application-name" content="Cocursor" />
+            <meta
+              property="og:image"
+              content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
+            />
+            <meta property="og:title" content="Cocursor" />
+            <meta
+              property="og:description"
+              content="Cocursor – Collaborative Coding Platform"
+            />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content="Cocursor" />
+            <meta
+              name="twitter:description"
+              content="Cocursor – Collaborative Coding Platform"
+            />
+            <meta
+              name="twitter:image"
+              content="https://res.cloudinary.com/dz12pywzs/image/upload/v1770130073/Copy_of_Webinar_Keynote_Presentation_1_g0bs5i.png"
+            />
+          </head>
+          <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
           >
-            <Toaster />
-            {children}
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              {children}
+            </ThemeProvider>
+          </body>
+        </html>
+      </ClerkProvider>
+    </ConvexClientProvider>
   );
 }

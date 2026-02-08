@@ -1,8 +1,15 @@
+"use client";
+
 import Logo from "@/components/mine/logo";
-import { link } from "fs";
-import { Folder, FolderDown, FolderOpen } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Folder, FolderDown, FolderOpen, Plus } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import { mutation } from "../../../convex/_generated/server";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+
 const type = [
   {
     icon: <FolderOpen size={16} />,
@@ -30,9 +37,25 @@ const folder = [
 ];
 
 const Page = () => {
+  const [inputValue, setInputValue] = useState("");
+  const addTodo = useMutation(api.todo.addTodo);
+
+  const handleSubmit = async () => {
+    await addTodo({ text: inputValue });
+  };
+
   return (
     <div className="flex justify-center items-center h-screen w-full overflow-hidden relative">
-      {" "}
+      <div className="flex gap-2">
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <Button className="" onClick={handleSubmit}>
+          <Plus />
+        </Button>
+      </div>
+
       <svg
         className=" absolute -z-50 inset-0 w-full"
         viewBox="0 0 1920 1796"
