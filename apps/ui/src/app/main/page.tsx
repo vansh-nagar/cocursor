@@ -37,25 +37,8 @@ const folder = [
 ];
 
 const Page = () => {
-  const [inputValue, setInputValue] = useState("");
-  const addTodo = useMutation(api.todo.addTodo);
-
-  const handleSubmit = async () => {
-    await addTodo({ text: inputValue });
-  };
-
   return (
     <div className="flex justify-center items-center h-screen w-full overflow-hidden relative">
-      <div className="flex gap-2">
-        <Input
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-        />
-        <Button className="" onClick={handleSubmit}>
-          <Plus />
-        </Button>
-      </div>
-
       <svg
         className=" absolute -z-50 inset-0 w-full"
         viewBox="0 0 1920 1796"

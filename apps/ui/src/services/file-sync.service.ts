@@ -1,11 +1,11 @@
 /**
  * File Sync Service
- * 
+ *
  * Manages bidirectional file synchronization between:
  * - Editor (CodeMirror)
- * - Database (Prisma/SQLite)
+ * - Database (Convex)
  * - WebContainer filesystem
- * 
+ *
  * Sync flows:
  * 1. Editor → DB → WebContainer (user edits)
  * 2. WebContainer → DB → Editor (external changes from npm install, generators, etc.)
@@ -33,12 +33,13 @@ export interface FileSyncEvent {
 }
 
 // Debounce utility
-type DebouncedSaveFunc = (projectId: string, path: string, content: string) => void;
+type DebouncedSaveFunc = (
+  projectId: string,
+  path: string,
+  content: string,
+) => void;
 
-function debounce(
-  func: DebouncedSaveFunc,
-  wait: number
-): DebouncedSaveFunc {
+function debounce(func: DebouncedSaveFunc, wait: number): DebouncedSaveFunc {
   let timeout: NodeJS.Timeout | null = null;
   return (projectId: string, path: string, content: string) => {
     if (timeout) clearTimeout(timeout);
@@ -48,7 +49,8 @@ function debounce(
 
 class FileSyncService extends EventEmitter {
   private static instance: FileSyncService | null = null;
-  private writeQueue: Map<string, { content: string; projectId: string }> = new Map();
+  private writeQueue: Map<string, { content: string; projectId: string }> =
+    new Map();
   private isProcessingQueue: boolean = false;
   private debouncedSaves: Map<string, DebouncedSaveFunc> = new Map();
   private currentProjectId: string | null = null;
@@ -78,18 +80,20 @@ class FileSyncService extends EventEmitter {
   /**
    * Load project files from DB and return as FileSystemTree for WebContainer
    */
-  async loadProjectFiles(projectId: string): Promise<{ files: FileData[]; tree: FileSystemTree }> {
+  async loadProjectFiles(
+    projectId: string,
+  ): Promise<{ files: FileData[]; tree: FileSystemTree }> {
     console.log(`[FileSyncService] Loading files for project: ${projectId}`);
-    
+
     try {
       const response = await fetch(`/api/files?projectId=${projectId}`);
       if (!response.ok) {
         throw new Error(`Failed to load files: ${response.statusText}`);
       }
-      
+
       const files: FileData[] = await response.json();
       const tree = this.filesToTree(files);
-      
+
       console.log(`[FileSyncService] Loaded ${files.length} files`);
       return { files, tree };
     } catch (error) {
@@ -132,9 +136,14 @@ class FileSyncService extends EventEmitter {
    * Save file to DB with debouncing
    * Called when editor content changes
    */
-  saveFile(projectId: string, path: string, content: string, immediate: boolean = false): void {
+  saveFile(
+    projectId: string,
+    path: string,
+    content: string,
+    immediate: boolean = false,
+  ): void {
     const key = `${projectId}:${path}`;
-    
+
     if (immediate) {
       this.performSave(projectId, path, content);
       return;
@@ -146,7 +155,7 @@ class FileSyncService extends EventEmitter {
         key,
         debounce((pId: string, p: string, c: string) => {
           this.performSave(pId, p, c);
-        }, 1000) // 1 second debounce
+        }, 1000), // 1 second debounce
       );
     }
 
@@ -157,11 +166,15 @@ class FileSyncService extends EventEmitter {
   /**
    * Actually perform the save operation
    */
-  private async performSave(projectId: string, path: string, content: string): Promise<void> {
+  private async performSave(
+    projectId: string,
+    path: string,
+    content: string,
+  ): Promise<void> {
     // Add to queue
     const key = `${projectId}:${path}`;
     this.writeQueue.set(key, { content, projectId });
-    
+
     // Process queue if not already processing
     if (!this.isProcessingQueue) {
       this.processQueue();
@@ -185,7 +198,7 @@ class FileSyncService extends EventEmitter {
 
         try {
           console.log(`[FileSyncService] Saving to DB: ${path}`);
-          
+
           // 1. Save to database
           const response = await fetch("/api/files", {
             method: "POST",
@@ -214,7 +227,6 @@ class FileSyncService extends EventEmitter {
             path,
             content,
           } as FileSyncEvent);
-
         } catch (error) {
           console.error(`[FileSyncService] Error saving file ${path}:`, error);
           this.emit("file:error", { path, error });
@@ -229,7 +241,11 @@ class FileSyncService extends EventEmitter {
    * Handle external file change from WebContainer
    * (e.g., from npm install, build tools)
    */
-  async handleExternalChange(projectId: string, path: string, content: string): Promise<void> {
+  async handleExternalChange(
+    projectId: string,
+    path: string,
+    content: string,
+  ): Promise<void> {
     console.log(`[FileSyncService] External change detected: ${path}`);
 
     try {
@@ -241,7 +257,9 @@ class FileSyncService extends EventEmitter {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to save external change: ${response.statusText}`);
+        throw new Error(
+          `Failed to save external change: ${response.statusText}`,
+        );
       }
 
       // 2. Emit event for editor to update
@@ -251,7 +269,6 @@ class FileSyncService extends EventEmitter {
         path,
         content,
       } as FileSyncEvent);
-
     } catch (error) {
       console.error(`[FileSyncService] Error handling external change:`, error);
     }
@@ -260,7 +277,11 @@ class FileSyncService extends EventEmitter {
   /**
    * Create a new file
    */
-  async createFile(projectId: string, path: string, content: string = ""): Promise<FileData> {
+  async createFile(
+    projectId: string,
+    path: string,
+    content: string = "",
+  ): Promise<FileData> {
     console.log(`[FileSyncService] Creating file: ${path}`);
 
     // 1. Save to database
@@ -300,9 +321,12 @@ class FileSyncService extends EventEmitter {
     console.log(`[FileSyncService] Deleting file: ${path}`);
 
     // 1. Delete from database
-    const response = await fetch(`/api/files?projectId=${projectId}&path=${encodeURIComponent(path)}`, {
-      method: "DELETE",
-    });
+    const response = await fetch(
+      `/api/files?projectId=${projectId}&path=${encodeURIComponent(path)}`,
+      {
+        method: "DELETE",
+      },
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to delete file: ${response.statusText}`);
