@@ -3,27 +3,16 @@ import { v } from "convex/values";
 
 // Get all projects
 export const list = query({
-  args: {},
-  handler: async (ctx) => {
-    const projects = await ctx.db.query("Project").order("desc").collect();
+  args: {
+    clerkId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const projects = await ctx.db
+      .query("Project")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .collect();
 
-    // Get file counts for each project
-    const projectsWithCounts = await Promise.all(
-      projects.map(async (project) => {
-        const files = await ctx.db
-          .query("Node")
-          .withIndex("by_project", (q) => q.eq("projectId", project._id))
-          .filter((q) => q.eq(q.field("type"), "file"))
-          .collect();
-
-        return {
-          ...project,
-          _count: { files: files.length },
-        };
-      }),
-    );
-
-    return projectsWithCounts;
+    return projects;
   },
 });
 
@@ -55,6 +44,7 @@ export const get = query({
 export const create = mutation({
   args: {
     name: v.string(),
+    clerkId: v.string(),
     initialFiles: v.optional(
       v.array(v.object({ path: v.string(), content: v.string() })),
     ),
@@ -62,6 +52,8 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const projectId = await ctx.db.insert("Project", {
       name: args.name,
+      clerkId: args.clerkId,
+      nodes: [],
     });
 
     // Create initial files if provided

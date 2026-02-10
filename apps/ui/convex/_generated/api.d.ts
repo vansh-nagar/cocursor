@@ -9,6 +9,7 @@
  */
 
 import type * as project from "../project.js";
+import type * as user from "../user.js";
 
 import type {
   ApiFromModules,
@@ -18,6 +19,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   project: typeof project;
+  user: typeof user;
 }>;
 
 /**
