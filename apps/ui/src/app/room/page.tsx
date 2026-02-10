@@ -7,5 +7,5 @@ const IDEComponent = dynamic(() => import("./_ide-component"), {
 });
 
 export default function RoomPage() {
-  return <IDEComponent />;
+  return <IDEComponent projectId={undefined} />;
 }

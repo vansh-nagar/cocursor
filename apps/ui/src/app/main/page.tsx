@@ -100,11 +100,12 @@ const Page = () => {
     try {
       const project = await createProject({
         name: projectName.trim(),
+        templateKey: "vanilla-web-app",
       });
       setIsDialogOpen(false);
       setProjectName("");
       if (project?._id) {
-        router.push(`/room?projectId=${project._id}`);
+        router.push(`/room/${project._id}`);
       } else {
         router.push("/room");
       }
@@ -284,7 +285,7 @@ const Page = () => {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                <Link href={`/room?projectId=${item._id}`}>
+                <Link href={`/room/${item._id}`}>
                   <Button
                     size={"icon"}
                     style={{

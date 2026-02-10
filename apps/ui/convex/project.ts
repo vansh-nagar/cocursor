@@ -1,5 +1,11 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
+import {
+  templateToNodes,
+  nodesToTemplate,
+  Template,
+} from "./lib/templateToNodes";
+import { projectFiles } from "../src/data/project-file";
 
 // Get all projects
 export const list = query({
@@ -28,19 +34,18 @@ export const get = query({
     const project = await ctx.db.get(args.id);
     if (!project) return null;
 
-    const files = await ctx.db
+    const nodes = await ctx.db
       .query("Node")
       .withIndex("by_project", (q) => q.eq("projectId", args.id))
-      .filter((q) => q.eq(q.field("type"), "file"))
       .collect();
+
+    const fileTree = nodesToTemplate(nodes);
 
     return {
       ...project,
-      files: files.map((f) => ({
-        id: f._id,
-        path: f.path,
-        updatedAt: f._creationTime,
-      })),
+      fileTree: {
+        "vanilla-web-app": fileTree,
+      },
     };
   },
 });
@@ -52,10 +57,10 @@ export const create = mutation({
     initialFiles: v.optional(
       v.array(v.object({ path: v.string(), content: v.string() })),
     ),
+    templateKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
-    console.log("Creating project for user identity:", identity);
     const user = await ctx.db
       .query("User")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity?.subject ?? ""))
@@ -66,15 +71,13 @@ export const create = mutation({
         "Unauthorized: User must be logged in to create a project",
       );
 
-    console.log("Creating project for user:", user);
-
     const projectId = await ctx.db.insert("Project", {
       name: args.name,
       ownerId: user?._id,
     });
 
-    // Create initial files if provided
-    if (args.initialFiles) {
+    // Create initial files if provided, otherwise seed from template
+    if (args.initialFiles && args.initialFiles.length > 0) {
       for (const file of args.initialFiles) {
         await ctx.db.insert("Node", {
           projectId,
@@ -83,6 +86,22 @@ export const create = mutation({
           path: file.path,
           content: file.content,
         });
+      }
+    } else {
+      const templateKey = args.templateKey ?? "vanilla-web-app";
+      const template = projectFiles[templateKey as keyof typeof projectFiles];
+      if (template) {
+        const nodes = templateToNodes(template as unknown as Template);
+
+        for (const node of nodes) {
+          await ctx.db.insert("Node", {
+            projectId,
+            name: node.name,
+            type: node.type,
+            path: node.path,
+            content: node.content,
+          });
+        }
       }
     }
 

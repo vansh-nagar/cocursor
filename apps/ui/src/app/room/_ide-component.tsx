@@ -28,8 +28,19 @@ import { useKeyShortcutListeners } from "@/hooks/key-shortcut-listners";
 import { useWebContainer } from "@/hooks/webcontainer";
 import Chat from "@/components/ide-component/Chat";
 import ActivityBar from "@/components/ide-component/activity-bar";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { FileSystemTree } from "@webcontainer/api";
 
-const IDEComponent = () => {
+interface IDEComponentProps {
+  projectId?: string;
+}
+
+const IDEComponent = ({ projectId }: IDEComponentProps) => {
+  // Fetch project data from Convex
+
+  console.log("Fetched project data:", projectId);
+
   const {
     liveUrl,
     activeTab,
@@ -57,7 +68,12 @@ const IDEComponent = () => {
     handleFileClick,
     handleSaveCurrentFile,
     handleFileContentChange,
+    handleCreateFile,
+    handleCreateFolder,
+    handleDeleteNode,
+    handleRenameNode,
   } = useExplorer({
+    projectId,
     currentTabId,
     openTabs,
     setOpenTabs,
@@ -77,18 +93,23 @@ const IDEComponent = () => {
     currentTabId,
   });
 
-  const { initializeWebContainer, webContainerRef } = useWebContainer();
+  const { initializeWebContainer, webContainerRef } = useWebContainer({
+    projectId,
+  });
 
-  const initRef = useRef(false);
-
+  const getProjectData = useQuery(
+    api.project.get,
+    projectId ? { id: projectId as any } : "skip",
+  );
   useEffect(() => {
-    if (initRef.current) return;
-    initRef.current = true;
-
-    initializeWebContainer().catch((error) => {
-      console.error("[IDE] Failed to initialize WebContainer:", error);
-    });
-  }, [initializeWebContainer]);
+    if (getProjectData) {
+      initializeWebContainer(getProjectData.fileTree as FileSystemTree).catch(
+        (error) => {
+          console.error("[IDE] Failed to initialize WebContainer:", error);
+        },
+      );
+    }
+  }, [initializeWebContainer, getProjectData]);
 
   const currentTab = openTabs.find((tab) => tab.id === currentTabId);
 
