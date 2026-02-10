@@ -25,9 +25,10 @@ import {
 import { Input } from "@/components/ui/input";
 import {
   ArrowUpRight,
-  CircleArrowOutUpRight,
   FolderDown,
   FolderOpen,
+  Trash,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -36,7 +37,6 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Id } from "../../../convex/_generated/dataModel";
-import OrangePremButton from "@/components/landing/button/orange-prem-buttion";
 import OrangeButton, {
   BlackButton,
 } from "@/components/landing/button/orange-button";
@@ -62,7 +62,8 @@ const type = [
 const Page = () => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const projects = useQuery(api.project.list, { clerkId: user?.id ?? "" });
+  const me = useQuery(api.user.getMe);
+  const projects = useQuery(api.project.list, {});
   const createUser = useMutation(api.user.createUserIfExists);
   const createProject = useMutation(api.project.create);
   const deleteProject = useMutation(api.project.remove);
@@ -72,6 +73,8 @@ const Page = () => {
   const [deletingProjectId, setDeletingProjectId] = useState<string | null>(
     null,
   );
+  const projectCount = projects?.length ?? 0;
+  const isAtProjectLimit = projectCount >= 5;
 
   const formatCreationTime = (timestampMs: number) =>
     new Intl.DateTimeFormat("en-US", {
@@ -91,12 +94,12 @@ const Page = () => {
     event.preventDefault();
     if (!projectName.trim() || !user?.id) return;
     if (isCreating) return;
+    if (isAtProjectLimit) return;
 
     setIsCreating(true);
     try {
       const project = await createProject({
         name: projectName.trim(),
-        clerkId: user.id,
       });
       setIsDialogOpen(false);
       setProjectName("");
@@ -120,8 +123,10 @@ const Page = () => {
     }
   };
 
+  const visibleProjects = projects?.slice(0, 5) ?? [];
+
   return (
-    <div className="flex justify-center items-center h-screen w-full overflow-hidden relative">
+    <div className="flex justify-center items-center h-screen overflow-hidden w-full relative py-10">
       <svg
         className=" absolute -z-50 inset-0 w-full"
         viewBox="0 0 1920 1796"
@@ -165,8 +170,15 @@ const Page = () => {
           <div className="flex  gap-4 mt-2">
             {type.map((item, index) =>
               index === 0 ? (
-                <DialogTrigger key={index} asChild>
-                  <div className=" flex flex-col p-4 rounded-md bg-muted w-40 hover:bg-accent-foreground/20 transition-all duration-150 cursor-pointer">
+                <DialogTrigger key={index} asChild disabled={isAtProjectLimit}>
+                  <div
+                    className={
+                      "flex flex-col p-4 rounded-md bg-muted w-40 transition-all duration-150" +
+                      (isAtProjectLimit
+                        ? " opacity-60 cursor-not-allowed"
+                        : " hover:bg-accent-foreground/20 cursor-pointer")
+                    }
+                  >
                     {item.icon}
                     <span className="text-sm mt-1">{item.name}</span>
                   </div>
@@ -198,27 +210,35 @@ const Page = () => {
               <DialogFooter>
                 <Button
                   type="submit"
-                  disabled={!projectName.trim() || isCreating}
+                  disabled={
+                    !projectName.trim() || isCreating || isAtProjectLimit
+                  }
                 >
                   {isCreating ? "Creating..." : "Continue"}
                 </Button>
               </DialogFooter>
+              {isAtProjectLimit && (
+                <p className="text-xs text-muted-foreground">
+                  You reached the 5 project limit. Delete a project to create a
+                  new one.
+                </p>
+              )}
             </form>
           </DialogContent>
         </Dialog>
         <div className="flex mt-6 text-xs justify-between w-full">
           <div>Recent projects</div>
-          <div>View all({projects?.length ?? 0})</div>
+          <div>{projectCount} total</div>
         </div>
 
         <div className="mt-1 w-full">
-          {projects?.map((item, index) => (
+          {visibleProjects.map((item, index) => (
             <div
               key={index}
               className="flex justify-between w-full items-center mt-2"
             >
               <div className="flex flex-col gap-0.5">
-                <span className="text-xs">{item.name}</span>
+                <span className="text-sm">{item.name}</span>
                 <div className="text-xs text-muted-foreground">
                   Created At: {formatCreationTime(item._creationTime)}
                 </div>
@@ -229,9 +249,18 @@ const Page = () => {
               >
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <BlackButton className="py-1.5 px-3  cursor-pointer text-sm ">
-                      Delete
-                    </BlackButton>
+                    <Button
+                      style={{
+                        background: "#222222",
+                        color: "#fff",
+                        boxShadow:
+                          "0.444584px 0.444584px 0.628737px -0.75px rgba(0, 0, 0, 0.26), 1.21072px 1.21072px 1.71222px -1.5px rgba(0, 0, 0, 0.247), 2.6583px 2.6583px 3.75941px -2.25px rgba(0, 0, 0, 0.23), 5.90083px 5.90083px 8.34503px -3px rgba(0, 0, 0, 0.192), 14px 14px 21.2132px -3.75px rgba(0, 0, 0, 0.2), -0.5px -0.5px 0px rgba(0, 0, 0, 0.686), inset 1px 1px 1px rgba(255, 255, 255, 0.7), inset -1px -1px 1px rgba(0, 0, 0, 0.23)",
+                      }}
+                      size={"icon"}
+                      className="px-3 aspect-square cursor-pointer text-sm font-medium "
+                    >
+                      <Trash2 />
+                    </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -256,14 +285,30 @@ const Page = () => {
                   </AlertDialogContent>
                 </AlertDialog>
                 <Link href={`/room?projectId=${item._id}`}>
-                  <OrangeButton className="py-1.5 px-2  cursor-pointer text-sm ">
+                  <Button
+                    size={"icon"}
+                    style={{
+                      background: "#FF4A00",
+                      boxShadow:
+                        "0.444584px 0.444584px 0.628737px -1px rgba(0, 0, 0, 0.26), 1.21072px 1.21072px 1.71222px -1.5px rgba(0, 0, 0, 0.247), 2.6583px 2.6583px 3.75941px -2.25px rgba(0, 0, 0, 0.23), 5.90083px 5.90083px 8.34503px -3px rgba(0, 0, 0, 0.192), 10px 10px 21.2132px -3.75px rgba(0, 0, 0, 0.23), -0.5px -0.5px 0px rgba(149, 43, 0, 0.53), inset 1px 1px 1px rgba(255, 255, 255, 0.83), inset -1px -1px 1px rgba(0, 0, 0, 0.23)",
+                      color: "#fff",
+                    }}
+                    className="px-3 aspect-square cursor-pointer text-sm font-medium "
+                  >
+                    {" "}
                     <ArrowUpRight />
-                  </OrangeButton>
+                  </Button>
                 </Link>
               </div>
             </div>
           ))}
         </div>
+        {(projects?.length ?? 0) > 5 && (
+          <p className="mt-4 w-full text-xs text-muted-foreground">
+            You reached the 5 project limit. Delete a project to create a new
+            one.
+          </p>
+        )}
       </div>
     </div>
   );

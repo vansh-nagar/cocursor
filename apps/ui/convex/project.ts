@@ -3,13 +3,18 @@ import { v } from "convex/values";
 
 // Get all projects
 export const list = query({
-  args: {
-    clerkId: v.string(),
-  },
-  handler: async (ctx, args) => {
+  handler: async (ctx, _) => {
+    const identity = await ctx.auth.getUserIdentity();
+    const user = await ctx.db
+      .query("User")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity?.subject ?? ""))
+      .unique();
+
+    if (!identity || !user) return [];
+
     const projects = await ctx.db
       .query("Project")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
       .collect();
 
     return projects;
@@ -44,16 +49,28 @@ export const get = query({
 export const create = mutation({
   args: {
     name: v.string(),
-    clerkId: v.string(),
     initialFiles: v.optional(
       v.array(v.object({ path: v.string(), content: v.string() })),
     ),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    console.log("Creating project for user identity:", identity);
+    const user = await ctx.db
+      .query("User")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity?.subject ?? ""))
+      .unique();
+
+    if (!identity || !user)
+      throw new Error(
+        "Unauthorized: User must be logged in to create a project",
+      );
+
+    console.log("Creating project for user:", user);
+
     const projectId = await ctx.db.insert("Project", {
       name: args.name,
-      clerkId: args.clerkId,
-      nodes: [],
+      ownerId: user?._id,
     });
 
     // Create initial files if provided

@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/provider/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
-import ConvexClientProvider from "@/provider/convex-provider";
+import ConvexClientProvider from "@/provider/convex-client-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -80,8 +80,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black`}
       >
-        <ConvexClientProvider>
-          <ClerkProvider>
+        <ClerkProvider>
+          <ConvexClientProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -91,8 +91,8 @@ export default function RootLayout({
               <Toaster />
               {children}
             </ThemeProvider>
-          </ClerkProvider>
-        </ConvexClientProvider>
+          </ConvexClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
