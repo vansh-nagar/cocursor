@@ -1,9 +1,20 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
-export const wsRtcConnectionHook = ({ roomId }: { roomId: string }) => {
-  const [message, setMessage] = useState<string>("");
+type OnMessageCallback = (payload: string, fromPeerId?: string) => void;
 
+export type PeerMessage = {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  fromPeerId?: string;
+};
+
+export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
+  const [message, setMessage] = useState<string>("");
+  const [peerMessages, setPeerMessages] = useState<PeerMessage[]>([]);
+
+  const messageCallbackRef = useRef<OnMessageCallback | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const pc = useRef<RTCPeerConnection | null>(null);
   const channel = useRef<RTCDataChannel | undefined>(undefined);
@@ -172,6 +183,26 @@ export const wsRtcConnectionHook = ({ roomId }: { roomId: string }) => {
         console.log("File content received via websocket");
         console.log(data.FileContent);
       }
+      if (data.type === "message") {
+        const payload = data.payload || data.message;
+        console.log("Peer message received:", payload);
+
+        // Add to peer messages state
+        setPeerMessages((prev) => [
+          ...prev,
+          {
+            id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+            role: "assistant",
+            text: payload,
+            fromPeerId: data.fromPeerId,
+          },
+        ]);
+
+        // Call message callback if set
+        if (messageCallbackRef.current) {
+          messageCallbackRef.current(payload, data.fromPeerId);
+        }
+      }
       if (data.type === "offer") {
         await pc.current?.setRemoteDescription(
           new RTCSessionDescription(data.offer),
@@ -316,6 +347,35 @@ export const wsRtcConnectionHook = ({ roomId }: { roomId: string }) => {
     );
   };
 
+  const sendMessage = (payload: string) => {
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
+
+    // Add sent message to local history
+    setPeerMessages((prev) => [
+      ...prev,
+      {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        role: "user",
+        text: payload,
+      },
+    ]);
+
+    ws.current.send(
+      JSON.stringify({
+        type: "message",
+        roomId,
+        message: payload,
+      }),
+    );
+  };
+
+  const setMessageCallback = useCallback(
+    (callback: OnMessageCallback | null) => {
+      messageCallbackRef.current = callback;
+    },
+    [],
+  );
+
   return {
     ws,
     message,
@@ -339,5 +399,9 @@ export const wsRtcConnectionHook = ({ roomId }: { roomId: string }) => {
     sendingFile,
     fileNameRef,
     sendFileContent,
+    sendMessage,
+    peerMessages,
+    setPeerMessages,
+    setMessageCallback,
   };
 };

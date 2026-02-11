@@ -80,6 +80,21 @@ wss.on("connection", function connection(ws: any) {
       }
     }
 
+    if (message.type === "message") {
+      const clients = rooms.get(message.roomId);
+      if (clients === undefined) return;
+      clients.forEach((client) => {
+        if (client !== ws && client.readyState === 1) {
+          client.send(
+            JSON.stringify({
+              type: "message",
+              message: message.message,
+            }),
+          );
+        }
+      });
+    }
+
     // if (message.type === "offer") {
     //   console.log("offer received");
     //   const clients = rooms.get(message.roomId);

@@ -31,6 +31,7 @@ import ActivityBar from "@/components/ide-component/activity-bar";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { FileSystemTree } from "@webcontainer/api";
+import { useWsRtcConnection } from "@/hooks/rtc-ws";
 
 interface IDEComponentProps {
   projectId?: string;
@@ -38,6 +39,8 @@ interface IDEComponentProps {
 
 const IDEComponent = ({ projectId }: IDEComponentProps) => {
   // Fetch project data from Convex
+
+  const roomConnection = useWsRtcConnection({ roomId: projectId || "" });
 
   console.log("Fetched project data:", projectId);
 
@@ -410,7 +413,11 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
               <>
                 <ResizableHandle />
                 <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
-                  <Chat onClose={() => setShowAiChat(false)} />
+                  <Chat
+                    onClose={() => setShowAiChat(false)}
+                    projectId={projectId}
+                    roomConnection={roomConnection}
+                  />
                 </ResizablePanel>
               </>
             )}

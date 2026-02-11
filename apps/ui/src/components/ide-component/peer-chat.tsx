@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, KeyboardEvent } from "react";
+import { useRef, useState, KeyboardEvent, useEffect } from "react";
 import { MessageSquare, Send } from "lucide-react";
 
 import {
@@ -14,30 +14,26 @@ import { Response } from "../ai-elements/response";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 
-type PeerMessage = {
-  id: string;
-  role: "user" | "assistant";
-  text: string;
-};
+interface PeerChatProps {
+  projectId?: string;
+  roomConnection: any;
+}
 
-const PeerChat = () => {
+const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
   const [chatPrompt, setChatPrompt] = useState("");
-  const [messages, setMessages] = useState<PeerMessage[]>([]);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { sendMessage, peerMessages } = roomConnection;
 
   const handlePromptSubmit = () => {
     if (!chatPrompt.trim()) {
       return;
     }
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-        role: "user",
-        text: chatPrompt.trim(),
-      },
-    ]);
+    const messageText = chatPrompt.trim();
+
+    // Send message via websocket
+    sendMessage(messageText);
     setChatPrompt("");
   };
 
@@ -52,14 +48,14 @@ const PeerChat = () => {
     <div className="flex flex-col relative h-full">
       <Conversation className="w-full pb-26 mask-b-from-80%">
         <ConversationContent className="p-2">
-          {messages.length === 0 ? (
+          {peerMessages.length === 0 ? (
             <ConversationEmptyState
               icon={<MessageSquare className="size-12" />}
               title="No peer messages"
               description="Invite a peer to start chatting."
             />
           ) : (
-            messages.map((message) => (
+            peerMessages.map((message: any) => (
               <Message from={message.role} key={message.id}>
                 <MessageContent>
                   <Response>{message.text}</Response>
