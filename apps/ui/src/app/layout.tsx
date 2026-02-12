@@ -80,7 +80,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black dark`}
       >
-        <ClerkProvider>
+        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
           <ConvexClientProvider>
             <ThemeProvider attribute="class" disableTransitionOnChange>
               <Toaster />

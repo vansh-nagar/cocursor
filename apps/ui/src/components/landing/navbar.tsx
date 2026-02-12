@@ -1,16 +1,36 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { motion, useScroll, useMotionValueEvent } from "motion/react";
 import OrangeButton from "./button/orange-button";
-import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (latest > previous && latest > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50">
-      <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-12 xl:px-14 py-4 md:py-5">
+    <motion.nav
+      variants={{
+        visible: { y: 0 },
+        hidden: { y: "-100%" },
+      }}
+      animate={hidden ? "hidden" : "visible"}
+      transition={{ duration: 0.35, ease: "easeInOut" }}
+      className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-lg"
+    >
+      <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-12 xl:px-14 py-2">
         {/* Logo */}
         <Link href="/" className="flex items-center">
           <svg
@@ -34,30 +54,31 @@ const Navbar = () => {
           </svg>
         </Link>
 
-        <div className="hidden md:flex items-center gap-6 text-sm">
+        <div className="hidden md:flex items-center gap-6 text-sm mix-blend-difference">
           <Link href="/docs" className="hover:text-primary transition-colors">
             Docs
           </Link>
-          <Link href="/features" className="hover:text-primary transition-colors">
+          <Link
+            href="/features"
+            className="hover:text-primary transition-colors"
+          >
             Features
           </Link>
-        <SignedOut>
-          <SignInButton>
-            <OrangeButton className="py-1.5 px-4 cursor-pointer">
-              Login
-            </OrangeButton>
-          </SignInButton>
-        </SignedOut>
+          <SignedOut>
+            <Link href="/sign-in">
+              <OrangeButton className="py-1.5 px-4 cursor-pointer">
+                Login
+              </OrangeButton>
+            </Link>
+          </SignedOut>
 
- <SignedIn>
-  <SignOutButton>
-    <OrangeButton className="py-1.5 px-4 cursor-pointer">
-              Logout
-            </OrangeButton>
-  </SignOutButton>
-
-</SignedIn>
-
+          <SignedIn>
+            <SignOutButton>
+              <OrangeButton className="py-1.5 px-4 cursor-pointer">
+                Logout
+              </OrangeButton>
+            </SignOutButton>
+          </SignedIn>
         </div>
 
         {/* Mobile Hamburger Menu Button */}
@@ -82,7 +103,9 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMenuOpen ? "max-h-64 opacity-100 bg-background/20 backdrop-blur-sm" : "max-h-0 opacity-0"
+          isMenuOpen
+            ? "max-h-64 opacity-100 bg-background/20 backdrop-blur-sm"
+            : "max-h-0 opacity-0"
         }`}
       >
         <div className="px-4 py-4 space-y-4 border-t border-border/40 bg-background/95 backdrop-blur-sm">
@@ -100,14 +123,12 @@ const Navbar = () => {
           >
             Features
           </Link>
-          <SignInButton>
-            <OrangeButton onClick={() => setIsMenuOpen(false)} className="">
-              Login
-            </OrangeButton>
-          </SignInButton>
+          <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
+            <OrangeButton className="">Login</OrangeButton>
+          </Link>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
