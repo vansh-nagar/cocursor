@@ -337,6 +337,7 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                                 key={currentTab.id}
                                 fileContent={currentTab.content}
                                 filePath={currentTab.path}
+                                projectId={projectId}
                                 onChange={handleEditorChange}
                               />
                             </div>

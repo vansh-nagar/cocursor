@@ -31,9 +31,41 @@ export const useExplorer = ({
   // Sync fetched file tree to local state
   useEffect(() => {
     if (project?.fileTree) {
-      setFileStructure(project.fileTree as FileSystemTree);
+      const remoteTree = project.fileTree as unknown as FileSystemTree;
+      setFileStructure(remoteTree);
+
+      const getRemoteContent = (
+        path: string,
+        tree: FileSystemTree,
+      ): string | undefined => {
+        const parts = path.split("/").filter(Boolean);
+        let current: any = tree;
+        for (const part of parts) {
+          if (!current || !current[part]) return undefined;
+          if (current[part].file) return (current[part].file as any).contents;
+          current = current[part].directory;
+        }
+        return undefined;
+      };
+
+      // Sync open tabs with remote data only if they aren't dirty
+      setOpenTabs((prevTabs) => {
+        let changed = false;
+        const updatedTabs = prevTabs.map((tab) => {
+          if (tab.isDirty) return tab;
+
+          const remoteContent = getRemoteContent(tab.path, remoteTree);
+          if (remoteContent !== undefined && remoteContent !== tab.content) {
+            changed = true;
+            return { ...tab, content: remoteContent };
+          }
+          return tab;
+        });
+
+        return changed ? updatedTabs : prevTabs;
+      });
     }
-  }, [project?.fileTree, setFileStructure]);
+  }, [project?.fileTree, setFileStructure, setOpenTabs]);
 
   // Convex mutations
   const updateContentMutation = useMutation(api.node.updateContent);
@@ -47,12 +79,8 @@ export const useExplorer = ({
   );
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
 
-  // Helper to strip root folder prefix for Convex paths
-  // UI uses "vanilla-web-app/package.json", DB stores "package.json"
   const toDbPath = useCallback((uiPath: string): string => {
-    const parts = uiPath.split("/");
-    // Skip the first part (root folder name like "vanilla-web-app")
-    return parts.slice(1).join("/");
+    return `/${uiPath.replace(/^\/+/, "")}`;
   }, []);
 
   const toggleFolder = useCallback((folderName: string) => {
@@ -138,23 +166,24 @@ export const useExplorer = ({
     const saveToast = toast.loading(`Saving ${currentTab.name}...`);
 
     try {
-      // Save to WebContainer (local)
+      // save to wc.
       if (webContainer) {
         const wcPath = `/${currentTab.path}`;
         await webContainer.fs.writeFile(wcPath, contentToSave);
       }
 
-      // Save to Convex (remote) - use toDbPath to strip root folder
+      console.log(`[Save] Saved to WebContainer: /${currentTab.path}`);
+
+      // save to convexx
       if (projectId) {
-        const dbPath = toDbPath(currentTab.path);
         await updateContentMutation({
           projectId: projectId as Id<"Project">,
-          path: dbPath,
+          path: `/${currentTab.path}`,
           content: contentToSave,
         });
       }
 
-      // Update local state
+      // save to local
       setFileContent(currentTab.path, contentToSave);
 
       setOpenTabs((tabs) =>
@@ -328,7 +357,7 @@ export const useExplorer = ({
   const isLoading = projectId ? project === undefined : false;
 
   return {
-    fileStructure,
+    fileStructure: project?.fileTree as unknown as FileSystemTree,
     setFileStructure,
     expandedFolders,
     setExpandedFolders,

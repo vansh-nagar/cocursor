@@ -41,11 +41,11 @@ export const get = query({
 
     const fileTree = nodesToTemplate(nodes);
 
+    console.log(fileTree);
+
     return {
       ...project,
-      fileTree: {
-        "vanilla-web-app": fileTree,
-      },
+      fileTree,
     };
   },
 });
@@ -57,7 +57,6 @@ export const create = mutation({
     initialFiles: v.optional(
       v.array(v.object({ path: v.string(), content: v.string() })),
     ),
-    templateKey: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -88,10 +87,10 @@ export const create = mutation({
         });
       }
     } else {
-      const templateKey = args.templateKey ?? "vanilla-web-app";
-      const template = projectFiles[templateKey as keyof typeof projectFiles];
+      const template = projectFiles;
+      console.log("Seeding new project with template:", template);
       if (template) {
-        const nodes = templateToNodes(template as unknown as Template);
+        const nodes = templateToNodes(template);
 
         for (const node of nodes) {
           await ctx.db.insert("Node", {

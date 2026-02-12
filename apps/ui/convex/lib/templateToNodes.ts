@@ -11,9 +11,7 @@ export type FileTreeNode = {
   file?: { contents: string };
 };
 
-export type Template = {
-  directory: Record<string, FileTreeNode>;
-};
+export type Template = Record<string, FileTreeNode>;
 
 /**
  * Converts a project template JSON into an array of Node inputs
@@ -31,7 +29,7 @@ export function templateToNodes(template: Template): NodeInput[] {
         nodes.push({
           name,
           type: "folder",
-          path: currentPath,
+          path: `/${currentPath}`,
         });
         // Recurse into folder
         walk(value.directory, currentPath);
@@ -42,14 +40,14 @@ export function templateToNodes(template: Template): NodeInput[] {
         nodes.push({
           name,
           type: "file",
-          path: currentPath,
+          path: `/${currentPath}`,
           content: value.file.contents,
         });
       }
     }
   }
 
-  walk(template.directory, "");
+  walk(template, "");
 
   return nodes;
 }
@@ -97,5 +95,5 @@ export function nodesToTemplate(
     }
   }
 
-  return { directory: root };
+  return root;
 }

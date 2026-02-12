@@ -40,6 +40,7 @@ import { Id } from "../../../convex/_generated/dataModel";
 import OrangeButton, {
   BlackButton,
 } from "@/components/landing/button/orange-button";
+import { projectFiles } from "@/data/project-file";
 
 const type = [
   {
@@ -100,7 +101,6 @@ const Page = () => {
     try {
       const project = await createProject({
         name: projectName.trim(),
-        templateKey: "vanilla-web-app",
       });
       setIsDialogOpen(false);
       setProjectName("");

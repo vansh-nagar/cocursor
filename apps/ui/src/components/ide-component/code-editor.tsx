@@ -19,16 +19,19 @@ import {
 } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { useIDEStore } from "@/stores/ideStore";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 interface CodeEditorProps {
   fileContent: string;
   filePath: string;
+  projectId?: string;
   onChange?: (content: string) => void;
 }
 
 function getLanguageExtension(filePath: string) {
   const ext = filePath.split(".").pop()?.toLowerCase();
-  
+
   switch (ext) {
     case "js":
     case "jsx":
@@ -36,7 +39,10 @@ function getLanguageExtension(filePath: string) {
     case "tsx":
     case "mjs":
     case "cjs":
-      return javascript({ jsx: ext?.includes("x"), typescript: ext?.includes("ts") });
+      return javascript({
+        jsx: ext?.includes("x"),
+        typescript: ext?.includes("ts"),
+      });
     case "css":
       return css();
     case "html":
@@ -49,19 +55,73 @@ function getLanguageExtension(filePath: string) {
   }
 }
 
-export default function CodeEditor({ fileContent, filePath, onChange }: CodeEditorProps) {
+export default function CodeEditor({
+  fileContent,
+  filePath,
+  onChange,
+  projectId,
+}: CodeEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   const initialContentRef = useRef(fileContent);
-  
+
+  // Use the direct query for real-time sync if projectId is provided
+  const remoteContent = useQuery(
+    api.node.getContent,
+    projectId
+      ? {
+          projectId: projectId as any,
+          path: filePath.startsWith("/") ? filePath : `/${filePath}`,
+        }
+      : "skip",
+  );
+
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
+  // Sync with remote content if provided and if we're not currently editing (or it's the first load)
+  useEffect(() => {
+    if (remoteContent !== undefined && remoteContent !== null) {
+      // Only update if the content is actually different
+      if (viewRef.current) {
+        const currentContent = viewRef.current.state.doc.toString();
+        // Here we decide whether to overwrite.
+        // For simplicity, we only overwrite if the current content matches what we started with
+        // (basic check to see if user has typed anything since the last sync/load)
+        // If we want to be more sophisticated, we'd need isDirty passed in.
+        if (
+          remoteContent !== currentContent &&
+          initialContentRef.current === currentContent
+        ) {
+          viewRef.current.dispatch({
+            changes: {
+              from: 0,
+              to: currentContent.length,
+              insert: remoteContent,
+            },
+          });
+          initialContentRef.current = remoteContent;
+        }
+      } else {
+        initialContentRef.current = remoteContent;
+      }
+    }
+  }, [remoteContent]);
+
   useEffect(() => {
     initialContentRef.current = fileContent;
-  }, [filePath]);
+
+    if (viewRef.current) {
+      const currentContent = viewRef.current.state.doc.toString();
+      if (fileContent !== currentContent) {
+        viewRef.current.dispatch({
+          changes: { from: 0, to: currentContent.length, insert: fileContent },
+        });
+      }
+    }
+  }, [filePath, fileContent]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -98,7 +158,7 @@ export default function CodeEditor({ fileContent, filePath, onChange }: CodeEdit
           if (!update.docChanged) return;
 
           const content = update.state.doc.toString();
-          
+
           if (onChangeRef.current) {
             onChangeRef.current(content);
           }
@@ -112,7 +172,7 @@ export default function CodeEditor({ fileContent, filePath, onChange }: CodeEdit
     });
 
     viewRef.current = view;
-    
+
     useIDEStore.getState().setEditorView(view);
 
     return () => {
@@ -123,8 +183,8 @@ export default function CodeEditor({ fileContent, filePath, onChange }: CodeEdit
   }, [filePath]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="h-full w-full bg-[#282c34]"
       data-file={filePath}
     />
