@@ -112,6 +112,12 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
         },
       );
     }
+    return () => {
+      if (webContainerRef.current) {
+        webContainerRef.current.dispose();
+        toast("WebContainer disposed");
+      }
+    };
   }, [initializeWebContainer, getProjectData]);
 
   const currentTab = openTabs.find((tab) => tab.id === currentTabId);
@@ -324,7 +330,6 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                                     Run these commands in the terminal:
                                   </p>
                                   <pre className="bg-muted p-4 rounded-lg text-left text-sm">
-                                    cd vanilla-web-app{"\n"}
                                     npm install{"\n"}
                                     npm run dev
                                   </pre>

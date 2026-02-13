@@ -13,8 +13,8 @@ const Page = () => {
       <HeroSection />
       <Iso />
       <Bento />
-      <AiAgent />
       <PeerCoding />
+      <AiAgent />
       <Footer />
     </div>
   );

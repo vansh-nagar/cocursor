@@ -104,7 +104,7 @@ const BentoCodeSpeed = () => {
     >
       <div className="px-4 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8 flex-1">
         <motion.div
-          className="editor relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-4xl border border-white/10 bg-[#0d1117] p-4 sm:p-5 md:p-6"
+          className="editor relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-4xl border backdrop-blur-xl p-4 sm:p-5 md:p-6"
           initial={{ opacity: 0.9, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
