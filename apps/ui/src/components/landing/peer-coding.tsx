@@ -2,7 +2,17 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { MessageSquare, Mic, Video, FileText, FileArchive, FileType, Image as ImageIcon, Check, MicOff } from "lucide-react";
+import {
+  MessageSquare,
+  Mic,
+  Video,
+  FileText,
+  FileArchive,
+  FileType,
+  Image as ImageIcon,
+  Check,
+  MicOff,
+} from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 
 const steps = [
@@ -36,7 +46,6 @@ const steps = [
   },
 ];
 
-
 const springTransition = {
   type: "spring" as const,
   stiffness: 300,
@@ -48,7 +57,6 @@ const smoothTransition = {
   stiffness: 200,
   damping: 25,
 };
-
 
 const MessagingPanel = () => (
   <motion.div
@@ -71,7 +79,11 @@ const MessagingPanel = () => (
         className="flex items-start gap-2"
       >
         <div className="w-8 h-8 rounded-full bg-background border border-border overflow-hidden shrink-0">
-          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=peer1" alt="Peer 1" className="w-full h-full object-cover" />
+          <img
+            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&h=128&facepad=2"
+            alt="Peer 1"
+            className="w-full h-full object-cover"
+          />
         </div>
         <div className="bg-background border border-border rounded-2xl rounded-tl-sm px-4 py-2.5">
           <p className="text-foreground text-sm">Ready to start the session?</p>
@@ -87,10 +99,16 @@ const MessagingPanel = () => (
       >
         <div className="bg-background border border-border rounded-2xl rounded-tr-sm px-4 py-2.5">
           <p className="text-foreground text-sm">Yes, let's do it!</p>
-          <span className="text-muted-foreground text-xs text-right block">2:34 PM</span>
+          <span className="text-muted-foreground text-xs text-right block">
+            2:34 PM
+          </span>
         </div>
         <div className="w-8 h-8 rounded-full bg-background border border-border overflow-hidden shrink-0">
-          <img src="/image/pfp.png" alt="You" className="w-full h-full object-cover" />
+          <img
+            src="/image/pfp.png"
+            alt="You"
+            className="w-full h-full object-cover"
+          />
         </div>
       </motion.div>
 
@@ -110,7 +128,6 @@ const MessagingPanel = () => (
   </motion.div>
 );
 
-
 const VoicePanel = () => {
   return (
     <motion.div
@@ -126,11 +143,12 @@ const VoicePanel = () => {
         transition={{ delay: 0.1, ...smoothTransition }}
         className="relative"
       >
-
         {/* Audio waveform */}
         <div className="flex items-center justify-center gap-1 h-20 mb-4">
           {[...Array(16)].map((_, i) => {
-            const height = [12, 24, 18, 32, 28, 40, 36, 48, 44, 38, 30, 26, 20, 16, 12, 10];
+            const height = [
+              12, 24, 18, 32, 28, 40, 36, 48, 44, 38, 30, 26, 20, 16, 12, 10,
+            ];
             return (
               <motion.div
                 key={i}
@@ -141,7 +159,7 @@ const VoicePanel = () => {
                     height[i] * 0.6,
                     height[i] * 1.2,
                     height[i] * 0.8,
-                    height[i]
+                    height[i],
                   ],
                 }}
                 transition={{
@@ -174,7 +192,6 @@ const VoicePanel = () => {
   );
 };
 
-
 const VideoPanel = () => {
   return (
     <motion.div
@@ -193,10 +210,14 @@ const VideoPanel = () => {
         >
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-16 h-16 rounded-full bg-background border border-border overflow-hidden">
-              <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=peer1" alt="Peer 1" className="w-full h-full object-cover" />
+              <img
+                src="/image/pfp.png"
+                alt="Peer 1"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
-          
+
           <motion.div
             className="absolute top-3 left-3 flex items-center gap-1.5 bg-background border border-border px-2 py-1 rounded-full"
             initial={{ opacity: 0 }}
@@ -210,7 +231,6 @@ const VideoPanel = () => {
             />
             <span className="text-foreground text-xs font-medium">Live</span>
           </motion.div>
-
         </motion.div>
 
         {/* Peer thumbnails */}
@@ -224,9 +244,19 @@ const VideoPanel = () => {
               className="aspect-video bg-background rounded-lg border border-border flex items-center justify-center relative overflow-hidden"
             >
               <div className="w-6 h-6 rounded-full bg-background border border-border overflow-hidden">
-                <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=peer${i + 2}`} alt={`Peer ${i + 2}`} className="w-full h-full object-cover" />
+                <img
+                  src={
+                    i === 0
+                      ? "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=128&h=128&facepad=2"
+                      : i === 1
+                        ? "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&h=128&facepad=2"
+                        : "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=facearea&w=128&h=128&facepad=2"
+                  }
+                  alt={`Peer ${i + 2}`}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              
+
               {i === 2 && (
                 <div className="absolute bottom-1.5 right-1.5 p-1  bg-background border border-border rounded-full flex items-center justify-center">
                   <MicOff size={10} className="text-destructive" />
@@ -240,12 +270,26 @@ const VideoPanel = () => {
   );
 };
 
-
 const FilesPanel = () => {
   const files = [
-    { name: "project-files.zip", size: "2.4 MB", progress: 100, icon: <FileArchive className="w-5 h-5" /> },
-    { name: "presentation.pdf", size: "1.8 MB", progress: 68, icon: <FileType className="w-5 h-5" /> },
-    { name: "screenshot.png", size: "856 KB", progress: 35, icon: <ImageIcon className="w-5 h-5" /> },
+    {
+      name: "project-files.zip",
+      size: "2.4 MB",
+      progress: 100,
+      icon: <FileArchive className="w-5 h-5" />,
+    },
+    {
+      name: "presentation.pdf",
+      size: "1.8 MB",
+      progress: 68,
+      icon: <FileType className="w-5 h-5" />,
+    },
+    {
+      name: "screenshot.png",
+      size: "856 KB",
+      progress: 35,
+      icon: <ImageIcon className="w-5 h-5" />,
+    },
   ];
 
   return (
@@ -270,7 +314,9 @@ const FilesPanel = () => {
                 {file.icon}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-foreground text-sm font-medium truncate">{file.name}</p>
+                <p className="text-foreground text-sm font-medium truncate">
+                  {file.name}
+                </p>
                 <p className="text-muted-foreground text-xs">{file.size}</p>
               </div>
               {file.progress === 100 ? (
@@ -278,37 +324,24 @@ const FilesPanel = () => {
                   <Check className="w-3.5 h-3.5 text-foreground" />
                 </div>
               ) : (
-                <span className="text-foreground text-xs font-medium shrink-0">{file.progress}%</span>
+                <span className="text-foreground text-xs font-medium shrink-0">
+                  {file.progress}%
+                </span>
               )}
             </div>
-            
+
             {/* Progress bar */}
             <div className="relative w-full h-1.5 bg-muted rounded-full overflow-hidden">
               <motion.div
                 className="absolute inset-y-0 left-0 rounded-full bg-foreground"
                 initial={{ width: 0 }}
                 animate={{ width: `${file.progress}%` }}
-                transition={{ 
-                  delay: 0.3 + i * 0.2, 
+                transition={{
+                  delay: 0.3 + i * 0.2,
                   duration: 1.2,
-                  ease: "easeOut"
+                  ease: "easeOut",
                 }}
               />
-              
-              {/* Shimmer effect for active transfers */}
-              {file.progress < 100 && (
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-foreground/20 to-transparent"
-                  animate={{
-                    x: ['-100%', '200%']
-                  }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
-                />
-              )}
             </div>
           </motion.div>
         ))}
@@ -318,20 +351,14 @@ const FilesPanel = () => {
 };
 
 const AnimationPreview = ({ activeStep }: { activeStep: number }) => {
-  const panels = [
-    MessagingPanel,
-    VoicePanel,
-    VideoPanel,
-    FilesPanel,
-  ];
+  const panels = [MessagingPanel, VoicePanel, VideoPanel, FilesPanel];
   const ActivePanel = panels[activeStep];
 
   return (
     <div className="relative w-full h-[500px] rounded-3xl overflow-hidden">
-    
-        <AnimatePresence mode="wait">
-          <ActivePanel key={activeStep} />
-        </AnimatePresence>
+      <AnimatePresence mode="wait">
+        <ActivePanel key={activeStep} />
+      </AnimatePresence>
     </div>
   );
 };
@@ -340,7 +367,6 @@ const PeerCoding = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
 
   useEffect(() => {
     if (!isHovering) {
@@ -355,23 +381,17 @@ const PeerCoding = () => {
 
   return (
     <div className="relative flex justify-center py-24 overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-transparent pointer-events-none" />
-
       <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-7xl relative z-10">
         <div
           className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          {/* Left side - Steps (40%) */}
           <div className="lg:col-span-2 relative">
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight mb-5">
               Real-Time Peer
-              <span className="bg-[#FA6000] bg-clip-text text-transparent">
-                {" "}
-                Connections
-              </span>
+              <br />
+              Connections
             </h2>
 
             <div className="space-y-2">
