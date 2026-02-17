@@ -102,7 +102,7 @@ const BentoCodeSpeed = () => {
       ref={rootRef}
       className="rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border relative overflow-hidden flex flex-col justify-between min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
     >
-      <div className="px-4 pt-4 sm:px-6 sm:pt-6 md:px-8 md:pt-8 flex-1">
+      <div className="p-4 pb-0 sm:p-6 sm:pb-0 md:p-8 md:pb-0 flex-1">
         <motion.div
           className="editor relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-4xl border backdrop-blur-xl p-4 sm:p-5 md:p-6"
           initial={{ opacity: 0.9, scale: 0.98 }}
@@ -206,7 +206,7 @@ const BentoCodeSpeed = () => {
       </div>
 
       <BentoTextSection
-        className="px-4 pb-4 sm:px-6 sm:pb-6 md:px-8 md:pb-8"
+        className="p-4 pt-0 sm:p-6 sm:pt-0 md:p-8 md:pt-0"
         title="Write code at the speed of thought"
         description="Inline AI suggestions appear as you type. Accept full lines, functions, or patterns instantly no breaking your flow."
       />

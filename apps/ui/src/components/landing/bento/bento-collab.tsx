@@ -110,7 +110,7 @@ const BentoFollowerB = () => {
 
 const BentoCollab = () => {
   return (
-    <div className="border flex flex-col justify-between rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] relative pl-4 pt-4 sm:pl-6 sm:pt-6 md:pl-8 md:pt-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0">
+    <div className="border flex flex-col justify-between rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] relative p-4 sm:p-6 md:p-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0">
       <div className="pointer-events-none absolute inset-0 z-20">
         <div className="absolute top-32 left-6">
           <BentoFollowerA />
@@ -124,7 +124,7 @@ const BentoCollab = () => {
       </div>
 
       <BentoTextSection
-        className="pr-4 sm:pr-6 md:pr-8 pb-4 sm:pb-6 md:pb-8"
+        className=""
         title="Code Together, In Real Time"
         description="See live cursors, edits, and changes from your team instantly — like multiplayer for coding."
       />

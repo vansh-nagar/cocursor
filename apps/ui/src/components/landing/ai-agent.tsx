@@ -200,15 +200,15 @@ const AiAgent = () => {
   };
 
   return (
-    <div className="relative flex justify-center py-24 overflow-hidden">
-      <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[85vw] relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+    <div className="relative flex justify-center py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
+      <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw] relative z-10 px-4 sm:px-6 md:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           <div
-            className="relative flex items-center justify-center min-h-[500px]"
+            className="relative flex items-center justify-center min-h-[320px] sm:min-h-[400px] md:min-h-[500px]"
             onClick={handleContainerClick}
           >
             <div
-              className="relative w-[500px] h-[500px] flex items-center justify-center"
+              className="relative w-[90vw] max-w-[320px] sm:max-w-[400px] md:max-w-[500px] h-[90vw] max-h-[320px] sm:max-h-[400px] md:max-h-[500px] flex items-center justify-center"
               ref={containerRef}
             >
               <motion.div
@@ -289,7 +289,7 @@ const AiAgent = () => {
                 {activeNode && (
                   <motion.div
                     layout
-                    className="absolute z-40 right-[-320px] top-1/2 -translate-y-1/2 w-80 backdrop-blur-md border p-4 rounded-2xl"
+                    className="absolute z-40 left-1/2 top-full lg:right-[-320px] lg:left-auto lg:top-1/2 lg:-translate-y-1/2 w-[90vw] max-w-xs sm:max-w-sm md:max-w-md lg:w-80 backdrop-blur-md border p-4 rounded-2xl"
                     initial={{ opacity: 0, x: -40, scale: 0.9 }}
                     animate={{ opacity: 1, x: 0, scale: 1 }}
                     exit={{ opacity: 0, x: -20, scale: 0.95 }}
@@ -394,11 +394,11 @@ const AiAgent = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-center lg:pl-8">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-medium mb-5">
+          <div className="flex flex-col justify-center mt-10 lg:mt-0 lg:pl-8 px-2 sm:px-0">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium mb-4 sm:mb-5">
               Supercharged Intelligence
             </h2>
-            <p className="text-muted-foreground max-w-md">
+            <p className="text-muted-foreground max-w-md text-base sm:text-lg">
               Our AI agent autonomously navigates your codebase to understand,
               plan, and execute complex tasks with precision.
             </p>

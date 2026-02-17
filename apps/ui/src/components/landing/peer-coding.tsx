@@ -118,10 +118,8 @@ const MessagingPanel = () => (
         transition={{ delay: 0.7 }}
         className="flex items-center gap-2 pl-10"
       >
-        <div className="bg-background border border-border rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
-          <Skeleton className="w-1.5 h-1.5 rounded-full" />
-          <Skeleton className="w-1.5 h-1.5 rounded-full" />
-          <Skeleton className="w-1.5 h-1.5 rounded-full" />
+        <div className=" relative bg-background border border-border rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
+          <Skeleton className=" absolute inset-0" />
         </div>
       </motion.div>
     </motion.div>
@@ -380,15 +378,15 @@ const PeerCoding = () => {
   }, [isHovering]);
 
   return (
-    <div className="relative flex justify-center py-24 overflow-hidden">
-      <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-7xl relative z-10">
+    <div className="relative flex justify-center py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
+      <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw] relative z-10">
         <div
-          className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start"
+          className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 items-start"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
           <div className="lg:col-span-2 relative">
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight mb-5">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-5">
               Real-Time Peer
               <br />
               Connections

@@ -28,13 +28,12 @@ const Navbar = () => {
       }}
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-50 bg-background/60 backdrop-blur-lg"
+      className="fixed w-[100vw] top-0 left-0 right-0 z-50 "
     >
-      <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-12 xl:px-14 py-2">
-        {/* Logo */}
+      <div className="flex justify-between items-center px-4 sm:px-6 md:px-8 lg:px-12 py-2 bg-background/10 backdrop-blur-lg">
         <Link href="/" className="flex items-center">
           <svg
-            className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16"
+            className="w-10 h-10 sm:w-12 sm:h-12"
             viewBox="0 0 87 91"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -104,11 +103,11 @@ const Navbar = () => {
       <div
         className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           isMenuOpen
-            ? "max-h-64 opacity-100 bg-background/20 backdrop-blur-sm"
+            ? "max-h-64 opacity-100 bg-background/10 backdrop-blur-lg"
             : "max-h-0 opacity-0"
         }`}
       >
-        <div className="px-4 py-4 space-y-4 border-t border-border/40 bg-background/95 backdrop-blur-sm">
+        <div className="px-4 py-4">
           <Link
             href="/docs"
             className="block py-2 hover:text-primary transition-colors text-base"
@@ -123,8 +122,12 @@ const Navbar = () => {
           >
             Features
           </Link>
-          <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
-            <OrangeButton className="">Login</OrangeButton>
+          <Link
+            href="/sign-in"
+            className="block py-2 hover:text-primary transition-colors text-base"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Login
           </Link>
         </div>
       </div>

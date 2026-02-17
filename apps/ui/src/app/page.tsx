@@ -11,8 +11,8 @@ const Page = () => {
     <div>
       <Navbar />
       <HeroSection />
-      <Iso />
       <Bento />
+      <Iso />
       <PeerCoding />
       <AiAgent />
       <Footer />
