@@ -6,11 +6,11 @@ import Follower2 from "./cursor-followers/follower2";
 
 const HeroSection = () => {
   return (
-    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 lg:py-24 max-sm:mt-10">
-      <div className="follower1 absolute left-1/6 bottom-1/3 sm:top-1/4 z-50 pointer-events-none">
+    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-40 sm:py-40 md:py-44 lg:py-48 max-sm:mt-10">
+      <div className="follower1 absolute left-1/6 bottom-1/3 sm:top-1/4 z-40 pointer-events-none">
         <Follower1 />
       </div>
-      <div className="follower2 absolute bottom-1/4 sm:top-1/3 right-1/8 z-50 pointer-events-none">
+      <div className="follower2 absolute bottom-1/4 sm:top-1/3 right-1/8 z-40 pointer-events-none">
         <Follower2 />
       </div>
 

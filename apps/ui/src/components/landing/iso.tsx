@@ -16,7 +16,7 @@ const Iso = () => {
           <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium leading-tight text-left">
             WebContainers boot instantly inside your browser
           </div>
-          <div className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl max-w-xl text-left">
+          <div className="mt-4 sm:mt-6 text-base sm:text-lg md:text-xl text-muted-foreground max-w-xl text-left">
             Using WebContainers technology, your project runs in an isolated
             Linux-like runtime enabling real-time compilation, dependency
             installation, and instant live preview.

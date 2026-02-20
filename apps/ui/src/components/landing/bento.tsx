@@ -14,7 +14,9 @@ const Bento = () => {
           <BentoChat />
         </div>
 
-        <BentoCollab />
+        <div className="hidden lg:flex">
+          <BentoCollab />
+        </div>
       </div>
     </div>
   );

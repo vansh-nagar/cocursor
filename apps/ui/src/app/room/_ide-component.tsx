@@ -32,6 +32,7 @@ import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { FileSystemTree } from "@webcontainer/api";
 import { useWsRtcConnection } from "@/hooks/rtc-ws";
+import type { ImperativePanelHandle } from "react-resizable-panels";
 
 interface IDEComponentProps {
   projectId?: string;
@@ -131,6 +132,42 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     [currentTabId, handleFileContentChange],
   );
 
+  // Refs for imperative panel control
+  const explorerPanelRef = useRef<ImperativePanelHandle>(null);
+  const terminalPanelRef = useRef<ImperativePanelHandle>(null);
+  const aiChatPanelRef = useRef<ImperativePanelHandle>(null);
+
+  // Sync panel collapse/expand with state
+  useEffect(() => {
+    const panel = explorerPanelRef.current;
+    if (!panel) return;
+    if (showExplorer) {
+      if (panel.isCollapsed()) panel.expand();
+    } else {
+      if (!panel.isCollapsed()) panel.collapse();
+    }
+  }, [showExplorer]);
+
+  useEffect(() => {
+    const panel = terminalPanelRef.current;
+    if (!panel) return;
+    if (showTerminal) {
+      if (panel.isCollapsed()) panel.expand();
+    } else {
+      if (!panel.isCollapsed()) panel.collapse();
+    }
+  }, [showTerminal]);
+
+  useEffect(() => {
+    const panel = aiChatPanelRef.current;
+    if (!panel) return;
+    if (showAiChat) {
+      if (panel.isCollapsed()) panel.expand();
+    } else {
+      if (!panel.isCollapsed()) panel.collapse();
+    }
+  }, [showAiChat]);
+
   if (isLoading) {
     return (
       <div className="h-screen overflow-hidden w-full flex items-center justify-center bg-background">
@@ -192,52 +229,62 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
               setShowAiChat={setShowAiChat}
             />
 
-            {showExplorer && (
-              <>
-                <ResizablePanel defaultSize={20} minSize={15} maxSize={40}>
-                  <div className="h-full bg-muted/30 flex flex-col">
-                    <div className="px-4 py-3 font-semibold text-sm border-b flex items-center justify-between">
-                      <span>Explorer</span>
-                      <div className="flex gap-1">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>New File</TooltipContent>
-                        </Tooltip>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                            >
-                              <RefreshCw className="h-3 w-3" />
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>Refresh</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    </div>
-
-                    <FolderPreview
-                      fileStructure={fileStructure}
-                      expandedFolders={expandedFolders}
-                      selectedFile={selectedFile}
-                      onToggleFolder={toggleFolder}
-                      onFileClick={handleFileClick}
-                    />
+            {/* Explorer Panel - always mounted, collapsed when hidden */}
+            <ResizablePanel
+              ref={explorerPanelRef}
+              defaultSize={showExplorer ? 20 : 0}
+              minSize={15}
+              maxSize={40}
+              collapsible={true}
+              collapsedSize={0}
+              onCollapse={() => {
+                if (showExplorer) setShowExplorer(false);
+              }}
+              onExpand={() => {
+                if (!showExplorer) setShowExplorer(true);
+              }}
+            >
+              <div className="h-full bg-muted/30 flex flex-col">
+                <div className="px-4 py-3 font-semibold text-sm border-b flex items-center justify-between">
+                  <span>Explorer</span>
+                  <div className="flex gap-1">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>New File</TooltipContent>
+                    </Tooltip>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                        >
+                          <RefreshCw className="h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Refresh</TooltipContent>
+                    </Tooltip>
                   </div>
-                </ResizablePanel>
-                <ResizableHandle />
-              </>
-            )}
+                </div>
+
+                <FolderPreview
+                  fileStructure={fileStructure}
+                  expandedFolders={expandedFolders}
+                  selectedFile={selectedFile}
+                  onToggleFolder={toggleFolder}
+                  onFileClick={handleFileClick}
+                />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle className={showExplorer ? "" : "!w-0 !p-0 !border-0"} />
 
             <ResizablePanel
               className="h-full"
@@ -403,30 +450,49 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                     </div>
                   </ResizablePanel>
 
-                  {showTerminal && (
-                    <>
-                      <ResizableHandle />
-                      <ResizablePanel defaultSize={30} minSize={10}>
-                        <TerminalComponent />
-                      </ResizablePanel>
-                    </>
-                  )}
+                  {/* Terminal Panel - always mounted, collapsed when hidden */}
+                  <ResizableHandle className={showTerminal ? "" : "!h-0 !p-0 !border-0"} />
+                  <ResizablePanel
+                    ref={terminalPanelRef}
+                    defaultSize={showTerminal ? 30 : 0}
+                    minSize={10}
+                    collapsible={true}
+                    collapsedSize={0}
+                    onCollapse={() => {
+                      if (showTerminal) setShowTerminal(false);
+                    }}
+                    onExpand={() => {
+                      if (!showTerminal) setShowTerminal(true);
+                    }}
+                  >
+                    <TerminalComponent />
+                  </ResizablePanel>
                 </ResizablePanelGroup>
               </div>
             </ResizablePanel>
 
-            {showAiChat && (
-              <>
-                <ResizableHandle />
-                <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
-                  <Chat
-                    onClose={() => setShowAiChat(false)}
-                    projectId={projectId}
-                    roomConnection={roomConnection}
-                  />
-                </ResizablePanel>
-              </>
-            )}
+            {/* AI Chat Panel - always mounted, collapsed when hidden */}
+            <ResizableHandle className={showAiChat ? "" : "!w-0 !p-0 !border-0"} />
+            <ResizablePanel
+              ref={aiChatPanelRef}
+              defaultSize={showAiChat ? 25 : 0}
+              minSize={15}
+              maxSize={40}
+              collapsible={true}
+              collapsedSize={0}
+              onCollapse={() => {
+                if (showAiChat) setShowAiChat(false);
+              }}
+              onExpand={() => {
+                if (!showAiChat) setShowAiChat(true);
+              }}
+            >
+              <Chat
+                onClose={() => setShowAiChat(false)}
+                projectId={projectId}
+                roomConnection={roomConnection}
+              />
+            </ResizablePanel>
           </ResizablePanelGroup>
         </div>
       </div>
