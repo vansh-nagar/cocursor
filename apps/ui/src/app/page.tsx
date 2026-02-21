@@ -7,17 +7,27 @@ import PeerCoding from "@/components/landing/peer-coding";
 import Pricing from "@/components/landing/pricing";
 import FAQs from "@/components/landing/faq";
 
+import SectionSeparator from "@/components/landing/separator";
+import TOC from "@/components/landing/toc";
+
 const Page = () => {
   return (
-    <div>
+    <div className="relative">
       <Navbar />
-      <HeroSection />
-      <Bento />
-      <Iso />
-      <PeerCoding />
-      <Pricing />
+      <TOC />
+      <div id="hero"><HeroSection /></div>
+      <SectionSeparator />
+      <div id="features"><Bento /></div>
+      <SectionSeparator />
+      <div id="workspace"><Iso /></div>
+      <SectionSeparator />
+      <div id="collab"><PeerCoding /></div>
+      <SectionSeparator />
+      <div id="pricing"><Pricing /></div>
+      <SectionSeparator />
       {/* <AiAgent /> */}
-      <FAQs />
+      <div id="faq"><FAQs /></div>
+      <SectionSeparator />
       <Footer />
     </div>
   );

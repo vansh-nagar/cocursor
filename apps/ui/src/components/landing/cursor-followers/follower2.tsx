@@ -54,8 +54,10 @@ const Follower2 = () => {
         y: position.y,
       }}
       transition={{
-        duration: 3,
-        ease: "easeInOut",
+        type: "spring",
+        stiffness: 70,
+        damping: 20,
+        mass: 1,
       }}
     >
       <svg

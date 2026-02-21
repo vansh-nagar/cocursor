@@ -23,7 +23,7 @@ const HeroSection = () => {
           <span>Build software</span>
           <div className="w-10 max-sm:hidden h-5 sm:w-14 sm:h-7 md:w-16 md:h-8 lg:w-20 lg:h-10 xl:w-24 xl:h-10 relative">
             <img
-              className="absolute -top-5 sm:-top-7 md:-top-8 lg:-top-9 xl:-top-10 right-0 inset-0 h-[80px] sm:h-[120px] md:h-[140px] lg:h-[170px] xl:h-[200px] scale-x-[2]"
+              className="absolute -top-5 sm:-top-7 md:-top-8 lg:-top-9 right-0 inset-0 h-[80px] sm:h-[120px] md:h-[140px] lg:h-[170px] xl:p-0 xl:-top-10 xl:inset-0 xl:h-[200px] scale-x-[2]"
               src="/logo/zap.png"
               alt=""
             />
@@ -51,11 +51,11 @@ const HeroSection = () => {
         </Link>
       </div>
 
-      <div className="p-1 max-sm:hidden sm:p-2 md:p-2.5 bg-[#FF6200]/20 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-3xl sm:rounded-4xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
+      <div className="p-1 sm:p-2 md:p-2.5 bg-[#FF6200]/20 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-4xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
         <img
-          className="w-full rounded-xl sm:rounded-2xl z-50"
           src="/image/hero.png"
-          alt="Cocursor IDE Preview"
+          className="w-full h-full rounded-3xl z-50 overflow-hidden object-contain"
+          alt="Cocursor Dashboard"
         />
       </div>
       <svg

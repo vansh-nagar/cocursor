@@ -213,7 +213,7 @@ const Navbar = () => {
           backdropFilter: isScrolled ? "blur(12px)" : "blur(0px)",
         }}
         transition={{ duration: 0.3 }}
-        className="relative z-60 flex justify-between bg-[#111111] rounded-2xl border-white/10 items-center mx-4 sm:mx-8 md:mx-12 my-4 py-4 px-6 sm:px-8"
+        className="relative z-60 flex justify-between bg-[#111111] rounded-3xl border-white/10 items-center mx-4 sm:mx-8 md:mx-12 my-4 py-4 px-6 sm:px-8"
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 ">
@@ -281,7 +281,7 @@ const Navbar = () => {
               animate="open"
               exit="closed"
               style={{ transformOrigin: "top right" }}
-              className="absolute top-20 sm:top-24 right-4 md:right-12 z-60 w-[calc(100vw-2rem)] sm:w-[380px] bg-[#111111]  border-white/10 rounded-2xl overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[90vh]"
+              className="absolute top-20 sm:top-24 right-4 md:right-12 z-60 w-[calc(100vw-2rem)] sm:w-[380px] bg-[#111111]  border-white/10 rounded-3xl overflow-hidden flex flex-col max-h-[80vh] sm:max-h-[90vh]"
             >
               {/* Card Header */}
               <div className="flex items-center justify-between px-6 pt-5 pb-3 bg-[#111111] z-10">

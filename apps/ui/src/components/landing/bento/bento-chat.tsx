@@ -52,7 +52,6 @@ const ChatAnimation = () => {
           >
             <WhiteButton 
               className="text-left px-2 py-2 bg-white text-xs sm:text-xs"
-              style={{ borderRadius: "2px" }}
             >
               {userMessage}
             </WhiteButton>
@@ -90,7 +89,6 @@ const ChatAnimation = () => {
           >
             <OrangeButton 
               className="text-left px-2 py-2 text-xs sm:text-xs"
-              style={{ borderRadius: "2px" }}
             >
               {aiMessage}
             </OrangeButton>
@@ -104,7 +102,7 @@ const ChatAnimation = () => {
 const BentoChat = () => {
   return (
     <div
-      className="rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border relative overflow-hidden p-4 sm:p-6 md:p-8 flex flex-col justify-between "
+      className="rounded-3xl border relative overflow-hidden p-4 sm:p-6 md:p-8 flex flex-col justify-between"
     >
       <ChatAnimation />
 

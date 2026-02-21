@@ -100,25 +100,17 @@ const BentoCodeSpeed = () => {
   return (
     <div
       ref={rootRef}
-      className="rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border relative overflow-hidden flex flex-col justify-between min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
+      className="rounded-3xl border relative overflow-hidden flex flex-col justify-between min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
     >
       <div className="p-4 pb-0 sm:p-6 sm:pb-0 md:p-8 md:pb-0 flex-1">
         <motion.div
-          className="editor relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-4xl border backdrop-blur-xl p-4 sm:p-5 md:p-6"
+          className="editor relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-3xl border backdrop-blur-xl p-4 sm:p-5 md:p-6"
           initial={{ opacity: 0.9, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <div className="flex items-center justify-between gap-2 text-xs text-[#8b949e]">
-            <div className="flex gap-2">
-              <span className="h-3 w-3 rounded-full bg-[#ff5f56]" />
-              <span className="h-3 w-3 rounded-full bg-[#ffbd2e]" />
-              <span className="h-3 w-3 rounded-full bg-[#27c93f]" />
-            </div>
-            <span>index.html</span>
-          </div>
 
-          <div className="mt-4 font-mono text-[11px] sm:text-xs leading-5 text-[#c9d1d9]">
+          <div className="font-mono text-[11px] sm:text-xs leading-5 text-[#c9d1d9]">
             <div>
               <span className="text-[#ffa657]">&lt;!doctype html&gt;</span>
             </div>

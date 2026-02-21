@@ -315,7 +315,7 @@ const AnimationPreview = ({ activeStep }: { activeStep: number }) => {
   const ActivePanel = panels[activeStep];
 
   return (
-    <div className="relative w-full h-[500px] rounded-3xl overflow-hidden">
+    <div className="relative w-full h-[500px] rounded-3xl overflow-hidden border border-border">
       <AnimatePresence mode="wait">
         <ActivePanel key={activeStep} />
       </AnimatePresence>

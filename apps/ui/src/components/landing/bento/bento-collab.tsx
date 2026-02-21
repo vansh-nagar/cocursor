@@ -108,19 +108,13 @@ const BentoFollowerB = () => {
   );
 };
 
+import CodedCollab from "./coded-collab";
+
 const BentoCollab = () => {
   return (
-    <div className="border flex flex-col justify-between rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] relative p-4 sm:p-6 md:p-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0">
-      <div className="pointer-events-none absolute inset-0 z-20">
-        <div className="absolute top-32 left-6">
-          <BentoFollowerA />
-        </div>
-        <div className="absolute bottom-32 right-6">
-          <BentoFollowerB />
-        </div>
-      </div>
-      <div>
-        <img src="/image/bento-img2.png" alt="" className="w-full h-auto" />
+    <div className="border flex flex-col justify-between rounded-3xl relative p-4 sm:p-6 md:p-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0">
+      <div className="w-full mt-2 mb-6">
+        <CodedCollab />
       </div>
 
       <BentoTextSection
@@ -128,7 +122,6 @@ const BentoCollab = () => {
         title="Code Together, In Real Time"
         description="See live cursors, edits, and changes from your team instantly — like multiplayer for coding."
       />
-
     </div>
   );
 };
