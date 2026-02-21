@@ -77,6 +77,8 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
     endCall,
     localVideoStream,
     remoteVideoStream,
+    localStream,
+    remoteStream,
     localStreams,
     remoteStreams,
     send,
@@ -92,21 +94,21 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
   const localVideoRef = useCallback(
     (node: HTMLVideoElement | null) => {
       localVideoStream.current = node;
-      if (node && localStreams.current) {
-        node.srcObject = localStreams.current;
+      if (node && localStream) {
+        node.srcObject = localStream;
       }
     },
-    [localStreams.current],
+    [localStream],
   );
 
   const remoteVideoRef = useCallback(
     (node: HTMLVideoElement | null) => {
       remoteVideoStream.current = node;
-      if (node && remoteStreams.current) {
-        node.srcObject = remoteStreams.current;
+      if (node && remoteStream) {
+        node.srcObject = remoteStream;
       }
     },
-    [remoteStreams.current],
+    [remoteStream],
   );
 
   const scrollToBottom = () => {
@@ -182,9 +184,9 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
     totalSize > 0 ? Math.min((uploadedSize / totalSize) * 100, 100) : 0;
 
   const hasRemoteStream =
-    remoteStreams.current && remoteStreams.current.getTracks().length > 0;
+    remoteStream && remoteStream.getTracks().length > 0;
   const hasLocalStream =
-    localStreams.current && localStreams.current.getTracks().length > 0;
+    localStream && localStream.getTracks().length > 0;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -467,19 +469,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
           <div className="px-3 py-3 space-y-1 flex-1">
             {peerMessages.length === 0 ? (
               <div className="flex flex-col items-center justify-center min-h-[200px] text-center gap-3">
-                <Avatar size="lg">
-                  <AvatarFallback className="bg-muted/50">
-                    <Wifi className="size-5 text-muted-foreground" />
-                  </AvatarFallback>
-                </Avatar>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    No messages yet
-                  </p>
-                  <p className="text-xs text-muted-foreground/70">
-                    Send a message to start chatting
-                  </p>
-                </div>
+                
               </div>
             ) : (
               peerMessages.map((msg: any, i: number) => {

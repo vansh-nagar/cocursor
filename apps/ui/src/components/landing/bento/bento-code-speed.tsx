@@ -191,7 +191,6 @@ const BentoCodeSpeed = () => {
           </div>
 
           <div className="tab-hint absolute right-4 bottom-4 z-10 flex items-center gap-2 text-[10px] text-[#9da7b3]">
-            <span className="ping-dot" aria-hidden />
             <span>Tab to accept</span>
             <button
               type="button"
@@ -210,7 +209,6 @@ const BentoCodeSpeed = () => {
         title="Write code at the speed of thought"
         description="Inline AI suggestions appear as you type. Accept full lines, functions, or patterns instantly no breaking your flow."
       />
-      <BentoGlowSvg1 className="absolute bottom-0 -z-10 w-full h-auto" />
       <style jsx>{`
         .editor {
           box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);

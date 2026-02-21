@@ -98,23 +98,8 @@ const ChatAnimation = () => {
 const BentoChat = () => {
   return (
     <div
-      style={{
-        boxShadow: "inset 0px 11px 31.8px 1px rgba(250, 96, 0, 0.25)",
-      }}
       className="rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border relative overflow-hidden p-4 sm:p-6 md:p-8 flex flex-col justify-between "
     >
-      <div
-        className="-z-20"
-        style={{
-          position: "absolute",
-          width: "173px",
-          height: "173px",
-          right: "0",
-          top: "-15px",
-          background: "#E75900",
-          filter: "blur(107.3px)",
-        }}
-      />
       <ChatAnimation />
 
       <BentoTextSection

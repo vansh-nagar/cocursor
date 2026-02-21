@@ -2,13 +2,13 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="flex justify-center items-center mt-8 sm:mt-12 md:mt-16 lg:mt-20 px-4 sm:px-6 md:px-8 lg:px-12 mb-4 sm:mb-8 md:mb-12">
+    <div className="flex justify-center items-center">
       <div
         style={{
           boxShadow:
             "0.444584px 0.444584px 0.628737px -0.75px rgba(0, 0, 0, 0.26), 1.21072px 1.21072px 1.71222px -1.5px rgba(0, 0, 0, 0.247), 2.6583px 2.6583px 3.75941px -2.25px rgba(0, 0, 0, 0.23), 5.90083px 5.90083px 8.34503px -3px rgba(0, 0, 0, 0.192), -0.5px -0.5px 0px rgba(0, 0, 0, 0.686), inset -1px -1px 1px rgba(0, 0, 0, 0.23)",
         }}
-        className="flex flex-col overflow-hidden rounded-3xl sm:rounded-[40px] md:rounded-[48px] lg:rounded-[56px] border w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]"
+        className="flex flex-col overflow-hidden rounded-3xl w-full border m-4"
       >
         <div>
           <div className="relative rounded-4xl p-4 sm:p-6 md:p-8">
@@ -26,7 +26,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-center mt-8 sm:mt-10 md:mt-12 px-2 sm:px-4">
+        <div className="flex justify-center mt-8 sm:mt-10 md:mt-20 px-2 sm:px-4">
           <svg
             className="w-full max-w-full"
             viewBox="0 0 1667 127"

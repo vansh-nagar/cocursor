@@ -74,9 +74,7 @@ const LandingIso = () => {
     );
   }, []);
   return (
-    <div>
-      {" "}
-      <div className=" flex justify-center items-end h-full">
+ 
         <svg
           viewBox="0 0 1312 590"
           fill="none"
@@ -2419,8 +2417,6 @@ const LandingIso = () => {
             </clipPath>
           </defs>
         </svg>
-      </div>
-    </div>
   );
 };
 

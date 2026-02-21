@@ -20,10 +20,12 @@ const TerminalComponent: React.FC = () => {
   const fitAddonRef = useRef<FitAddon | null>(null);
 
   useEffect(() => {
+    if (!terminalRef.current) return;
+
     const term = new Terminal({
       cursorBlink: true,
       fontSize: 13,
-      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+      fontFamily: "var(--font-geist-mono), 'Cascadia Code', 'Consolas', monospace",
       theme: {
         background: "#0a0a0a",
         foreground: "#d4d4d4",
@@ -56,54 +58,69 @@ const TerminalComponent: React.FC = () => {
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
 
-    term.open(terminalRef.current!);
-    fitAddon.fit();
-    term.clear();
-    term.writeln("\x1b[1;38;5;208mCocursor Terminal\x1b[0m");
-    term.writeln("\x1b[90mWelcome to the interactive development shell.\x1b[0m\r\n");
+    const fitTerminal = () => {
+      // Defensive check for terminal, its element, and its dimensions
+      if (!term || !terminalRef.current || !term.element || terminalRef.current.clientWidth === 0) {
+        return;
+      }
+      
+      try {
+        fitAddon.fit();
+      } catch (err) {
+        // Log sparingly as this can happen during rapid layout changes
+        console.debug("Terminal fit latent:", err);
+      }
+    };
 
+    term.open(terminalRef.current);
     termRef.current = term;
     fitAddonRef.current = fitAddon;
 
+    // Initial stabilization fit
+    const initTimer = setTimeout(fitTerminal, 150);
+
+    // Use ResizeObserver instead of window resize — it only fires when 
+    // this element's own dimensions change, and won't fire when collapsed
+    const resizeObserver = new ResizeObserver(() => {
+      requestAnimationFrame(fitTerminal);
+    });
+    resizeObserver.observe(terminalRef.current);
+
+    term.writeln("\x1b[1;38;5;208mCocursor Term\x1b[0m \x1b[90m(v1.0.0)\x1b[0m");
+    term.writeln("\x1b[90mWelcome to the interactive development shell.\x1b[0m\r\n");
+
+    if (isContainerBooted) {
+      term.writeln("\x1b[32m✔\x1b[0m Environment ready.");
+      term.write("\r\n\x1b[38;5;208m$ \x1b[0m");
+    }
+
     let currentLine = "";
+    const disposable = term.onData((data) => {
+      if (data.startsWith("\x1B")) return;
 
-    term.onData((data) => {
-      const char = data;
-      if (char.startsWith("\x1B")) return;
-
-      // Enter key
-      if (char === "\r") {
-        term.writeln(""); // move to new line
+      if (data === "\r") {
+        term.writeln("");
         handleCommand(currentLine);
         currentLine = "";
-      }
-      // Backspace
-      else if (char === "\u007F") {
+      } else if (data === "\u007F") {
         if (currentLine.length > 0) {
           currentLine = currentLine.slice(0, -1);
-          term.write("\b \b"); // erase character visually
+          term.write("\b \b");
         }
-      }
-      // Normal characters
-      else {
-        currentLine += char;
-        term.write(char);
+      } else {
+        currentLine += data;
+        term.write(data);
       }
     });
 
     return () => {
+      clearTimeout(initTimer);
+      resizeObserver.disconnect();
+      disposable.dispose();
       term.dispose();
+      termRef.current = null;
     };
   }, []);
-
-  useEffect(() => {
-    if (isContainerBooted) {
-      termRef.current?.writeln(
-        "\x1b[32m✔\x1b[0m WebContainer booted successfully.",
-      );
-      termRef.current?.write("\r\n\x1b[38;5;208m$ \x1b[0m");
-    }
-  }, [isContainerBooted]);
 
   const handleCommand = async (currentLine: string) => {
     if (!webContainerRef.current) return;
@@ -138,17 +155,6 @@ const TerminalComponent: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-neutral-950 overflow-hidden">
-      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/50 shrink-0">
-        <div className="size-2.5 rounded-full bg-emerald-500/50" />
-        <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">
-          Terminal
-        </span>
-        <div className="ml-auto flex items-center gap-1.5">
-          <div className="text-[10px] font-mono text-neutral-500">
-            {isContainerBooted ? "webcontainer-v1" : "initializing..."}
-          </div>
-        </div>
-      </div>
       <div 
         ref={terminalRef} 
         className="flex-1 w-full bg-[#0a0a0a] p-2 [&>.xterm]:h-full [&>.xterm-viewport]:bg-transparent!"

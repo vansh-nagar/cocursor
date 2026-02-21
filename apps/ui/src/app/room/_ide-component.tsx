@@ -13,14 +13,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Plus, RefreshCw, Loader2 } from "lucide-react";
-import FolderPreview from "@/components/ide-component/FolderPreview";
+import { Plus, RefreshCw, Loader2, FolderPlus } from "lucide-react";
+import FolderPreview, { FolderPreviewRef } from "@/components/ide-component/FolderPreview";
 import NavBar from "@/components/ide-component/NavBar";
 import TerminalComponent from "@/components/ide-component/terminal";
 import CodeEditor from "@/components/ide-component/code-editor";
 import PreviewFrame from "@/components/ide-component/PreviewFrame";
 import { motion, AnimatePresence } from "motion/react";
-import { toast } from "sonner";
 import { useIDEStore } from "@/stores/ideStore";
 import { useTopbar } from "@/hooks/topbar";
 import { useExplorer } from "@/hooks/explorer";
@@ -51,7 +50,6 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     setActiveTab,
     isLoading,
     loadingMessage,
-    isContainerBooted,
     previewDevice,
     setPreviewDevice,
   } = useIDEStore();
@@ -97,6 +95,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     currentTabId,
   });
 
+  const folderPreviewRef = useRef<FolderPreviewRef>(null);
+
   const { initializeWebContainer, webContainerRef } = useWebContainer({
     projectId,
   });
@@ -113,13 +113,20 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
         },
       );
     }
+  }, [initializeWebContainer, getProjectData]);
+
+  // Teardown WebContainer only on unmount
+  useEffect(() => {
     return () => {
       if (webContainerRef.current) {
-        webContainerRef.current.dispose();
-        toast("WebContainer disposed");
+        try {
+          webContainerRef.current.teardown();
+        } catch (e) {
+          console.warn("WebContainer teardown failed:", e);
+        }
       }
     };
-  }, [initializeWebContainer, getProjectData]);
+  }, []);
 
   const currentTab = openTabs.find((tab) => tab.id === currentTabId);
 
@@ -171,42 +178,6 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
   if (isLoading) {
     return (
       <div className="h-screen overflow-hidden w-full flex items-center justify-center bg-background">
-        <svg
-          className=" absolute z-10 inset-0 w-full"
-          viewBox="0 0 1920 1796"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <g filter="url(#filter0_f_3_23)">
-            <path
-              d="M13.3671 760C433.367 1154 1526.03 617.5 2019.87 300L2203.87 1237.5L313.867 1496C-193.5 1081.5 -406.633 366 13.3671 760Z"
-              fill="#FA6000"
-            />
-          </g>
-          <defs>
-            <filter
-              id="filter0_f_3_23"
-              x="-509.978"
-              y="0"
-              width="3013.85"
-              height="1796"
-              filterUnits="userSpaceOnUse"
-              colorInterpolationFilters="sRGB"
-            >
-              <feFlood floodOpacity="0" result="BackgroundImageFix" />
-              <feBlend
-                mode="normal"
-                in="SourceGraphic"
-                in2="BackgroundImageFix"
-                result="shape"
-              />
-              <feGaussianBlur
-                stdDeviation="150"
-                result="effect1_foregroundBlur_3_23"
-              />
-            </filter>
-          </defs>
-        </svg>
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">{loadingMessage}</p>
@@ -247,15 +218,16 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
               <div className="h-full bg-muted/30 flex flex-col">
                 <div className="px-4 py-3 font-semibold text-sm border-b flex items-center justify-between">
                   <span>Explorer</span>
-                  <div className="flex gap-1">
+                  <div className="flex gap-0.5">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
+                          onClick={() => folderPreviewRef.current?.startNewFile()}
                         >
-                          <Plus className="h-3 w-3" />
+                          <Plus className="h-3.5 w-3.5" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>New File</TooltipContent>
@@ -266,25 +238,31 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                           variant="ghost"
                           size="icon"
                           className="h-6 w-6"
+                          onClick={() => folderPreviewRef.current?.startNewFolder()}
                         >
-                          <RefreshCw className="h-3 w-3" />
+                          <FolderPlus className="h-3.5 w-3.5" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>Refresh</TooltipContent>
+                      <TooltipContent>New Folder</TooltipContent>
                     </Tooltip>
                   </div>
                 </div>
 
                 <FolderPreview
+                  ref={folderPreviewRef}
                   fileStructure={fileStructure}
                   expandedFolders={expandedFolders}
                   selectedFile={selectedFile}
                   onToggleFolder={toggleFolder}
                   onFileClick={handleFileClick}
+                  onCreateFile={handleCreateFile}
+                  onCreateFolder={handleCreateFolder}
+                  onDeleteNode={handleDeleteNode}
+                  onRenameNode={handleRenameNode}
                 />
               </div>
             </ResizablePanel>
-            <ResizableHandle className={showExplorer ? "" : "w-0! p-0! border-0!"} />
+            <ResizableHandle />
 
             <ResizablePanel
               className="h-full"
@@ -310,48 +288,9 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                   setPreviewDevice={setPreviewDevice}
                 />
 
-                <ResizablePanelGroup direction="vertical" className="flex-1">
-                  <ResizablePanel defaultSize={showTerminal ? 70 : 100}>
+                <div className="flex flex-col flex-1 overflow-hidden">
+                  <div className="flex-1 overflow-hidden">
                     <div className="h-full overflow-hidden relative">
-                      <svg
-                        className=" absolute -z-50 inset-0 w-full"
-                        viewBox="0 0 1920 1796"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <g filter="url(#filter0_f_3_23)">
-                          <path
-                            d="M13.3671 760C433.367 1154 1526.03 617.5 2019.87 300L2203.87 1237.5L313.867 1496C-193.5 1081.5 -406.633 366 13.3671 760Z"
-                            fill="#FA6000"
-                          />
-                        </g>
-                        <defs>
-                          <filter
-                            id="filter0_f_3_23"
-                            x="-509.978"
-                            y="0"
-                            width="3013.85"
-                            height="1796"
-                            filterUnits="userSpaceOnUse"
-                            colorInterpolationFilters="sRGB"
-                          >
-                            <feFlood
-                              floodOpacity="0"
-                              result="BackgroundImageFix"
-                            />
-                            <feBlend
-                              mode="normal"
-                              in="SourceGraphic"
-                              in2="BackgroundImageFix"
-                              result="shape"
-                            />
-                            <feGaussianBlur
-                              stdDeviation="150"
-                              result="effect1_foregroundBlur_3_23"
-                            />
-                          </filter>
-                        </defs>
-                      </svg>
                       <AnimatePresence mode="wait">
                         <motion.div
                           key={activeTab}
@@ -404,75 +343,24 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                                   editing
                                 </p>
                               </div>
-                              <svg
-                                className=" absolute z-0 inset-0 w-full"
-                                viewBox="0 0 1920 1796"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <g filter="url(#filter0_f_3_23)">
-                                  <path
-                                    d="M13.3671 760C433.367 1154 1526.03 617.5 2019.87 300L2203.87 1237.5L313.867 1496C-193.5 1081.5 -406.633 366 13.3671 760Z"
-                                    fill="#FA6000"
-                                  />
-                                </g>
-                                <defs>
-                                  <filter
-                                    id="filter0_f_3_23"
-                                    x="-509.978"
-                                    y="0"
-                                    width="3013.85"
-                                    height="1796"
-                                    filterUnits="userSpaceOnUse"
-                                    colorInterpolationFilters="sRGB"
-                                  >
-                                    <feFlood
-                                      floodOpacity="0"
-                                      result="BackgroundImageFix"
-                                    />
-                                    <feBlend
-                                      mode="normal"
-                                      in="SourceGraphic"
-                                      in2="BackgroundImageFix"
-                                      result="shape"
-                                    />
-                                    <feGaussianBlur
-                                      stdDeviation="150"
-                                      result="effect1_foregroundBlur_3_23"
-                                    />
-                                  </filter>
-                                </defs>
-                              </svg>
                             </div>
                           )}
                         </motion.div>
                       </AnimatePresence>
                     </div>
-                  </ResizablePanel>
+                  </div>
 
-
-                  <ResizableHandle className={showTerminal ? "" : "h-0! p-0! border-0!"} />
-                  <ResizablePanel
-                    ref={terminalPanelRef}
-                    defaultSize={showTerminal ? 30 : 0}
-                    minSize={10}
-                    collapsible={true}
-                    collapsedSize={0}
-                    onCollapse={() => {
-                      if (showTerminal) setShowTerminal(false);
-                    }}
-                    onExpand={() => {
-                      if (!showTerminal) setShowTerminal(true);
-                    }}
-                  >
-                    <TerminalComponent />
-                  </ResizablePanel>
-                </ResizablePanelGroup>
+                  {showTerminal && (
+                    <div className="h-[220px] border-t border-border shrink-0">
+                      <TerminalComponent />
+                    </div>
+                  )}
+                </div>
               </div>
             </ResizablePanel>
 
 
-            <ResizableHandle className={showAiChat ? "" : "w-0! p-0! border-0!"} />
+            <ResizableHandle />
             <ResizablePanel
               ref={aiChatPanelRef}
               defaultSize={showAiChat ? 25 : 0}

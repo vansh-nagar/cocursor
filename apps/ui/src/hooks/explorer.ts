@@ -261,8 +261,18 @@ export const useExplorer = ({
           content,
         });
 
+        // Also write to WebContainer
+        const wc = useIDEStore.getState().webContainerRef.current;
+        if (wc) {
+          try {
+            await wc.fs.writeFile(dbPath, content);
+          } catch {
+            // File might need parent dirs created first
+          }
+        }
+
         // Update local file structure
-        setFileContent(path, content);
+        setFileContent(path.replace(/^\/+/, ""), content);
 
         toast.success(`Created ${path.split("/").pop()}`);
       } catch (error) {
@@ -285,6 +295,16 @@ export const useExplorer = ({
           path: dbPath,
         });
 
+        // Also create in WebContainer
+        const wc = useIDEStore.getState().webContainerRef.current;
+        if (wc) {
+          try {
+            await wc.fs.mkdir(dbPath, { recursive: true });
+          } catch {
+            // Might already exist
+          }
+        }
+
         toast.success(`Created folder ${path.split("/").pop()}`);
       } catch (error) {
         console.error("[CreateFolder] Error:", error);
@@ -306,8 +326,19 @@ export const useExplorer = ({
           path: dbPath,
         });
 
-        // Close any open tabs for deleted files
-        setOpenTabs((tabs) => tabs.filter((tab) => !tab.path.startsWith(path)));
+        // Also remove from WebContainer
+        const wc = useIDEStore.getState().webContainerRef.current;
+        if (wc) {
+          try {
+            await wc.fs.rm(dbPath, { recursive: true });
+          } catch {
+            // Already removed or doesn't exist
+          }
+        }
+
+        // Close any open tabs for deleted files (strip leading slash for tab path matching)
+        const tabPath = path.replace(/^\/+/, "");
+        setOpenTabs((tabs) => tabs.filter((tab) => !tab.path.startsWith(tabPath)));
 
         toast.success(`Deleted ${path.split("/").pop()}`);
       } catch (error) {

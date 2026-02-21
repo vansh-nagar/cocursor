@@ -65,6 +65,7 @@ export default function CodeEditor({
   const viewRef = useRef<EditorView | null>(null);
   const onChangeRef = useRef(onChange);
   const initialContentRef = useRef(fileContent);
+  const suppressOnChangeRef = useRef(false);
 
   // Use the direct query for real-time sync if projectId is provided
   const remoteContent = useQuery(
@@ -95,6 +96,7 @@ export default function CodeEditor({
           remoteContent !== currentContent &&
           initialContentRef.current === currentContent
         ) {
+          suppressOnChangeRef.current = true;
           viewRef.current.dispatch({
             changes: {
               from: 0,
@@ -102,6 +104,7 @@ export default function CodeEditor({
               insert: remoteContent,
             },
           });
+          suppressOnChangeRef.current = false;
           initialContentRef.current = remoteContent;
         }
       } else {
@@ -116,9 +119,11 @@ export default function CodeEditor({
     if (viewRef.current) {
       const currentContent = viewRef.current.state.doc.toString();
       if (fileContent !== currentContent) {
+        suppressOnChangeRef.current = true;
         viewRef.current.dispatch({
           changes: { from: 0, to: currentContent.length, insert: fileContent },
         });
+        suppressOnChangeRef.current = false;
       }
     }
   }, [filePath, fileContent]);
@@ -156,6 +161,7 @@ export default function CodeEditor({
         }),
         EditorView.updateListener.of((update) => {
           if (!update.docChanged) return;
+          if (suppressOnChangeRef.current) return;
 
           const content = update.state.doc.toString();
 

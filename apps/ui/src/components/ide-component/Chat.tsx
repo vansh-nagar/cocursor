@@ -43,9 +43,6 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
           >
             <Users className="size-3.5" />
             Peer Chat
-            {totalUserCount > 1 && (
-              <span className="flex size-1.5 ml-0.5 rounded-full bg-emerald-500" />
-            )}
           </Button>
         </div>
 

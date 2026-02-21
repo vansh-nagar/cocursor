@@ -70,21 +70,29 @@ const NavBar: React.FC<NavBarProps> = ({
           : openTabs.map((tab) => (
               <div
                 key={tab.id}
-                className={`flex items-center gap-2 px-3 h-full text-sm cursor-pointer transition-colors ${
+                className={`group relative flex items-center gap-1.5 px-3 h-full text-sm cursor-pointer transition-all border-t-2 ${
                   currentTabId === tab.id
-                    ? "bg-background border-primary"
-                    : "bg-transparent border-transparent hover:bg-accent"
+                    ? "bg-background text-foreground border-t-primary"
+                    : "bg-transparent text-muted-foreground border-t-transparent hover:bg-accent/50 hover:text-foreground"
                 }`}
                 onClick={() => setCurrentTabId(tab.id)}
               >
-                <File size={16} />
-                <span className="truncate max-w-[150px]">
+                <File
+                  size={14}
+                  className={`shrink-0 transition-colors ${
+                    currentTabId === tab.id
+                      ? "text-foreground"
+                      : "text-muted-foreground"
+                  }`}
+                />
+                <span className={`truncate max-w-[150px] transition-colors ${
+                  tab.isDirty ? "text-amber-400" : ""
+                }`}>
                   {tab.name}
-                  {tab.isDirty && " •"}
                 </span>
                 <X
-                  size={16}
-                  className="hover:text-accent-foreground"
+                  size={14}
+                  className="shrink-0 text-muted-foreground hover:text-foreground transition-colors"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleCloseTab(tab.id);
@@ -168,9 +176,6 @@ const NavBar: React.FC<NavBarProps> = ({
             <p>Export</p>
           </TooltipContent>
         </Tooltip>
-
-
-
       </div>
     </div>
   );

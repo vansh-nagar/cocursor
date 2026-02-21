@@ -33,8 +33,23 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
 
   const localVideoStream = useRef<HTMLVideoElement | null>(null);
   const remoteVideoStream = useRef<HTMLVideoElement | null>(null);
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+
   const localStreams = useRef<MediaStream | null>(null);
   const remoteStreams = useRef<MediaStream | null>(null);
+
+  // Sync refs with state for internal logic
+  useEffect(() => {
+    localStreams.current = localStream;
+  }, [localStream]);
+
+  useEffect(() => {
+    remoteStreams.current = remoteStream;
+    if (remoteStream && remoteVideoStream.current) {
+      remoteVideoStream.current.srcObject = remoteStream;
+    }
+  }, [remoteStream]);
 
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(false);
@@ -146,13 +161,8 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     };
 
     pc.current.ontrack = async (e) => {
-      const remoteStream = e.streams[0];
-      remoteStreams.current = remoteStream;
-
-      if (remoteVideoStream.current) {
-        remoteVideoStream.current.srcObject = remoteStream;
-      }
-
+      const remoteMediaStream = e.streams[0];
+      setRemoteStream(remoteMediaStream);
       setIsInCall(true);
     };
 
@@ -230,12 +240,10 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
         audio: true,
       });
 
-      localStreams.current = stream;
+      setLocalStream(stream);
 
-      stream.getAudioTracks().forEach((track) => {
-        track.enabled = false;
-      });
-      stream.getVideoTracks().forEach((track) => {
+      // Start with audio/video disabled to match initial state
+      stream.getTracks().forEach((track) => {
         track.enabled = false;
       });
 
@@ -299,20 +307,62 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     }
   }, []);
 
-  const toggleVideo = useCallback(() => {
-    if (localStreams.current) {
-      const videoTracks = localStreams.current.getVideoTracks();
+  const toggleVideo = useCallback(async () => {
+    if (!localStreams.current) return;
+
+    const videoTracks = localStreams.current.getVideoTracks();
+    
+    if (isVideoEnabled) {
+      // Turning OFF: true hardware stop
       videoTracks.forEach((track) => {
-        track.enabled = !track.enabled;
+        track.enabled = false;
+        track.stop();
+        localStreams.current?.removeTrack(track);
       });
-      setIsVideoEnabled((prev) => !prev);
+      
+      // Update peer connection
+      const sender = pc.current?.getSenders().find((s) => s.track?.kind === "video");
+      if (sender) {
+        await sender.replaceTrack(null);
+      }
+      
+      // Trigger re-render by updating state with a fresh stream clone or the current one
+      if (localStreams.current) {
+        setLocalStream(new MediaStream(localStreams.current.getTracks()));
+      }
+      setIsVideoEnabled(false);
+    } else {
+      // Turning ON: re-acquire track
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const newTrack = stream.getVideoTracks()[0];
+        
+        if (localStreams.current) {
+          localStreams.current.addTrack(newTrack);
+          
+          const sender = pc.current?.getSenders().find((s) => s.track?.kind === "video");
+          if (sender) {
+            await sender.replaceTrack(newTrack);
+          } else {
+            pc.current?.addTrack(newTrack, localStreams.current);
+          }
+          
+          setLocalStream(new MediaStream(localStreams.current.getTracks()));
+        }
+
+        setIsVideoEnabled(true);
+      } catch (err) {
+        console.error("Failed to re-acquire video:", err);
+        toast.error("Could not turn on camera.");
+      }
     }
-  }, []);
+  }, [isVideoEnabled]);
 
   const endCall = useCallback(() => {
     if (localStreams.current) {
       localStreams.current.getTracks().forEach((track) => {
         track.enabled = false;
+        track.stop();
       });
     }
     setIsAudioEnabled(false);
@@ -416,6 +466,8 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     remoteVideoStream,
     offer,
     localVideoStream,
+    localStream,
+    remoteStream,
     localStreams,
     remoteStreams,
     sendingFile,
@@ -434,3 +486,4 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     endCall,
   };
 };
+

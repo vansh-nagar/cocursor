@@ -56,7 +56,7 @@ const AiChat = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex items-center gap-1 px-3 py-1.5 border-b bg-muted/40 shrink-0">
+      <div className="flex items-center gap-1 px-3 py-2.5 border-b bg-muted/40 shrink-0">
         <Badge variant="outline" className="text-orange-500 border-orange-500/30 bg-orange-500/10 gap-1.5 py-0.5">
           {loading ? (
             <Loader2 className="size-3 animate-spin" />
@@ -65,7 +65,7 @@ const AiChat = () => {
           )}
           AI Assistant
         </Badge>
-        <Badge variant="secondary" className="py-0.5 text-[10px] uppercase tracking-wider font-bold">
+        <Badge variant="secondary" className="py-0.5 text-[10px]">
           {status === "streaming" ? "Typing..." : "Ready"}
         </Badge>
       </div>

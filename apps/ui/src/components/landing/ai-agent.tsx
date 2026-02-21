@@ -202,7 +202,6 @@ const AiAgent = () => {
   return (
     <div className="relative flex justify-center py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
       <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw] relative z-10 px-4 sm:px-6 md:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 items-center">
           <div
             className="relative flex items-center justify-center min-h-[320px] sm:min-h-[400px] md:min-h-[500px]"
             onClick={handleContainerClick}
@@ -394,16 +393,7 @@ const AiAgent = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-center mt-10 lg:mt-0 lg:pl-8 px-2 sm:px-0">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium mb-4 sm:mb-5">
-              Supercharged Intelligence
-            </h2>
-            <p className="text-muted-foreground max-w-md text-base sm:text-lg">
-              Our AI agent autonomously navigates your codebase to understand,
-              plan, and execute complex tasks with precision.
-            </p>
-          </div>
-        </div>
+    
       </div>
     </div>
   );

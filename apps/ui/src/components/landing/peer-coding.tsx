@@ -170,21 +170,7 @@ const VoicePanel = () => {
           })}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center"
-        >
-          <div className="flex items-center justify-center gap-1.5 mt-2">
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full bg-green-500"
-              animate={{ opacity: [1, 0.4, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-            <span className="text-foreground  text-xs">Connected</span>
-          </div>
-        </motion.div>
+  
       </motion.div>
     </motion.div>
   );
@@ -403,9 +389,29 @@ const PeerCoding = () => {
                   {activeStep === index && (
                     <motion.div
                       layoutId="activeIndicator"
-                      className="absolute inset-0 rounded-2xl border"
+                      className="absolute inset-0 rounded-2xl border border-orange-500/30 overflow-hidden"
                       transition={springTransition}
-                    />
+                    >
+                      <style>{`
+                        @keyframes stripe-move {
+                          0% { background-position: 0 0; }
+                          100% { background-position: 50px 50px; }
+                        }
+                        .active-stripe-bg {
+                          background-image: repeating-linear-gradient(
+                            45deg,
+                            rgba(250, 96, 0, 0.05),
+                            rgba(250, 96, 0, 0.05) 10px,
+                            transparent 10px,
+                            transparent 20px
+                          );
+                          background-size: 50px 50px;
+                          animation: stripe-move 2s linear infinite;
+                        }
+                      `}</style>
+                      <div className="absolute inset-0 active-stripe-bg" />
+                      <div className="absolute inset-0 bg-linear-to-br from-orange-500/5 to-transparent" />
+                    </motion.div>
                   )}
 
                   <div

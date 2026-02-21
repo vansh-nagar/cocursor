@@ -31,7 +31,7 @@ export const useWebContainer = ({ projectId }: { projectId?: string }) => {
       containerBooted.current = true;
 
       try {
-        setLoadingMessage("Booting WebContainer...");
+        setLoadingMessage("Booting Container...");
         const wc = await WebContainer.boot();
         webContainerRef.current = wc;
 

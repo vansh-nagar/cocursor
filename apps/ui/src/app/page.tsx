@@ -5,6 +5,7 @@ import HeroSection from "@/components/landing/herosection";
 import Iso from "@/components/landing/iso";
 import Navbar from "@/components/landing/navbar";
 import PeerCoding from "@/components/landing/peer-coding";
+import FAQs from "@/components/landing/faq";
 
 const Page = () => {
   return (
@@ -15,6 +16,7 @@ const Page = () => {
       <Iso />
       <PeerCoding />
       <AiAgent />
+      <FAQs />
       <Footer />
     </div>
   );
