@@ -72,7 +72,7 @@ const NavBar: React.FC<NavBarProps> = ({
                 key={tab.id}
                 className={`group relative flex items-center gap-1.5 px-3 h-full text-sm cursor-pointer transition-all border-t-2 ${
                   currentTabId === tab.id
-                    ? "bg-background text-foreground border-t-primary"
+                    ? "bg-background text-foreground border-t-[#FA6000]"
                     : "bg-transparent text-muted-foreground border-t-transparent hover:bg-accent/50 hover:text-foreground"
                 }`}
                 onClick={() => setCurrentTabId(tab.id)}

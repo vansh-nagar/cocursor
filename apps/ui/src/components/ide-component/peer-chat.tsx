@@ -237,9 +237,9 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                       <div key={file.id} className="p-3 hover:bg-muted/50 transition-colors flex items-center gap-3 group">
                         <div className={cn(
                           "size-8 rounded flex items-center justify-center shrink-0 shadow-xs border",
-                          file.type === "sent" ? "bg-orange-500/5 border-orange-500/10" : "bg-emerald-500/5 border-emerald-500/10"
+                          file.type === "sent" ? "bg-[#FA6000]/5 border-[#FA6000]/10" : "bg-emerald-500/5 border-emerald-500/10"
                         )}>
-                          <FileIcon className={cn("size-4", file.type === "sent" ? "text-orange-600" : "text-emerald-600")} />
+                          <FileIcon className={cn("size-4", file.type === "sent" ? "text-[#FA6000]" : "text-emerald-600")} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-medium truncate text-foreground">{file.name}</p>
@@ -252,7 +252,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                             <span className={cn(
                               "text-[9px] font-bold uppercase tracking-tight px-1 rounded-[2px] shrink-0 border",
                               file.type === "sent" 
-                                ? "bg-orange-500/5 text-orange-600 border-orange-500/10" 
+                                ? "bg-[#FA6000]/5 text-[#FA6000] border-[#FA6000]/10" 
                                 : "bg-emerald-500/5 text-emerald-600 border-emerald-500/10"
                             )}>
                               {file.type}
@@ -373,8 +373,8 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
         <div className="shrink-0 p-3 bg-muted/20 border-b space-y-2">
           {selectedFiles && selectedFiles.length > 0 && !sendingFile && (
             <div className="flex items-center gap-3 bg-background border px-3 py-2.5 rounded-md shadow-sm">
-              <div className="size-9 rounded bg-orange-500/10 flex items-center justify-center shrink-0 shadow-inner">
-                <FileIcon className="size-5 text-orange-600" />
+              <div className="size-9 rounded bg-[#FA6000]/10 flex items-center justify-center shrink-0 shadow-inner">
+                <FileIcon className="size-5 text-[#FA6000]" />
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <div className="flex items-center gap-2 min-w-0">
@@ -387,7 +387,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                 <Button
                   size="sm"
                   variant="default"
-                  className="h-8 px-3 text-xs bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
+                  className="h-8 px-3 text-xs bg-[#FA6000] hover:bg-[#E55800] text-white shadow-sm"
                   onClick={handleSendFile}
                   disabled={!peerConnected}
                 >
@@ -412,8 +412,8 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
           {sendingFile && (
             <div className="bg-background border rounded-md p-3 shadow-sm space-y-2">
               <div className="flex items-center gap-2">
-                <div className="size-6 rounded bg-orange-500/10 flex items-center justify-center shrink-0">
-                  <Loader2 className="size-3.5 animate-spin text-orange-600" />
+                <div className="size-6 rounded bg-[#FA6000]/10 flex items-center justify-center shrink-0">
+                  <Loader2 className="size-3.5 animate-spin text-[#FA6000]" />
                 </div>
                 <span className="text-xs font-semibold text-foreground flex-1 truncate">
                   Sending file...
@@ -488,10 +488,10 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                   >
                     <div
                       className={cn(
-                        "max-w-[85%] min-w-0 px-3 py-1.5 text-[13px] leading-relaxed border shadow-sm wrap-break-word whitespace-pre-wrap",
+                        "max-w-[85%] min-w-0 px-4 py-2 text-[13px] leading-relaxed border shadow-sm wrap-break-word whitespace-pre-wrap rounded-sm",
                         isUser
-                          ? "bg-orange-500 text-white border-orange-600 rounded-md"
-                          : "bg-muted text-foreground border-muted-foreground/10 rounded-md"
+                          ? "bg-[#FA6000] text-white border-[#E55800]"
+                          : "bg-[#FA6000]/5 text-foreground border-[#FA6000]/10"
                       )}
                     >
                       {msg.text}
@@ -536,14 +536,14 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
             value={chatPrompt}
             onChange={(e) => setChatPrompt(e.target.value)}
             onKeyDown={handleKeyDown as any}
-            className="flex-1 h-10 border px-3 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-orange-500/30"
+            className="flex-1 h-10 border px-3 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-[#FA6000]/30"
           />
 
           <Button
             onClick={handlePromptSubmit}
             disabled={!chatPrompt.trim()}
             size="icon"
-            className="h-10 w-10 shrink-0 bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
+            className="h-10 w-10 shrink-0 bg-[#FA6000] hover:bg-[#E55800] text-white shadow-sm"
           >
             <Send className="size-4" />
           </Button>

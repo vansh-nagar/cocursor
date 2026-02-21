@@ -57,11 +57,11 @@ const AiChat = () => {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex items-center gap-1 px-3 py-2.5 border-b bg-muted/40 shrink-0">
-        <Badge variant="outline" className="text-orange-500 border-orange-500/30 bg-orange-500/10 gap-1.5 py-0.5">
+        <Badge variant="outline" className="text-[#FA6000] border-[#FA6000]/30 bg-[#FA6000]/10 gap-1.5 py-0.5">
           {loading ? (
             <Loader2 className="size-3 animate-spin" />
           ) : (
-            <div className="size-1.5 rounded-full bg-orange-500" />
+            <div className="size-1.5 rounded-full bg-[#FA6000]" />
           )}
           AI Assistant
         </Badge>
@@ -91,7 +91,7 @@ const AiChat = () => {
                   </MessageContent>
                 </Message>
               ))}
-
+ 
               {loading && (
                 <div className="flex justify-start p-2">
                   <Skeleton className="h-10 w-40" />
@@ -112,13 +112,13 @@ const AiChat = () => {
             value={chatPrompt}
             onChange={(e) => setChatPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 h-10 border px-3 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-orange-500/30"
+            className="flex-1 h-10 border px-3 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-[#FA6000]/30"
           />
           <Button
             onClick={handlePromptSubmit}
             disabled={!chatPrompt.trim() || loading}
             size="icon"
-            className="h-10 w-10 shrink-0 bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
+            className="h-10 w-10 shrink-0 bg-[#FA6000] hover:bg-[#E55800] text-white shadow-sm"
           >
             {loading ? (
               <Loader2 className="size-4 animate-spin" />

@@ -6,7 +6,7 @@ import Follower2 from "./cursor-followers/follower2";
 
 const HeroSection = () => {
   return (
-    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-40 sm:py-40 md:py-44 lg:py-48 max-sm:mt-10">
+    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-20 sm:py-20 md:py-24 lg:py-28 max-sm:mt-10">
       <div className="follower1 absolute left-1/6 bottom-1/3 sm:top-1/4 z-40 pointer-events-none">
         <Follower1 />
       </div>
@@ -14,10 +14,11 @@ const HeroSection = () => {
         <Follower2 />
       </div>
 
-      <OrangePremButton className="rounded-full px-3 py-1 text-[10px] sm:text-xs mb-4 sm:mb-6">
+      <OrangePremButton className="rounded-full px-3 py-1 text-[10px] sm:text-xs mb-6 sm:mb-14">
         Code Together Powered by AI
       </OrangePremButton>
-      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium flex items-center flex-col text-center leading-7 md:leading-10 lg:leading-12">
+
+      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl flex items-center flex-col text-center leading-7 md:leading-10 lg:leading-14">
         <span className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 whitespace-nowrap">
           <span>Build software</span>
           <div className="w-10 max-sm:hidden h-5 sm:w-14 sm:h-7 md:w-16 md:h-8 lg:w-20 lg:h-10 xl:w-24 xl:h-10 relative">
@@ -50,9 +51,7 @@ const HeroSection = () => {
         </Link>
       </div>
 
-      <div className="p-1 max-sm:hidden sm:p-2 md:p-2.5 bg-[#FF6200]/20 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-2xl sm:rounded-3xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
-        <div className="bg-white blur-xl sm:blur-2xl -z-10 absolute top-0 right-0 translate-x-1/2 -translate-y-1/2 w-[200px] sm:w-[300px] md:w-[400px] lg:w-[600px] aspect-square rounded-full"></div>
-        <div className="bg-white blur-xl sm:blur-2xl -z-10 absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-[150px] sm:w-[200px] md:w-[250px] lg:w-[300px] aspect-square rounded-full"></div>
+      <div className="p-1 max-sm:hidden sm:p-2 md:p-2.5 bg-[#FF6200]/20 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-3xl sm:rounded-4xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
         <img
           className="w-full rounded-xl sm:rounded-2xl z-50"
           src="/image/hero.png"

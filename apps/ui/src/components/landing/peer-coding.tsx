@@ -85,7 +85,7 @@ const MessagingPanel = () => (
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="bg-background border border-border rounded-2xl rounded-tl-sm px-4 py-2.5">
+        <div className="bg-background border border-border rounded-sm px-4 py-2.5">
           <p className="text-foreground text-sm">Ready to start the session?</p>
           <span className="text-muted-foreground text-xs">2:34 PM</span>
         </div>
@@ -97,7 +97,7 @@ const MessagingPanel = () => (
         transition={{ delay: 0.4, ...smoothTransition }}
         className="flex items-start gap-2 justify-end"
       >
-        <div className="bg-background border border-border rounded-2xl rounded-tr-sm px-4 py-2.5">
+        <div className="bg-background border border-border rounded-sm px-4 py-2.5">
           <p className="text-foreground text-sm">Yes, let's do it!</p>
           <span className="text-muted-foreground text-xs text-right block">
             2:34 PM
@@ -109,17 +109,6 @@ const MessagingPanel = () => (
             alt="You"
             className="w-full h-full object-cover"
           />
-        </div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-        className="flex items-center gap-2 pl-10"
-      >
-        <div className=" relative bg-background border border-border rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1.5">
-          <Skeleton className=" absolute inset-0" />
         </div>
       </motion.div>
     </motion.div>
@@ -202,19 +191,6 @@ const VideoPanel = () => {
             </div>
           </div>
 
-          <motion.div
-            className="absolute top-3 left-3 flex items-center gap-1.5 bg-background border border-border px-2 py-1 rounded-full"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full bg-green-500"
-              animate={{ opacity: [1, 0.4, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            />
-            <span className="text-foreground text-xs font-medium">Live</span>
-          </motion.div>
         </motion.div>
 
         {/* Peer thumbnails */}
