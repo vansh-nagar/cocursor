@@ -32,11 +32,14 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
   const [sendingFile, setSendingFile] = useState(false);
 
   const localVideoStream = useRef<HTMLVideoElement | null>(null);
-
   const remoteVideoStream = useRef<HTMLVideoElement | null>(null);
-
   const localStreams = useRef<MediaStream | null>(null);
   const remoteStreams = useRef<MediaStream | null>(null);
+
+  const [isAudioEnabled, setIsAudioEnabled] = useState(false);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(false);
+  const [isInCall, setIsInCall] = useState(false);
+  const [peerConnected, setPeerConnected] = useState(false);
 
   const MAX_MEMORY = 8 * 1024 * 1024;
   const MIN_MEMORY = 2 * 1024 * 1024;
@@ -52,15 +55,12 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
   }, []);
 
   const pause = async () => {
-    console.log("PAUSING FOR MEMORY TO DRAIN");
     await new Promise<void>((resolve) => {
       const check = () => {
         if (channel.current?.bufferedAmount! < MIN_MEMORY) {
           resolve();
         } else {
-          setTimeout(() => {
-            check();
-          }, 50);
+          setTimeout(check, 50);
         }
       };
       check();
@@ -74,7 +74,7 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
       }
       if (e.data.startsWith("SIZE/")) {
         const sizeStr = e.data.split("/");
-        // setTotalSize(Number(sizeStr[1]));
+        setTotalSize(Number(sizeStr[1]));
       }
 
       if (e.data.startsWith("EOF/")) {
@@ -86,13 +86,14 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
           finalFile.set(chunk, offset);
           offset += chunk.length;
         }
-        const blob = new Blob([finalFile], { type: "image/png" });
+        const blob = new Blob([finalFile]);
         const url = URL.createObjectURL(blob);
         setImage(url);
 
+        toast.success(`File received: ${fileName[1]}`);
+
         reciverSize.current = 0;
         recivedData.current = [];
-
         return;
       }
     }
@@ -100,10 +101,7 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     const byte = new Uint8Array(e.data);
     recivedData.current.push(byte);
     reciverSize.current += byte.length;
-
     channel.current?.send("ACK");
-
-    // console.log(byte);
   };
 
   useEffect(() => {
@@ -116,11 +114,7 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     pc.current = new RTCPeerConnection({
       iceServers: [
         { urls: "stun:stun.l.google.com:19302" },
-        {
-          urls: "turn:your-turn-server.com",
-          username: "user",
-          credential: "pass",
-        },
+        { urls: "stun:stun1.l.google.com:19302" },
       ],
     });
 
@@ -134,19 +128,24 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
 
     pc.current.onconnectionstatechange = () => {
       const state = pc.current?.connectionState;
-      toast.message(`${pc.current?.connectionState}`);
 
-      if (state === "failed" || state === "closed") {
-        pc.current?.close();
+      if (state === "connected") {
+        setPeerConnected(true);
+        toast.success("Peer connected!");
+      } else if (state === "disconnected" || state === "failed" || state === "closed") {
+        setPeerConnected(false);
+        setIsInCall(false);
+        toast.info("Peer disconnected");
 
-        pc.current?.getSenders().forEach((sender) => {
-          pc.current?.removeTrack(sender);
-        });
+        if (state === "failed" || state === "closed") {
+          pc.current?.getSenders().forEach((sender) => {
+            pc.current?.removeTrack(sender);
+          });
+        }
       }
     };
 
     pc.current.ontrack = async (e) => {
-      console.log("Remote track received", e.streams);
       const remoteStream = e.streams[0];
       remoteStreams.current = remoteStream;
 
@@ -154,40 +153,28 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
         remoteVideoStream.current.srcObject = remoteStream;
       }
 
-      if (remoteStreams.current) {
-      }
+      setIsInCall(true);
     };
 
     pc.current.ondatachannel = (e) => {
       channel.current = e.channel;
       channel.current.binaryType = "arraybuffer";
-      channel.current.onopen = () => {
-        console.log("data channel open");
-      };
+      channel.current.onopen = () => {};
       channel.current.onmessage = async (e) => {
         onMessageHandler(e);
       };
       channel.current.bufferedAmountLowThreshold = MIN_MEMORY;
       channel.current.onbufferedamountlow = () => {
-        console.log("BUFFERED AMOUNT LOW TRIGGERED");
         PAUSE_STREAMING.current = false;
       };
     };
 
     ws.current.onmessage = async (message) => {
-      console.log("WebSocket message received:", message.data);
-
       const data = JSON.parse(message.data);
 
-      if (data.type === "FileContent") {
-        console.log("File content received via websocket");
-        console.log(data.FileContent);
-      }
       if (data.type === "message") {
         const payload = data.payload || data.message;
-        console.log("Peer message received:", payload);
 
-        // Add to peer messages state
         setPeerMessages((prev) => [
           ...prev,
           {
@@ -198,7 +185,6 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
           },
         ]);
 
-        // Call message callback if set
         if (messageCallbackRef.current) {
           messageCallbackRef.current(payload, data.fromPeerId);
         }
@@ -227,64 +213,74 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
         setTotalUserCount(data.count);
       }
     };
+
+    return () => {
+      if (localStreams.current) {
+        localStreams.current.getTracks().forEach((track) => track.stop());
+      }
+      pc.current?.close();
+      ws.current?.close();
+    };
   }, []);
+
+  const startMediaStream = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+
+      localStreams.current = stream;
+
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = false;
+      });
+      stream.getVideoTracks().forEach((track) => {
+        track.enabled = false;
+      });
+
+      if (localVideoStream.current) {
+        localVideoStream.current.srcObject = stream;
+      }
+
+      stream.getTracks().forEach((track) => {
+        pc.current?.addTrack(track, stream);
+      });
+
+      return stream;
+    } catch (err) {
+      console.error("Failed to get media stream:", err);
+      toast.error("Failed to access camera/microphone. Please check permissions.");
+      return null;
+    }
+  };
 
   const offer = async () => {
     channel.current = pc.current?.createDataChannel("data-transfer");
     if (channel.current) channel.current.binaryType = "arraybuffer";
     if (!channel.current) return;
 
-    // const stream = await navigator.mediaDevices.getUserMedia({
-    //   video: true,
-    //   audio: true,
-    // });
+    await startMediaStream();
 
-    // localStreams.current = stream;
-
-    // stream.getTracks().forEach((track) => {
-    //   track.enabled = false;
-    //   pc.current?.addTrack(track, stream);
-    // });
-
-    // if (localVideoStream.current) {
-    //   localVideoStream.current.srcObject = stream;
-    // }
-
-    channel.current.onopen = () => {
-      console.log("data channel open");
-    };
+    channel.current.onopen = () => {};
 
     channel.current.onmessage = (e) => {
       onMessageHandler(e);
     };
 
     if (!pc.current) return;
-    const offer = await pc.current.createOffer();
-    await pc.current.setLocalDescription(offer);
+    const offerSdp = await pc.current.createOffer();
+    await pc.current.setLocalDescription(offerSdp);
 
-    if (offer && ws.current) {
-      ws.current.send(JSON.stringify({ type: "offer", offer: offer, roomId }));
+    if (offerSdp && ws.current) {
+      ws.current.send(JSON.stringify({ type: "offer", offer: offerSdp, roomId }));
     }
   };
 
   const answer = async () => {
     if (!pc.current) return;
 
-    // const stream = await navigator.mediaDevices.getUserMedia({
-    //   video: true,
-    //   audio: true,
-    // });
-
-    // stream.getTracks().forEach((track) => {
-    //   track.enabled = false;
-    //   pc.current?.addTrack(track, stream);
-    // });
-
-    // if (localVideoStream.current) {
-    //   localVideoStream.current.srcObject = stream;
-    // }
-
-    // localStreams.current = stream;
+    await startMediaStream();
 
     const ans = await pc.current?.createAnswer();
     await pc.current?.setLocalDescription(ans);
@@ -293,15 +289,44 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
       ws.current.send(JSON.stringify({ type: "answer", answer: ans, roomId }));
   };
 
+  const toggleAudio = useCallback(() => {
+    if (localStreams.current) {
+      const audioTracks = localStreams.current.getAudioTracks();
+      audioTracks.forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setIsAudioEnabled((prev) => !prev);
+    }
+  }, []);
+
+  const toggleVideo = useCallback(() => {
+    if (localStreams.current) {
+      const videoTracks = localStreams.current.getVideoTracks();
+      videoTracks.forEach((track) => {
+        track.enabled = !track.enabled;
+      });
+      setIsVideoEnabled((prev) => !prev);
+    }
+  }, []);
+
+  const endCall = useCallback(() => {
+    if (localStreams.current) {
+      localStreams.current.getTracks().forEach((track) => {
+        track.enabled = false;
+      });
+    }
+    setIsAudioEnabled(false);
+    setIsVideoEnabled(false);
+    setIsInCall(false);
+  }, []);
+
   const pauseTillStreamFalse = async () => {
     await new Promise<void>((r) => {
       const check = () => {
         if (PAUSE_STREAMING.current === false) {
           r();
         } else {
-          setTimeout(() => {
-            check();
-          }, 50);
+          setTimeout(check, 50);
         }
       };
       check();
@@ -311,7 +336,6 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
   const send = async () => {
     setSendingFile(true);
     const file = File![0];
-    console.log("Sending file:", file.type);
     const buffer = await file.arrayBuffer();
     const bytes = new Uint8Array(buffer);
     const CHUNK_SIZE = 256 * 1024;
@@ -329,12 +353,11 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
 
       channel.current?.send(bytes.slice(i, i + CHUNK_SIZE));
       inFlightChunk.current++;
-
       updatedUploadedSize.current += CHUNK_SIZE;
     }
     channel.current?.send(`EOF/${file.name}`);
     setSendingFile(false);
-    return;
+    toast.success(`File sent: ${file.name}`);
   };
 
   const sendFileContent = () => {
@@ -350,7 +373,6 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
   const sendMessage = (payload: string) => {
     if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
 
-    // Add sent message to local history
     setPeerMessages((prev) => [
       ...prev,
       {
@@ -403,5 +425,12 @@ export const useWsRtcConnection = ({ roomId }: { roomId: string }) => {
     peerMessages,
     setPeerMessages,
     setMessageCallback,
+    isAudioEnabled,
+    isVideoEnabled,
+    isInCall,
+    peerConnected,
+    toggleAudio,
+    toggleVideo,
+    endCall,
   };
 };

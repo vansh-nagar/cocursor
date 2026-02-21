@@ -229,7 +229,7 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
               setShowAiChat={setShowAiChat}
             />
 
-            {/* Explorer Panel - always mounted, collapsed when hidden */}
+
             <ResizablePanel
               ref={explorerPanelRef}
               defaultSize={showExplorer ? 20 : 0}
@@ -284,7 +284,7 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                 />
               </div>
             </ResizablePanel>
-            <ResizableHandle className={showExplorer ? "" : "!w-0 !p-0 !border-0"} />
+            <ResizableHandle className={showExplorer ? "" : "w-0! p-0! border-0!"} />
 
             <ResizablePanel
               className="h-full"
@@ -450,8 +450,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                     </div>
                   </ResizablePanel>
 
-                  {/* Terminal Panel - always mounted, collapsed when hidden */}
-                  <ResizableHandle className={showTerminal ? "" : "!h-0 !p-0 !border-0"} />
+
+                  <ResizableHandle className={showTerminal ? "" : "h-0! p-0! border-0!"} />
                   <ResizablePanel
                     ref={terminalPanelRef}
                     defaultSize={showTerminal ? 30 : 0}
@@ -471,8 +471,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
               </div>
             </ResizablePanel>
 
-            {/* AI Chat Panel - always mounted, collapsed when hidden */}
-            <ResizableHandle className={showAiChat ? "" : "!w-0 !p-0 !border-0"} />
+
+            <ResizableHandle className={showAiChat ? "" : "w-0! p-0! border-0!"} />
             <ResizablePanel
               ref={aiChatPanelRef}
               defaultSize={showAiChat ? 25 : 0}

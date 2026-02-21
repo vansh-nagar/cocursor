@@ -22,7 +22,35 @@ const TerminalComponent: React.FC = () => {
   useEffect(() => {
     const term = new Terminal({
       cursorBlink: true,
-      fontSize: 14,
+      fontSize: 13,
+      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+      theme: {
+        background: "#0a0a0a",
+        foreground: "#d4d4d4",
+        cursor: "#f8f8f2",
+        selectionBackground: "#3e4451",
+        black: "#000000",
+        red: "#ff5555",
+        green: "#50fa7b",
+        yellow: "#f1fa8c",
+        blue: "#bd93f9",
+        magenta: "#ff79c6",
+        cyan: "#8be9fd",
+        white: "#bfbfbf",
+        brightBlack: "#4d4d4d",
+        brightRed: "#ff6e6e",
+        brightGreen: "#69ff94",
+        brightYellow: "#ffffa5",
+        brightBlue: "#d6acff",
+        brightMagenta: "#ff92df",
+        brightCyan: "#a4ffff",
+        brightWhite: "#e6e6e6",
+      },
+      allowTransparency: true,
+      cursorStyle: "bar",
+      cursorWidth: 2,
+      letterSpacing: 0.5,
+      lineHeight: 1.2,
     });
 
     const fitAddon = new FitAddon();
@@ -31,7 +59,8 @@ const TerminalComponent: React.FC = () => {
     term.open(terminalRef.current!);
     fitAddon.fit();
     term.clear();
-    term.writeln("Welcome to the Cocursor terminal !\r\n");
+    term.writeln("\x1b[1;38;5;208mCocursor Terminal\x1b[0m");
+    term.writeln("\x1b[90mWelcome to the interactive development shell.\x1b[0m\r\n");
 
     termRef.current = term;
     fitAddonRef.current = fitAddon;
@@ -70,8 +99,9 @@ const TerminalComponent: React.FC = () => {
   useEffect(() => {
     if (isContainerBooted) {
       termRef.current?.writeln(
-        "Web Container is booted! You can start typing commands.",
+        "\x1b[32m✔\x1b[0m WebContainer booted successfully.",
       );
+      termRef.current?.write("\r\n\x1b[38;5;208m$ \x1b[0m");
     }
   }, [isContainerBooted]);
 
@@ -107,10 +137,23 @@ const TerminalComponent: React.FC = () => {
   };
 
   return (
-    <div
-      ref={terminalRef}
-      style={{ width: "100%", height: "100%", minHeight: "300px" }}
-    ></div>
+    <div className="flex flex-col h-full bg-neutral-950 overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-1.5 border-b border-white/5 bg-neutral-900/50 shrink-0">
+        <div className="size-2.5 rounded-full bg-emerald-500/50" />
+        <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-widest">
+          Terminal
+        </span>
+        <div className="ml-auto flex items-center gap-1.5">
+          <div className="text-[10px] font-mono text-neutral-500">
+            {isContainerBooted ? "webcontainer-v1" : "initializing..."}
+          </div>
+        </div>
+      </div>
+      <div 
+        ref={terminalRef} 
+        className="flex-1 w-full bg-[#0a0a0a] p-2 [&>.xterm]:h-full [&>.xterm-viewport]:bg-transparent!"
+      />
+    </div>
   );
 };
 

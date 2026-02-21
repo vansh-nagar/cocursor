@@ -13,12 +13,14 @@ import {
 import { Message, MessageContent } from "../ai-elements/message";
 import { Response } from "../ai-elements/response";
 import { DefaultChatTransport } from "ai";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import { Badge } from "@/components/ui/badge";
 
 const AiChat = () => {
   const [chatPrompt, setChatPrompt] = useState("");
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = useRef<HTMLInputElement>(null);
 
   const { messages, sendMessage, status } = useChat({
     transport: new DefaultChatTransport({
@@ -43,7 +45,7 @@ const AiChat = () => {
     setChatPrompt("");
   };
 
-  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handlePromptSubmit();
@@ -53,9 +55,23 @@ const AiChat = () => {
   const loading = status === "streaming" || status === "submitted";
 
   return (
-    <div className="flex flex-col relative h-full">
+    <div className="flex flex-col h-full overflow-hidden">
+      <div className="flex items-center gap-1 px-3 py-1.5 border-b bg-muted/40 shrink-0">
+        <Badge variant="outline" className="text-orange-500 border-orange-500/30 bg-orange-500/10 gap-1.5 py-0.5">
+          {loading ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <div className="size-1.5 rounded-full bg-orange-500" />
+          )}
+          AI Assistant
+        </Badge>
+        <Badge variant="secondary" className="py-0.5 text-[10px] uppercase tracking-wider font-bold">
+          {status === "streaming" ? "Typing..." : "Ready"}
+        </Badge>
+      </div>
+
       <Conversation className="w-full pb-26 mask-b-from-80% ">
-        <ConversationContent className="p-2">
+        <ConversationContent className="p-3 gap-3">
           {messages.length === 0 ? (
             <ConversationEmptyState
               icon={<MessageSquare className="size-12" />}
@@ -88,27 +104,26 @@ const AiChat = () => {
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="flex flex-col items-end border rounded-md overflow-hidden absolute bottom-0 inset-x-0 z-50 backdrop-blur-xl ">
-        <Textarea
-          ref={textareaRef}
-          placeholder="Type your message... (Enter to send, Shift+Enter for new line)"
-          value={chatPrompt}
-          onChange={(e) => setChatPrompt(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="resize-none border-0 focus:ring-0 focus-visible:ring-0 outline-none bg-transparent rounded-b-none"
-          rows={1}
-        />
-        <div className=" border-t w-full flex justify-end">
+      <div className="shrink-0 p-3 bg-background border-t">
+        <div className="flex items-end gap-2">
+          <Input
+            ref={textareaRef}
+            placeholder="Type your message..."
+            value={chatPrompt}
+            onChange={(e) => setChatPrompt(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="flex-1 h-10 border px-3 text-sm shadow-none focus-visible:ring-1 focus-visible:ring-orange-500/30"
+          />
           <Button
             onClick={handlePromptSubmit}
-            disabled={!chatPrompt.trim()}
+            disabled={!chatPrompt.trim() || loading}
             size="icon"
-            className="bg-orange-500 hover:bg-orange-600 text-white shrink-0 m-1"
+            className="h-10 w-10 shrink-0 bg-orange-600 hover:bg-orange-700 text-white shadow-sm"
           >
             {loading ? (
-              <Loader2 className="size-5 animate-spin" />
+              <Loader2 className="size-4 animate-spin" />
             ) : (
-              <Send className="size-5" />
+              <Send className="size-4" />
             )}
           </Button>
         </div>

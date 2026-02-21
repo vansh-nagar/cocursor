@@ -25,7 +25,7 @@ export default function SignInPage() {
       await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
         redirectUrl: "/sign-in/sso-callback",
-        redirectUrlComplete: "/main",
+        redirectUrlComplete: "/",
       });
     } catch (err: unknown) {
       const error = err as { errors?: { message: string }[] };

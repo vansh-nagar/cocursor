@@ -12,7 +12,6 @@ wss.on("connection", function connection(ws: any) {
     if (message.type === "FileContent") {
       const clients = rooms.get(message.roomId);
       if (clients === undefined) return;
-      console.log("FileContent received");
       clients.forEach((client) => {
         if (client !== ws && client.readyState === 1) {
           client.send(
@@ -24,7 +23,6 @@ wss.on("connection", function connection(ws: any) {
           );
         }
       });
-      console.log("FileContent forwarded");
       return;
     }
 
@@ -40,7 +38,7 @@ wss.on("connection", function connection(ws: any) {
         ws.send(
           JSON.stringify({
             type: "toast",
-            message: `uh oh Room already filled :(`,
+            message: `Room already filled`,
           }),
         );
         return;
@@ -55,7 +53,6 @@ wss.on("connection", function connection(ws: any) {
       );
 
       clients.forEach((client) => {
-        console.log("message sent");
         if (client.readyState === 1)
           client.send(
             JSON.stringify({
@@ -64,10 +61,6 @@ wss.on("connection", function connection(ws: any) {
             }),
           );
       });
-
-      rooms.get(message.roomId);
-
-      console.log(`Total clients in room ${message.roomId}: ${clients.length}`);
 
       const firstUser = clients[0];
       if (clients.length === 2 && firstUser.readyState === 1) {
@@ -95,53 +88,48 @@ wss.on("connection", function connection(ws: any) {
       });
     }
 
-    // if (message.type === "offer") {
-    //   console.log("offer received");
-    //   const clients = rooms.get(message.roomId);
-    //   if (clients === undefined) return;
+    if (message.type === "offer") {
+      const clients = rooms.get(message.roomId);
+      if (clients === undefined) return;
 
-    //   clients.forEach((client) => {
-    //     if (client !== ws && client.readyState === 1) {
-    //       client.send(
-    //         JSON.stringify({
-    //           type: "offer",
-    //           offer: message.offer,
-    //           roomId: message.roomId,
-    //         }),
-    //       );
-    //     }
-    //   });
-    //   console.log("offer forwarded");
-    // }
-    // if (message.type === "answer") {
-    //   const clients = rooms.get(message.roomId);
-    //   if (clients === undefined) return;
+      clients.forEach((client) => {
+        if (client !== ws && client.readyState === 1) {
+          client.send(
+            JSON.stringify({
+              type: "offer",
+              offer: message.offer,
+              roomId: message.roomId,
+            }),
+          );
+        }
+      });
+    }
 
-    //   console.log("answer received");
-    //   clients.forEach((client) => {
-    //     if (client !== ws && client.readyState === 1) {
-    //       client.send(
-    //         JSON.stringify({ type: "answer", answer: message.answer }),
-    //       );
-    //     }
-    //   });
-    //   console.log("answer forwarded");
-    // }
-    // if (message.type === "candidate") {
-    //   console.log("candidate received");
+    if (message.type === "answer") {
+      const clients = rooms.get(message.roomId);
+      if (clients === undefined) return;
 
-    //   const clients = rooms.get(message.roomId);
-    //   if (clients === undefined) return;
+      clients.forEach((client) => {
+        if (client !== ws && client.readyState === 1) {
+          client.send(
+            JSON.stringify({ type: "answer", answer: message.answer }),
+          );
+        }
+      });
+    }
 
-    //   clients.forEach((client) => {
-    //     if (client !== ws && client.readyState === 1) {
-    //       client.send(
-    //         JSON.stringify({ type: "candidate", candidate: message.candidate }),
-    //       );
-    //     }
-    //   });
-    //   console.log("candidate forwarded");
-    // }
+    if (message.type === "candidate") {
+      const clients = rooms.get(message.roomId);
+      if (clients === undefined) return;
+
+      clients.forEach((client) => {
+        if (client !== ws && client.readyState === 1) {
+          client.send(
+            JSON.stringify({ type: "candidate", candidate: message.candidate }),
+          );
+        }
+      });
+    }
   });
 
   ws.on("close", () => {
@@ -150,9 +138,7 @@ wss.on("connection", function connection(ws: any) {
         roomId,
         client.filter((c) => c !== ws),
       );
-      console.log(`Client disconnected from room: ${roomId}`);
       rooms.get(roomId)?.forEach((client) => {
-        console.log("message sent");
         if (client.readyState === 1)
           client.send(
             JSON.stringify({

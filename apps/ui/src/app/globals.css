@@ -134,3 +134,17 @@ html, body, * {
   }
 }
 
+/* Mirror local video (selfie view) */
+.mirror {
+  transform: scaleX(-1);
+}
+
+/* Utility to hide scrollbar */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
