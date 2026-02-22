@@ -105,7 +105,7 @@ const AiChat = () => {
       </Conversation>
 
       <div className="shrink-0 p-3 bg-background border-t">
-        <div className="flex items-end gap-2">
+        <ButtonGroup className="flex-1">
           <Input
             ref={textareaRef}
             placeholder="Type your message..."
@@ -126,7 +126,7 @@ const AiChat = () => {
               <Send className="size-4" />
             )}
           </Button>
-        </div>
+        </ButtonGroup>
       </div>
     </div>
   );

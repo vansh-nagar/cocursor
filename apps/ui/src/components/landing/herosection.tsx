@@ -1,12 +1,11 @@
-import OrangePremButton from "./button/orange-prem-buttion";
-import OrangeButton, { BlackButton } from "./button/orange-button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Follower1 from "./cursor-followers/follower1";
 import Follower2 from "./cursor-followers/follower2";
 
 const HeroSection = () => {
   return (
-    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-20 sm:py-20 md:py-24 lg:py-28 max-sm:mt-10">
+    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-20 md:py-24 lg:py-28 max-sm:mt-10">
       <div className="follower1 absolute left-1/6 bottom-1/3 sm:top-1/4 z-40 pointer-events-none">
         <Follower1 />
       </div>
@@ -14,11 +13,7 @@ const HeroSection = () => {
         <Follower2 />
       </div>
 
-      <OrangePremButton className="rounded-full px-3 py-1 text-[10px] sm:text-xs mb-6 sm:mb-14">
-        Code Together Powered by AI
-      </OrangePremButton>
-
-      <div className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl flex items-center flex-col text-center leading-7 md:leading-10 lg:leading-14">
+      <div className="text-3xl sm:text-4xl mt-20 md:text-5xl lg:text-6xl flex items-center flex-col text-center leading-7 md:leading-10 lg:leading-14">
         <span className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 whitespace-nowrap">
           <span>Build software</span>
           <div className="w-10 max-sm:hidden h-5 sm:w-14 sm:h-7 md:w-16 md:h-8 lg:w-20 lg:h-10 xl:w-24 xl:h-10 relative">
@@ -32,29 +27,29 @@ const HeroSection = () => {
         </span>
         <span className="mt-2 sm:mt-3 md:mt-4">Right in your browser</span>
       </div>
-      <div className="mt-4 sm:mt-6 md:mt-8 text-center text-base sm:text-lg md:text-xl text-muted-foreground max-w-xs sm:max-w-md md:max-w-lg lg:max-w-none px-4">
+      <div className="mt-4 sm:mt-6 md:mt-8 text-center text-base sm:text-lg md:text-lg text-muted-foreground max-w-xs sm:max-w-md md:max-w-lg lg:max-w-none px-4">
         A browser-based IDE where AI helps you write code,{" "}
         <br className=" max-sm:hidden" /> teammates collaborate live, and apps
         run instantly.
       </div>
 
-      <div className="mt-8 sm:mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-0">
-        <Link href="/main">
-          <OrangeButton className="py-2 px-4 cursor-pointer text-sm sm:text-base">
+      <div className="mt-8 sm:mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-0 w-full sm:w-auto">
+        <Button asChild className="bg-orange-600" >
+          <Link href="/main">
             Launch Cocursor
-          </OrangeButton>
-        </Link>
-        <Link href="/docs">
-          <BlackButton className="py-2 px-4 bg-black cursor-pointer text-sm sm:text-base">
+          </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/docs">
             See How It Works
-          </BlackButton>
-        </Link>
+          </Link>
+        </Button>
       </div>
 
-      <div className="p-1 sm:p-2 md:p-2.5 bg-[#FF6200]/20 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-4xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
+      <div className="p-1 sm:p-2 md:p-2.5 border bg-black/50 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-4xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
         <img
           src="/image/hero.png"
-          className="w-full h-full rounded-3xl z-50 overflow-hidden object-contain"
+          className="w-full h-full rounded-xl z-50 overflow-hidden object-contain"
           alt="Cocursor Dashboard"
         />
       </div>
@@ -97,5 +92,7 @@ const HeroSection = () => {
     </div>
   );
 };
+
+
 
 export default HeroSection;

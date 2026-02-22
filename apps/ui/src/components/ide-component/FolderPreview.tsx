@@ -296,9 +296,9 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
     return (
       <div className="flex items-center gap-1.5 px-2 py-1 ml-6">
         {inlineInput.type === "folder" ? (
-          <FolderClosed className="h-4 w-4 text-blue-400 shrink-0" />
+          <FolderClosed className="h-4 w-4 text-orange-400 shrink-0" />
         ) : (
-          <File className="h-4 w-4 text-[#FA6000] shrink-0" />
+          <File className="h-4 w-4 text-orange-600 shrink-0" />
         )}
         <input
           ref={inlineInputRef}
@@ -360,9 +360,9 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
                 <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
               )}
               {isExpanded ? (
-                <FolderOpen className="h-4 w-4 text-blue-400 shrink-0" />
+                <FolderOpen className="h-4 w-4 text-orange-600 shrink-0" />
               ) : (
-                <FolderClosed className="h-4 w-4 text-blue-400 shrink-0" />
+                <FolderClosed className="h-4 w-4 text-orange-600 shrink-0" />
               )}
 
               {isBeingRenamed ? (
@@ -458,7 +458,7 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
           onDragStart={(e) => handleDragStart(e, fullPath, name, "file")}
           onDragEnd={handleDragEnd}
         >
-          <File className="h-4 w-4 text-[#FA6000] shrink-0" />
+          <File className="h-4 w-4 text-orange-600 shrink-0" />
 
           {isBeingRenamed ? (
             <input

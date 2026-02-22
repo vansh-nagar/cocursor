@@ -43,11 +43,11 @@ const faqItems = [
 
 export default function FAQs() {
   return (
-    <section className="@container py-24 flex justify-center">
+    <section className="@container py-10 sm:py-24 flex justify-center">
       <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw] px-6">
         <div className="@xl:flex-row @xl:items-start @xl:gap-12 flex flex-col gap-8">
           <div className="@xl:sticky @xl:top-24 @xl:w-64 shrink-0">
-            <h2 className="text-3xl sm:text-4xl font-medium tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-serif font-medium tracking-tight">
               FAQs
             </h2>
             <p className="text-muted-foreground mt-3 text-sm">

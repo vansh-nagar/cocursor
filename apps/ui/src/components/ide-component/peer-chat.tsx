@@ -515,6 +515,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
             className="hidden"
             onChange={handleFileSelect}
           />
+        <ButtonGroup className="flex-1">
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
@@ -547,6 +548,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
           >
             <Send className="size-4" />
           </Button>
+        </ButtonGroup>
         </div>
       </div>
     </div>

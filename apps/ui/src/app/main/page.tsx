@@ -127,54 +127,18 @@ const Page = () => {
   const visibleProjects = projects?.slice(0, 5) ?? [];
 
   return (
-    <div className="flex justify-center items-center h-screen overflow-hidden w-full relative py-10">
-      <svg
-        className=" absolute -z-50 inset-0 w-full"
-        viewBox="0 0 1920 1796"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <g filter="url(#filter0_f_3_23)">
-          <path
-            d="M13.3671 760C433.367 1154 1526.03 617.5 2019.87 300L2203.87 1237.5L313.867 1496C-193.5 1081.5 -406.633 366 13.3671 760Z"
-            fill="#FA6000"
-          />
-        </g>
-        <defs>
-          <filter
-            id="filter0_f_3_23"
-            x="-509.978"
-            y="0"
-            width="3013.85"
-            height="1796"
-            filterUnits="userSpaceOnUse"
-            colorInterpolationFilters="sRGB"
-          >
-            <feFlood floodOpacity="0" result="BackgroundImageFix" />
-            <feBlend
-              mode="normal"
-              in="SourceGraphic"
-              in2="BackgroundImageFix"
-              result="shape"
-            />
-            <feGaussianBlur
-              stdDeviation="150"
-              result="effect1_foregroundBlur_3_23"
-            />
-          </filter>
-        </defs>
-      </svg>
-      <div className="flex flex-col justify-center items-start  ">
+    <div className="flex justify-center items-center min-h-screen sm:h-screen sm:overflow-hidden w-full relative py-12 px-6 sm:px-0">
+      <div className="flex flex-col justify-center items-start w-full sm:w-auto max-w-4xl">
         <Logo />
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <div className="flex  gap-4 mt-2">
+          <div className="grid grid-cols-2 sm:flex gap-3 sm:gap-4 mt-6 w-full">
             {type.map((item, index) =>
               index === 0 ? (
                 <DialogTrigger key={index} asChild disabled={isAtProjectLimit}>
                   <div
                     className={
-                      "flex flex-col p-4 rounded-md bg-muted w-40 transition-all duration-150" +
+                      "flex flex-col p-4 rounded-md bg-muted w-full sm:w-40 transition-all duration-150" +
                       (isAtProjectLimit
                         ? " opacity-60 cursor-not-allowed"
                         : " hover:bg-accent-foreground/20 cursor-pointer")
@@ -186,7 +150,7 @@ const Page = () => {
                 </DialogTrigger>
               ) : (
                 <Link key={index} href={item.link}>
-                  <div className=" flex flex-col p-4 rounded-md bg-muted w-40 hover:bg-accent-foreground/20 transition-all duration-150 cursor-pointer">
+                  <div className=" flex flex-col p-4 rounded-md bg-muted w-full sm:w-40 hover:bg-accent-foreground/20 transition-all duration-150 cursor-pointer">
                     {item.icon}
                     <span className="text-sm mt-1">{item.name}</span>
                   </div>
@@ -238,8 +202,8 @@ const Page = () => {
               key={index}
               className="flex justify-between w-full items-center mt-2"
             >
-              <div className="flex flex-col gap-0.5">
-                <span className="text-sm">{item.name}</span>
+              <div className="flex flex-col gap-0.5 min-w-0 flex-1 mr-4">
+                <span className="text-sm font-medium truncate">{item.name}</span>
                 <div className="text-xs text-muted-foreground">
                   Created At: {formatCreationTime(item._creationTime)}
                 </div>

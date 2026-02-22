@@ -14,7 +14,7 @@ const Page = () => {
   return (
     <div className="relative">
       <Navbar />
-      <TOC />
+      {/* <TOC /> */}
       <div id="hero"><HeroSection /></div>
       <SectionSeparator />
       <div id="features"><Bento /></div>
@@ -25,7 +25,6 @@ const Page = () => {
       <SectionSeparator />
       <div id="pricing"><Pricing /></div>
       <SectionSeparator />
-      {/* <AiAgent /> */}
       <div id="faq"><FAQs /></div>
       <SectionSeparator />
       <Footer />

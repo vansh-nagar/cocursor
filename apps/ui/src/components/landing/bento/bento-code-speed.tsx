@@ -6,6 +6,7 @@ import { useGSAP } from "@gsap/react";
 import { motion } from "motion/react";
 import BentoTextSection from "../bento-text-section";
 import BentoGlowSvg1 from "../svg/bento-glow-svg-1";
+import { Kbd } from "@/components/ui/kbd";
 
 const BentoCodeSpeed = () => {
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -183,15 +184,12 @@ const BentoCodeSpeed = () => {
           </div>
 
           <div className="tab-hint absolute right-4 bottom-4 z-10 flex items-center gap-2 text-[10px] text-[#9da7b3]">
-            <span>Tab to accept</span>
-            <button
-              type="button"
+            <Kbd
               onClick={handleTabClick}
               className="tab-key rounded border border-white/20 bg-white/10 px-1.5 py-0.5 text-[#c9d1d9] hover:bg-white/20"
-              aria-label="Press Tab to accept"
             >
               Tab
-            </button>
+            </Kbd>
           </div>
         </motion.div>
       </div>

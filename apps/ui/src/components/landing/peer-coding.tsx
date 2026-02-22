@@ -174,56 +174,49 @@ const VideoPanel = () => {
       transition={smoothTransition}
       className="h-full p-8 flex items-center justify-center"
     >
-      <div className="w-full max-w-md mb-2">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1, ...smoothTransition }}
-          className="relative aspect-video bg-background mb-2 rounded-xl border border-border overflow-hidden"
-        >
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-background border border-border overflow-hidden">
-              <img
-                src="/image/pfp.png"
-                alt="Peer 1"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-
-        </motion.div>
-
-        {/* Peer thumbnails */}
-        <div className="grid grid-cols-3 gap-2">
-          {[0, 1, 2].map((i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.1, ...smoothTransition }}
-              className="aspect-video bg-background rounded-lg border border-border flex items-center justify-center relative overflow-hidden"
-            >
-              <div className="w-6 h-6 rounded-full bg-background border border-border overflow-hidden">
+      <div className="w-full max-w-sm">
+        <div className="grid grid-cols-1 gap-4">
+          {/* Remote Peer - Saara */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, ...smoothTransition }}
+            className="relative aspect-video bg-background rounded-xl border border-border overflow-hidden"
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-background border border-border overflow-hidden">
                 <img
-                  src={
-                    i === 0
-                      ? "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=128&h=128&facepad=2"
-                      : i === 1
-                        ? "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&h=128&facepad=2"
-                        : "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?auto=format&fit=facearea&w=128&h=128&facepad=2"
-                  }
-                  alt={`Peer ${i + 2}`}
+                  src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&h=128&facepad=2"
+                  alt="Saara"
                   className="w-full h-full object-cover"
                 />
               </div>
+            </div>
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-xs rounded text-[10px] text-white font-medium">
+              Saara
+            </div>
+          </motion.div>
 
-              {i === 2 && (
-                <div className="absolute bottom-1.5 right-1.5 p-1  bg-background border border-border rounded-full flex items-center justify-center">
-                  <MicOff size={10} className="text-destructive" />
-                </div>
-              )}
-            </motion.div>
-          ))}
+          {/* Local Peer - Vansh (or vice versa) */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, ...smoothTransition }}
+            className="relative aspect-video bg-background rounded-xl border border-border overflow-hidden"
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-background border border-border overflow-hidden">
+                <img
+                  src="/image/pfp.png"
+                  alt="Vansh"
+                  className="w-full h-full object-cover shadow-2xl"
+                />
+              </div>
+            </div>
+            <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-xs rounded text-[10px] text-white font-medium">
+              Vansh
+            </div>
+          </motion.div>
         </div>
       </div>
     </motion.div>
@@ -340,7 +333,7 @@ const PeerCoding = () => {
   }, [isHovering]);
 
   return (
-    <div className="relative flex justify-center py-12 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
+    <div className="relative flex justify-center py-10 sm:py-16 md:py-20 lg:py-24 overflow-hidden">
       <div className="w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw] relative z-10">
         <div
           className="grid grid-cols-1 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-12 items-start"
@@ -348,7 +341,7 @@ const PeerCoding = () => {
           onMouseLeave={() => setIsHovering(false)}
         >
           <div className="lg:col-span-2 relative">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight mb-5">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight mb-5">
               Real-Time Peer
               <br />
               Connections

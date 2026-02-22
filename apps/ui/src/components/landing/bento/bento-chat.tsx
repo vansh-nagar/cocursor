@@ -50,11 +50,11 @@ const ChatAnimation = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay: 0.4, ease: "easeOut" }}
           >
-            <WhiteButton 
-              className="text-left px-2 py-2 bg-white text-xs sm:text-xs"
+            <div 
+              className="text-left px-2 py-2 text-xs sm:text-xs border bg-orange-600"
             >
               {userMessage}
-            </WhiteButton>
+            </div>
           </motion.div>
         </div>
       </motion.div>
@@ -87,11 +87,11 @@ const ChatAnimation = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay: 1.2, ease: "easeOut" }}
           >
-            <OrangeButton 
-              className="text-left px-2 py-2 text-xs sm:text-xs"
+            <div  
+              className="text-left px-2 py-2 text-xs sm:text-xs border"
             >
               {aiMessage}
-            </OrangeButton>
+            </div>
           </motion.div>
         </div>
       </motion.div>

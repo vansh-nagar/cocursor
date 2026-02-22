@@ -114,7 +114,7 @@ const BentoCollab = () => {
   return (
     <div className="border flex flex-col justify-between rounded-3xl relative p-4 sm:p-6 md:p-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0">
       <div className="w-full mt-2 mb-6">
-        <CodedCollab />
+        {/* <CodedCollab /> */}
       </div>
 
       <BentoTextSection
