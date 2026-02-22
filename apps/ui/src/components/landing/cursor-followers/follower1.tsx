@@ -78,14 +78,10 @@ const Follower1 = () => {
 </defs>
 </svg>
       <button
-      className=' absolute top-8 -left-10 flex justify-center items-center px-2 py-1 rounded-full text-xs'
+      className='border absolute top-8 -left-10 flex justify-center items-center px-2 py-1 rounded-full text-xs'
         type="button"
         aria-label="Follower action"
-        style={{
-          background: 'linear-gradient(360deg, #FF8A33 0%, #FF4A4A 51.8%), #FF4A4A',
-          boxShadow:
-            'inset 1px -1px 5px rgba(255, 255, 255, 0.4), inset -1px -1px 5px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(255, 255, 255, 0.4), inset 2px -2px 5px rgba(255, 255, 255, 0.4)',
-        }}
+       
       >vansh</button>
     </motion.div>
   )

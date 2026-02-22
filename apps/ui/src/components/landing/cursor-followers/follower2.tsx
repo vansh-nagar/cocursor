@@ -113,14 +113,8 @@ const Follower2 = () => {
 
       <button
         type="button"
-        className=" absolute top-8 -right-10 flex justify-center items-center px-2 py-1 rounded-full text-xs"
+        className="border absolute top-8 -right-10 flex justify-center items-center px-2 py-1 rounded-full text-xs"
         aria-label="Follower action"
-        style={{
-          background: "linear-gradient(360deg, #000DFF 0%, #8800FF 51.8%)",
-          boxShadow:
-            "inset 1px -1px 5px rgba(255, 255, 255, 0.4), inset -1px -1px 5px rgba(255, 255, 255, 0.4), inset -2px -2px 5px rgba(255, 255, 255, 0.4), inset 2px -2px 5px rgba(255, 255, 255, 0.4)",
-          borderRadius: "38px",
-        }}
       >
         saara
       </button>
