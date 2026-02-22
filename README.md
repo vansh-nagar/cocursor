@@ -1,4 +1,4 @@
-# Orcha
+# Cocursor
 
 **Orcha** is a collaborative, AI-powered code editor inspired by Cursor.  
 It enables real-time collaboration, AI-assisted coding, and an interactive development environment directly in the browser.
