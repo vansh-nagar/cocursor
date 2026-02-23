@@ -350,11 +350,9 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                     </div>
                   </div>
 
-                  {showTerminal && (
-                    <div className="h-[220px] border-t border-border shrink-0">
-                      <TerminalComponent />
-                    </div>
-                  )}
+                  <div className={`h-[220px] border-t border-border shrink-0 ${!showTerminal ? "hidden" : ""}`}>
+                    <TerminalComponent />
+                  </div>
                 </div>
               </div>
             </ResizablePanel>

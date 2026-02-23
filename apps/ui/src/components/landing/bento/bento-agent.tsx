@@ -5,7 +5,7 @@ import BentoTextSection from "../bento-text-section";
 
 const BentoAgent = () => {
   return (
-    <div className="rounded-3xl min-h-[300px] border relative overflow-hidden flex flex-col justify-between">
+    <div className="rounded-3xl bg-background min-h-[300px] border relative overflow-hidden flex flex-col justify-between">
       <div className=" h-10">
         <BentoSvg />
       </div>

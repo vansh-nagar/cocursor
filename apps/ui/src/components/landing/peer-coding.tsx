@@ -341,7 +341,7 @@ const PeerCoding = () => {
           onMouseLeave={() => setIsHovering(false)}
         >
           <div className="lg:col-span-2 relative">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium tracking-tight mb-5">
+            <h2 className="text-4xl font-semibold lg:text-5xl mb-5">
               Real-Time Peer
               <br />
               Connections
@@ -358,29 +358,9 @@ const PeerCoding = () => {
                   {activeStep === index && (
                     <motion.div
                       layoutId="activeIndicator"
-                      className="absolute inset-0 rounded-2xl border border-orange-500/30 overflow-hidden"
+                      className="absolute inset-0 rounded-2xl border border-orange-500/30 bg-orange-500/5"
                       transition={springTransition}
-                    >
-                      <style>{`
-                        @keyframes stripe-move {
-                          0% { background-position: 0 0; }
-                          100% { background-position: 50px 50px; }
-                        }
-                        .active-stripe-bg {
-                          background-image: repeating-linear-gradient(
-                            45deg,
-                            rgba(250, 96, 0, 0.05),
-                            rgba(250, 96, 0, 0.05) 10px,
-                            transparent 10px,
-                            transparent 20px
-                          );
-                          background-size: 50px 50px;
-                          animation: stripe-move 2s linear infinite;
-                        }
-                      `}</style>
-                      <div className="absolute inset-0 active-stripe-bg" />
-                      <div className="absolute inset-0 bg-linear-to-br from-orange-500/5 to-transparent" />
-                    </motion.div>
+                    />
                   )}
 
                   <div

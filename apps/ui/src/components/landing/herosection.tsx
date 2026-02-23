@@ -34,22 +34,22 @@ const HeroSection = () => {
       </div>
 
       <div className="mt-8 sm:mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-0 w-full sm:w-auto">
-        <Button asChild className="bg-orange-600" >
+        <Button asChild className="bg-orange-600 rounded-none" >
           <Link href="/main">
             Launch Cocursor
           </Link>
         </Button>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="rounded-none">
           <Link href="/docs">
             See How It Works
           </Link>
         </Button>
       </div>
 
-      <div className="p-1 sm:p-2 md:p-2.5 border bg-black/50 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 rounded-4xl overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
+      <div className="p-1 sm:p-2 md:p-2.5 border bg-black/50 relative mt-8 sm:mt-12 md:mt-16 lg:mt-20 overflow-hidden w-full max-w-[95vw] sm:max-w-[90vw] lg:max-w-[85vw] xl:max-w-[80vw]">
         <img
           src="/image/hero.png"
-          className="w-full h-full rounded-xl z-50 overflow-hidden object-contain"
+          className="w-full h-full z-50 overflow-hidden object-contain"
           alt="Cocursor Dashboard"
         />
       </div>

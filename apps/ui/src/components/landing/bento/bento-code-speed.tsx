@@ -101,7 +101,7 @@ const BentoCodeSpeed = () => {
   return (
     <div
       ref={rootRef}
-      className="rounded-3xl border relative overflow-hidden flex flex-col justify-between min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
+      className="rounded-3xl bg-background border relative overflow-hidden flex flex-col justify-between min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0"
     >
       <div className="p-4 pb-0 sm:p-6 sm:pb-0 md:p-8 md:pb-0 flex-1">
         <motion.div

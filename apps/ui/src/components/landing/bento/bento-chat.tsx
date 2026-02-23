@@ -102,7 +102,7 @@ const ChatAnimation = () => {
 const BentoChat = () => {
   return (
     <div
-      className="rounded-3xl border relative overflow-hidden p-4 sm:p-6 md:p-8 flex flex-col justify-between"
+      className="rounded-3xl border bg-background relative overflow-hidden p-4 sm:p-6 md:p-8 flex flex-col justify-between"
     >
       <ChatAnimation />
 
