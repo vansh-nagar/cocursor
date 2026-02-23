@@ -201,13 +201,13 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
               Connected
             </Badge>
           ) : (
-            <Badge variant="outline" className="text-muted-foreground gap-1.5 py-0.5">
+            <Badge variant="outline" className="text-muted-foreground gap-1.5 py-0.5 rounded-none">
               <WifiOff className="size-3" />
               Waiting for peer
             </Badge>
           )}
         </div>
-        <Badge variant="secondary" className="tabular-nums py-0.5">
+        <Badge variant="secondary" className="tabular-nums py-0.5 rounded-none">
           {totalUserCount} {totalUserCount === 1 ? "user" : "users"}
         </Badge>
         
@@ -515,8 +515,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
             className="hidden"
             onChange={handleFileSelect}
           />
-        <ButtonGroup className="flex-1">
-          <Tooltip>
+            <Tooltip>
             <TooltipTrigger asChild>
               <Button
                 variant="outline"
@@ -530,6 +529,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
             </TooltipTrigger>
             <TooltipContent side="top">Attach File</TooltipContent>
           </Tooltip>
+        <ButtonGroup className="flex-1">
 
           <Input
             ref={textareaRef as any}

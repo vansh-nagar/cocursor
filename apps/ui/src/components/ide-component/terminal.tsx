@@ -5,7 +5,7 @@ import { useIDEStore } from "@/stores/ideStore";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
-import { Terminal as TerminalIcon, X, Maximize2, Minimize2, Trash2, Folder } from "lucide-react";
+import { Terminal as TerminalIcon, X, Maximize2, Trash2, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -234,7 +234,7 @@ const TerminalComponent: React.FC = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 hover:bg-white/5 text-neutral-400 rounded-none"
+            className="h-6 w-6 text-neutral-400 rounded-none"
             onClick={clearTerminal}
             title="Clear Terminal"
           >
@@ -243,14 +243,14 @@ const TerminalComponent: React.FC = () => {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 hover:bg-white/5 text-neutral-400 rounded-none"
+            className="h-6 w-6 text-neutral-400 rounded-none"
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </Button>
           <Button 
             variant="ghost" 
             size="icon" 
-            className="h-6 w-6 hover:bg-white/5 text-red-500/70 hover:text-red-500 rounded-none"
+            className="h-6 w-6 rounded-none text-neutral-400"
           >
             <X className="w-3.5 h-3.5" />
           </Button>

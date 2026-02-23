@@ -113,7 +113,7 @@ const Follower2 = () => {
 
       <button
         type="button"
-        className="border absolute top-8 -right-10 flex justify-center items-center px-2 py-1 rounded-full text-xs"
+        className="border absolute top-8 -right-10 flex justify-center items-center px-2 py-1 bg-background text-xs"
         aria-label="Follower action"
       >
         saara

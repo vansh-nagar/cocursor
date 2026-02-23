@@ -105,7 +105,7 @@ const BentoCodeSpeed = () => {
     >
       <div className="p-4 pb-0 sm:p-6 sm:pb-0 md:p-8 md:pb-0 flex-1">
         <motion.div
-          className="editor relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-3xl border backdrop-blur-xl p-4 sm:p-5 md:p-6"
+          className="editor bg-black relative h-full min-h-[220px] sm:min-h-[260px] overflow-hidden rounded-3xl border backdrop-blur-xl p-4 sm:p-5 md:p-6"
           initial={{ opacity: 0.9, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -186,7 +186,7 @@ const BentoCodeSpeed = () => {
           <div className="tab-hint absolute right-4 bottom-4 z-10 flex items-center gap-2 text-[10px] text-[#9da7b3]">
             <Kbd
               onClick={handleTabClick}
-              className="tab-key rounded border border-white/20 bg-white/10 px-1.5 py-0.5 text-[#c9d1d9] hover:bg-white/20"
+              className="tab-key border border-white/20 bg-white/10 px-1.5 py-0.5 text-[#c9d1d9] hover:bg-white/20"
             >
               Tab
             </Kbd>

@@ -54,7 +54,7 @@ const ActivityBar = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant={showExplorer ? "outline" : "ghost"}
+              variant={showExplorer ? "ghost" : "ghost"}
               size="icon"
               onClick={() => setShowExplorer((prev) => !prev)}
               className={`cursor-pointer ${showExplorer ? "[&_svg]:text-[#FA6000]" : ""}`}
@@ -75,7 +75,7 @@ const ActivityBar = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant={showTerminal ? "outline" : "ghost"}
+              variant={showTerminal ? "ghost" : "ghost"}
               size="icon"
               onClick={() => setShowTerminal((prev) => !prev)}
               className={`cursor-pointer ${showTerminal ? "[&_svg]:text-[#FA6000]" : ""}`}
@@ -88,7 +88,7 @@ const ActivityBar = ({
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
-              variant={showAiChat ? "outline" : "ghost"}
+              variant={showAiChat ? "ghost" : "ghost"}
               size="icon"
               onClick={() => setShowAiChat((prev) => !prev)}
               className={`cursor-pointer ${showAiChat ? "[&_svg]:text-[#FA6000]" : ""}`}
