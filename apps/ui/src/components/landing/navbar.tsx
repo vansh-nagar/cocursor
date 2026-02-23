@@ -57,10 +57,10 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className="fixed w-full top-0 left-0 right-0 z-50 px-4 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-6"
+      className="fixed w-full top-0 left-0 right-0 z-50 px-2 sm:px-6 md:px-8 lg:px-12 pt-4 sm:pt-6"
     >
       <div 
-        className={`max-w-screen-2xl mx-auto flex justify-between items-center py-4 px-6 rounded-3xl border transition-all duration-300 ${
+        className={`max-w-screen-2xl mx-auto flex justify-between items-center py-3 px-4 sm:py-4 sm:px-6 rounded-2xl sm:rounded-3xl border transition-all duration-300 ${
           isScrolled 
             ? "bg-black/80 border-white/10 backdrop-blur-xl shadow-2xl" 
             : "bg-transparent border-transparent"

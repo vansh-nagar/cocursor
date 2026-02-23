@@ -5,7 +5,7 @@ import Follower2 from "./cursor-followers/follower2";
 
 const HeroSection = () => {
   return (
-    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-20 md:py-24 lg:py-28 max-sm:mt-10">
+    <div className="relative flex flex-col max-sm:overflow-x-hidden justify-center items-center sm:min-h-screen px-2 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-20 md:py-24 lg:py-28 max-sm:mt-10">
       <div className="follower1 absolute left-1/6 bottom-1/3 sm:top-1/4 z-40 pointer-events-none">
         <Follower1 />
       </div>
@@ -13,8 +13,8 @@ const HeroSection = () => {
         <Follower2 />
       </div>
 
-      <div className="text-3xl sm:text-4xl mt-20 md:text-5xl lg:text-6xl flex items-center flex-col text-center leading-7 md:leading-10 lg:leading-14">
-        <span className="flex items-center justify-center gap-1 sm:gap-2 md:gap-3 whitespace-nowrap">
+      <div className="text-2xl sm:text-4xl mt-20 md:text-5xl lg:text-6xl flex items-center flex-col text-center leading-tight md:leading-10 lg:leading-14 w-full px-2">
+        <span className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 md:gap-3 sm:whitespace-nowrap">
           <span>Build software</span>
           <div className="w-10 max-sm:hidden h-5 sm:w-14 sm:h-7 md:w-16 md:h-8 lg:w-20 lg:h-10 xl:w-24 xl:h-10 relative">
             <img
@@ -28,9 +28,8 @@ const HeroSection = () => {
         <span className="mt-2 sm:mt-3 md:mt-4">Right in your browser</span>
       </div>
       <div className="mt-4 sm:mt-6 md:mt-8 text-center text-base sm:text-lg md:text-lg text-muted-foreground max-w-xs sm:max-w-md md:max-w-lg lg:max-w-none px-4">
-        A browser-based IDE where AI helps you write code,{" "}
-        <br className=" max-sm:hidden" /> teammates collaborate live, and apps
-        run instantly.
+        A browser-based IDE where AI helps you write code, teammates
+        collaborate live, and apps run instantly.
       </div>
 
       <div className="mt-8 sm:mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-0 w-full sm:w-auto">
