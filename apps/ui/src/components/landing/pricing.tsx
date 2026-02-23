@@ -53,7 +53,7 @@ export default function Pricing() {
 
                                 <Button
                                     asChild
-                                    className="w-full bg-primary hover:bg-primary/90">
+                                    className="w-full bg-orange-600 text-white hover:bg-orange-700">
                                     <Link href="/sign-up">Get Started</Link>
                                 </Button>
                             </div>

@@ -18,14 +18,14 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
   return (
     <div className="h-full bg-background flex flex-col">
       {/* Header with simple Shadcn-style toggle */}
-      <div className="h-12 border-b flex items-center justify-between px-3 shrink-0">
+      <div className="py-1.5 border-b flex items-center justify-between px-2 shrink-0">
         <div className="flex bg-muted p-0.5 rounded-md">
           <Button
             variant={activeTab === "ai" ? "secondary" : "ghost"}
             size="sm"
             onClick={() => setActiveTab("ai")}
             className={cn(
-              "h-7 px-3 text-xs font-medium gap-2 transition-none shadow-none",
+              "h-8 px-3 text-xs font-medium gap-2 transition-none shadow-none",
               activeTab === "ai" ? "bg-background shadow-sm" : ""
             )}
           >
@@ -37,7 +37,7 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
             size="sm"
             onClick={() => setActiveTab("peer")}
             className={cn(
-              "h-7 px-3 text-xs font-medium gap-2 transition-none shadow-none",
+              "h-8 px-3 text-xs font-medium gap-2 transition-none shadow-none",
               activeTab === "peer" ? "bg-background shadow-sm" : ""
             )}
           >

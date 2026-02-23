@@ -27,7 +27,6 @@ import {
   ArrowUpRight,
   FolderDown,
   FolderOpen,
-  Trash,
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
@@ -37,10 +36,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Id } from "../../../convex/_generated/dataModel";
-import OrangeButton, {
-  BlackButton,
-} from "@/components/landing/button/orange-button";
-import { projectFiles } from "@/data/project-file";
+
 
 const type = [
   {
@@ -63,7 +59,6 @@ const type = [
 const Page = () => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const me = useQuery(api.user.getMe);
   const projects = useQuery(api.project.list, {});
   const createUser = useMutation(api.user.createUserIfExists);
   const createProject = useMutation(api.project.create);
@@ -106,7 +101,7 @@ const Page = () => {
       setProjectName("");
       if (project?._id) {
         router.push(`/room/${project._id}`);
-      } else {
+      } else {  
         router.push("/room");
       }
     } finally {
@@ -215,9 +210,8 @@ const Page = () => {
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
-                    variant={"destructive"}
                       size={"icon"}
-                      className="px-3 aspect-square cursor-pointer text-sm font-medium "
+                      className="px-3 aspect-square cursor-pointer text-sm font-medium bg-orange-600 hover:bg-orange-700 text-white "
                     >
                       <Trash2 />
                     </Button>
@@ -250,7 +244,6 @@ const Page = () => {
                     variant={"secondary"} 
                     className="px-3 aspect-square cursor-pointer text-sm font-medium "
                   >
-                    {" "}
                     <ArrowUpRight />
                   </Button>
                 </Link>

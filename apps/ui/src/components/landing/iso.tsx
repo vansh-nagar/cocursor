@@ -1,10 +1,5 @@
 "use client";
-
-import React from "react";
 import LandingIso from "./svg/landing-iso";
-import OrangeButton from "./button/orange-button";
-import Link from "next/link";
-import { ArrowRight, Menu as MenuIcon } from "lucide-react";
 
 const Iso = () => {
   return (
@@ -15,7 +10,7 @@ const Iso = () => {
         </h2>
       </div>
 
-      <div className="w-full max-w-[90vw] lg:max-w-[80vw] flex justify-center items-center">
+      <div className="w-full max-w-[80vw] lg:max-w-[70vw] flex justify-center items-center">
         <LandingIso />
       </div>
     </div>

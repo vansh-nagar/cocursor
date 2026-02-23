@@ -61,7 +61,7 @@ const AiChat = () => {
           {loading ? (
             <Loader2 className="size-3 animate-spin" />
           ) : (
-            <div className="size-1.5 rounded-full bg-[#FA6000]" />
+            <div className="size-1.5 bg-[#FA6000]" />
           )}
           AI Assistant
         </Badge>

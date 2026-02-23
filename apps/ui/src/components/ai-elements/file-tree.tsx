@@ -146,7 +146,7 @@ export const FileTreeFolder = ({
             </button>
           </CollapsibleTrigger>
           <CollapsibleContent>
-            <div className="ml-4 border-l pl-2">{children}</div>
+            <div className="ml-4 border-l border-dashed pl-2">{children}</div>
           </CollapsibleContent>
         </div>
       </Collapsible>
