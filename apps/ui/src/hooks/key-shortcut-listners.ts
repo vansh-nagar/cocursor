@@ -13,6 +13,7 @@ export const useKeyShortcutListeners = ({
 }) => {
   // Sidebar State
   const [showExplorer, setShowExplorer] = useState(true);
+  const [showSearch, setShowSearch] = useState(false);
   const [showAiChat, setShowAiChat] = useState(true);
   const [showTerminal, setShowTerminal] = useState(true);
   const { setActiveTab, activeTab } = useIDEStore();
@@ -23,6 +24,14 @@ export const useKeyShortcutListeners = ({
       if ((e.ctrlKey || e.metaKey) && e.key === "b") {
         e.preventDefault();
         setShowExplorer((prev) => !prev);
+        if (showSearch) setShowSearch(false);
+      }
+
+      // Ctrl/Cmd + Shift + F - Toggle Search
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "F") {
+        e.preventDefault();
+        setShowSearch((prev) => !prev);
+        if (showExplorer) setShowExplorer(false);
       }
 
       // Ctrl/Cmd + ` - Toggle Terminal
@@ -35,6 +44,7 @@ export const useKeyShortcutListeners = ({
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "E") {
         e.preventDefault();
         setShowExplorer((prev) => !prev);
+        if (showSearch) setShowSearch(false);
       }
 
       // Ctrl/Cmd + Shift + A - Toggle AI Chat
@@ -72,13 +82,15 @@ export const useKeyShortcutListeners = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentTabId]);
+  }, [currentTabId, showExplorer, showSearch]);
 
   return {
     setShowTerminal,
     setShowExplorer,
+    setShowSearch,
     setShowAiChat,
     showExplorer,
+    showSearch,
     showTerminal,
     showAiChat,
   };

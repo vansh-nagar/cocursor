@@ -14,6 +14,8 @@ import {
 type SidebarProps = {
   showExplorer: boolean;
   setShowExplorer: React.Dispatch<React.SetStateAction<boolean>>;
+  showSearch: boolean;
+  setShowSearch: React.Dispatch<React.SetStateAction<boolean>>;
   showTerminal: boolean;
   setShowTerminal: React.Dispatch<React.SetStateAction<boolean>>;
   showAiChat: boolean;
@@ -23,6 +25,8 @@ type SidebarProps = {
 const ActivityBar = ({
   showExplorer,
   setShowExplorer,
+  showSearch,
+  setShowSearch,
   showTerminal,
   setShowTerminal,
   showAiChat,
@@ -56,7 +60,10 @@ const ActivityBar = ({
             <Button
               variant={showExplorer ? "ghost" : "ghost"}
               size="icon"
-              onClick={() => setShowExplorer((prev) => !prev)}
+              onClick={() => {
+                setShowExplorer((prev) => !prev);
+                if (!showExplorer) setShowSearch(false);
+              }}
               className={`cursor-pointer ${showExplorer ? "[&_svg]:text-[#FA6000]" : ""}`}
             >
               <File />
@@ -66,11 +73,19 @@ const ActivityBar = ({
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="cursor-pointer">
+            <Button
+              variant={showSearch ? "ghost" : "ghost"}
+              size="icon"
+              onClick={() => {
+                setShowSearch((prev) => !prev);
+                if (!showSearch) setShowExplorer(false);
+              }}
+              className={`cursor-pointer ${showSearch ? "[&_svg]:text-[#FA6000]" : ""}`}
+            >
               <Search />
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="right">Search</TooltipContent>
+          <TooltipContent side="right">Search (Ctrl+Shift+F)</TooltipContent>
         </Tooltip>
         <Tooltip>
           <TooltipTrigger asChild>

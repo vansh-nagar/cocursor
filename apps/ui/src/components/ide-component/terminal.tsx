@@ -219,7 +219,6 @@ const TerminalComponent: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a] border-t border-white/5 overflow-hidden group/term relative rounded-none">
-      {/* Terminal Header */}
       <div className="flex items-center justify-between px-4 py-1.5 bg-[#0d0d0d] border-b border-white/5 select-none shrink-0 rounded-none">
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-none bg-white/5 border border-white/10">
@@ -286,7 +285,6 @@ const TerminalComponent: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Terminal Content */}
       <div className="flex-1 w-full bg-[#0a0a0a] relative overflow-hidden rounded-none">
         <div 
           ref={terminalRef} 

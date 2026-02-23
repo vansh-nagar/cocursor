@@ -10,6 +10,8 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { motion } from "motion/react";
 import OrangeButton from "../landing/button/orange-button";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import ExportGithubDialog from "./export-github";
+import { FileSystemTree } from "@webcontainer/api";
 
 interface TabInfo {
   id: string;
@@ -36,6 +38,8 @@ interface NavBarProps {
   setActiveTab?: (tab: "code" | "preview") => void;
   previewDevice?: "desktop" | "tablet" | "mobile";
   setPreviewDevice?: (device: "desktop" | "tablet" | "mobile") => void;
+  fileStructure: FileSystemTree;
+  projectName?: string;
 }
 
 const NavBar: React.FC<NavBarProps> = ({
@@ -55,6 +59,8 @@ const NavBar: React.FC<NavBarProps> = ({
   setActiveTab = () => {},
   previewDevice = "desktop",
   setPreviewDevice = () => {},
+  fileStructure,
+  projectName,
 }) => {
   const devices = [
     { id: "desktop", icon: Monitor, label: "Desktop" },
@@ -107,7 +113,7 @@ const NavBar: React.FC<NavBarProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => setActiveTab("preview")}
-            className={`h-8 px-3 text-xs rounded-none ${
+            className={`text-xs rounded-none ${
               activeTab === "preview" ? "bg-accent" : ""
             }`}
           >
@@ -118,7 +124,7 @@ const NavBar: React.FC<NavBarProps> = ({
             variant="ghost"
             size="sm"
             onClick={() => setActiveTab("code")}
-            className={`h-8 px-3 text-xs rounded-none ${
+            className={`text-xs rounded-none ${
               activeTab === "code" ? "bg-accent" : ""
             }`}
           >
@@ -137,7 +143,7 @@ const NavBar: React.FC<NavBarProps> = ({
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => setPreviewDevice(device.id)}
-                      className={`relative px-2 h-full transition-colors flex items-center justify-center ${
+                      className={`relative px-2 h-10 transition-colors flex items-center justify-center ${
                         isActive
                           ? "bg-accent text-foreground"
                           : "text-muted-foreground hover:bg-accent/50"
@@ -168,12 +174,13 @@ const NavBar: React.FC<NavBarProps> = ({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button className="h-8 px-2 text-xs ">
-              Export To Github
-            </Button>
+            <ExportGithubDialog 
+              fileStructure={fileStructure} 
+              projectName={projectName}
+            />
           </TooltipTrigger>
           <TooltipContent>
-            <p>Export</p>
+            <p>Export to GitHub</p>
           </TooltipContent>
         </Tooltip>
       </div>

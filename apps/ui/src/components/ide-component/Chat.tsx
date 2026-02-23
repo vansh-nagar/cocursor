@@ -19,7 +19,7 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
     <div className="h-full bg-background flex flex-col">
       {/* Header with simple Shadcn-style toggle */}
       <div className="py-1.5 border-b flex items-center justify-between px-2 shrink-0">
-        <div className="flex bg-muted p-0.5 rounded-md">
+        <div className="flex bg-muted p-0.5 rounded-md ">
           <Button
             variant={activeTab === "ai" ? "secondary" : "ghost"}
             size="sm"

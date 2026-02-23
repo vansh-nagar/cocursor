@@ -14,6 +14,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { FileSystemTree } from "@webcontainer/api";
+import { FileIconCustom } from "./file-icon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,7 +38,7 @@ interface FolderPreviewProps {
   onRenameNode?: (oldPath: string, newPath: string) => void;
 }
 
-// --- Context Menu ---
+
 interface ContextMenuState {
   x: number;
   y: number;
@@ -46,13 +47,13 @@ interface ContextMenuState {
   type: "file" | "folder" | "root";
 }
 
-// --- Inline Input ---
+
 interface InlineInputState {
   parentPath: string;
   type: "file" | "folder";
 }
 
-// --- Drag State ---
+
 interface DragState {
   sourcePath: string;
   sourceName: string;
@@ -296,9 +297,9 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
     return (
       <div className="flex items-center gap-1.5 px-2 py-1 ml-6">
         {inlineInput.type === "folder" ? (
-          <FolderClosed className="h-4 w-4 text-orange-400 shrink-0" />
+          <FolderClosed className="h-4 w-4  shrink-0" />
         ) : (
-          <File className="h-4 w-4 text-orange-600 shrink-0" />
+          <File className="h-4 w-4 shrink-0" />
         )}
         <input
           ref={inlineInputRef}
@@ -360,9 +361,9 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
                 <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
               )}
               {isExpanded ? (
-                <FolderOpen className="h-4 w-4 text-orange-600 shrink-0" />
+                <FolderOpen className="h-4 w-4  shrink-0" />
               ) : (
-                <FolderClosed className="h-4 w-4 text-orange-600 shrink-0" />
+                <FolderClosed className="h-4 w-4 shrink-0" />
               )}
 
               {isBeingRenamed ? (
@@ -441,7 +442,7 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
         );
       }
 
-      // --- File Node ---
+
       const isBeingRenamed = renamingPath === fullPath;
 
       return (
@@ -458,7 +459,7 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
           onDragStart={(e) => handleDragStart(e, fullPath, name, "file")}
           onDragEnd={handleDragEnd}
         >
-          <File className="h-4 w-4 text-orange-600 shrink-0" />
+          <FileIconCustom filename={name} className="h-4 w-4 shrink-0" />
 
           {isBeingRenamed ? (
             <input
@@ -625,7 +626,7 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog open={!!deleteTarget} onOpenChange={(open: boolean) => !open && setDeleteTarget(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete "{deleteTarget?.name}"?</AlertDialogTitle>

@@ -27,6 +27,7 @@ import { useKeyShortcutListeners } from "@/hooks/key-shortcut-listners";
 import { useWebContainer } from "@/hooks/webcontainer";
 import Chat from "@/components/ide-component/Chat";
 import ActivityBar from "@/components/ide-component/activity-bar";
+import SearchPanel from "@/components/ide-component/SearchPanel";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { FileSystemTree } from "@webcontainer/api";
@@ -85,6 +86,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
   const {
     showExplorer,
     setShowExplorer,
+    showSearch,
+    setShowSearch,
     showTerminal,
     setShowTerminal,
     showAiChat,
@@ -148,12 +151,12 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
   useEffect(() => {
     const panel = explorerPanelRef.current;
     if (!panel) return;
-    if (showExplorer) {
+    if (showExplorer || showSearch) {
       if (panel.isCollapsed()) panel.expand();
     } else {
       if (!panel.isCollapsed()) panel.collapse();
     }
-  }, [showExplorer]);
+  }, [showExplorer, showSearch]);
 
   useEffect(() => {
     const panel = terminalPanelRef.current;
@@ -194,6 +197,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
             <ActivityBar
               showExplorer={showExplorer}
               setShowExplorer={setShowExplorer}
+              showSearch={showSearch}
+              setShowSearch={setShowSearch}
               showTerminal={showTerminal}
               setShowTerminal={setShowTerminal}
               showAiChat={showAiChat}
@@ -203,63 +208,77 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
 
             <ResizablePanel
               ref={explorerPanelRef}
-              defaultSize={showExplorer ? 20 : 0}
+              defaultSize={showExplorer || showSearch ? 20 : 0}
               minSize={15}
               maxSize={40}
               collapsible={true}
               collapsedSize={0}
               onCollapse={() => {
                 if (showExplorer) setShowExplorer(false);
+                if (showSearch) setShowSearch(false);
               }}
               onExpand={() => {
-                if (!showExplorer) setShowExplorer(true);
+                if (!showExplorer && !showSearch) setShowExplorer(true);
               }}
             >
               <div className="h-full bg-muted/30 flex flex-col">
-                <div className="px-4 py-3 font-semibold text-sm border-b flex items-center justify-between">
-                  <span>Explorer</span>
-                  <div className="flex gap-0.5">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => folderPreviewRef.current?.startNewFile()}
-                        >
-                          <Plus className="h-3.5 w-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>New File</TooltipContent>
-                    </Tooltip>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6"
-                          onClick={() => folderPreviewRef.current?.startNewFolder()}
-                        >
-                          <FolderPlus className="h-3.5 w-3.5" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>New Folder</TooltipContent>
-                    </Tooltip>
-                  </div>
-                </div>
+                {showSearch ? (
+                  <SearchPanel
+                    fileStructure={fileStructure}
+                    onFileClick={handleFileClick}
+                  />
+                ) : (
+                  <>
+                    <div className="px-4 py-3 font-semibold text-sm border-b flex items-center justify-between">
+                      <span>Explorer</span>
+                      <div className="flex gap-0.5">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() =>
+                                folderPreviewRef.current?.startNewFile()
+                              }
+                            >
+                              <Plus className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>New File</TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() =>
+                                folderPreviewRef.current?.startNewFolder()
+                              }
+                            >
+                              <FolderPlus className="h-3.5 w-3.5" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>New Folder</TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </div>
 
-                <FolderPreview
-                  ref={folderPreviewRef}
-                  fileStructure={fileStructure}
-                  expandedFolders={expandedFolders}
-                  selectedFile={selectedFile}
-                  onToggleFolder={toggleFolder}
-                  onFileClick={handleFileClick}
-                  onCreateFile={handleCreateFile}
-                  onCreateFolder={handleCreateFolder}
-                  onDeleteNode={handleDeleteNode}
-                  onRenameNode={handleRenameNode}
-                />
+                    <FolderPreview
+                      ref={folderPreviewRef}
+                      fileStructure={fileStructure}
+                      expandedFolders={expandedFolders}
+                      selectedFile={selectedFile}
+                      onToggleFolder={toggleFolder}
+                      onFileClick={handleFileClick}
+                      onCreateFile={handleCreateFile}
+                      onCreateFolder={handleCreateFolder}
+                      onDeleteNode={handleDeleteNode}
+                      onRenameNode={handleRenameNode}
+                    />
+                  </>
+                )}
               </div>
             </ResizablePanel>
             <ResizableHandle />
@@ -286,6 +305,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                   setActiveTab={setActiveTab}
                   previewDevice={previewDevice}
                   setPreviewDevice={setPreviewDevice}
+                  fileStructure={fileStructure}
+                  projectName={getProjectData?.name}
                 />
 
                 <div className="flex flex-col flex-1 overflow-hidden">

@@ -28,8 +28,9 @@ const HeroSection = () => {
         <span className="mt-2 sm:mt-3 md:mt-4">Right in your browser</span>
       </div>
       <div className="mt-4 sm:mt-6 md:mt-8 text-center text-base sm:text-lg md:text-lg text-muted-foreground max-w-xs sm:max-w-md md:max-w-lg lg:max-w-none px-4">
-        A browser-based IDE where AI helps you write code, teammates
-        collaborate live, and apps run instantly.
+        A browser-based IDE where AI helps you write code,{" "}
+        <br className=" max-sm:hidden" /> teammates collaborate live, and apps
+        run instantly.
       </div>
 
       <div className="mt-8 sm:mt-12 md:mt-16 flex flex-col sm:flex-row gap-4 sm:gap-6 lg:gap-8 px-4 sm:px-0 w-full sm:w-auto">
