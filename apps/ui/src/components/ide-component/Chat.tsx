@@ -13,7 +13,7 @@ interface ChatProps {
 
 const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
   const { totalUserCount, peerConnected } = roomConnection;
-  const [activeTab, setActiveTab] = useState<"ai" | "peer">("peer");
+  const [activeTab, setActiveTab] = useState<"ai" | "peer">("ai");
 
   return (
     <div className="h-full bg-background flex flex-col">
@@ -26,7 +26,7 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
             onClick={() => setActiveTab("ai")}
             className={cn(
               "h-8 px-3 text-xs font-medium gap-2 transition-none shadow-none",
-              activeTab === "ai" ? "bg-background shadow-sm" : ""
+              activeTab === "ai" ? "bg-background shadow-sm" : "",
             )}
           >
             <Sparkles className="size-3.5" />
@@ -38,7 +38,7 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
             onClick={() => setActiveTab("peer")}
             className={cn(
               "h-8 px-3 text-xs font-medium gap-2 transition-none shadow-none",
-              activeTab === "peer" ? "bg-background shadow-sm" : ""
+              activeTab === "peer" ? "bg-background shadow-sm" : "",
             )}
           >
             <Users className="size-3.5" />
@@ -61,7 +61,9 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
         <div
           className={cn(
             "absolute inset-0",
-            activeTab === "ai" ? "visible opacity-100 z-10" : "invisible opacity-0 z-0"
+            activeTab === "ai"
+              ? "visible opacity-100 z-10"
+              : "invisible opacity-0 z-0",
           )}
         >
           <div className="h-full">
@@ -71,7 +73,9 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
         <div
           className={cn(
             "absolute inset-0",
-            activeTab === "peer" ? "visible opacity-100 z-10" : "invisible opacity-0 z-0"
+            activeTab === "peer"
+              ? "visible opacity-100 z-10"
+              : "invisible opacity-0 z-0",
           )}
         >
           <PeerChat projectId={projectId} roomConnection={roomConnection} />

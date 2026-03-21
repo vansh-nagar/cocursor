@@ -57,7 +57,10 @@ const AiChat = () => {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <div className="flex items-center gap-1 px-3 py-2.5 border-b bg-muted/40 shrink-0">
-        <Badge variant="outline" className="text-[#FA6000] rounded-none border-[#FA6000]/30 bg-[#FA6000]/10 gap-1.5 py-0.5">
+        <Badge
+          variant="outline"
+          className="text-[#FA6000] rounded-none border-[#FA6000]/30 bg-[#FA6000]/10 gap-1.5 py-0.5"
+        >
           {loading ? (
             <Loader2 className="size-3 animate-spin" />
           ) : (
@@ -91,7 +94,7 @@ const AiChat = () => {
                   </MessageContent>
                 </Message>
               ))}
- 
+
               {loading && (
                 <div className="flex justify-start p-2">
                   <Skeleton className="h-10 w-40" />
