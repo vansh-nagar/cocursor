@@ -65,6 +65,9 @@ export const useKeyShortcutListeners = ({
         setActiveTab("code");
       }
 
+      // Ctrl/Cmd + I is handled inside the editor (see code-editor.tsx) so it
+      // only fires when the editor has focus. Nothing to do here.
+
       // Ctrl/Cmd + S - Save
       if ((e.ctrlKey || e.metaKey) && e.key === "s") {
         e.preventDefault();
