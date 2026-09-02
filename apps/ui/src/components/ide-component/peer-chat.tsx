@@ -7,6 +7,7 @@ import {
   VideoOff,
   Mic,
   MicOff,
+  Phone,
   PhoneOff,
   Upload,
   Download,
@@ -43,6 +44,8 @@ import {
   PopoverTitle,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import type { RoomConnection } from "@/hooks/rtc-ws";
 
 interface SharedFile {
   id: string;
@@ -54,7 +57,7 @@ interface SharedFile {
 
 interface PeerChatProps {
   projectId?: string;
-  roomConnection: any;
+  roomConnection: RoomConnection;
 }
 
 const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
@@ -63,50 +66,47 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [fileHistory, setFileHistory] = useState<SharedFile[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
     sendMessage,
     peerMessages,
     totalUserCount,
     peerConnected,
+    connectionState,
     isAudioEnabled,
     isVideoEnabled,
     isInCall,
+    isRemoteVideoOn,
+    startCall,
+    endCall,
     toggleAudio,
     toggleVideo,
-    endCall,
-    localVideoStream,
-    remoteVideoStream,
     localStream,
     remoteStream,
-    localStreams,
-    remoteStreams,
-    send,
-    File: selectedFiles,
-    setFile,
-    Image: receivedFileUrl,
-    sendingFile,
-    fileNameRef,
-    uploadedSize,
-    totalSize,
+    sendFile,
+    receivedFiles,
+    dismissFile,
+    sendProgress,
+    receiveProgress,
   } = roomConnection;
 
   const localVideoRef = useCallback(
     (node: HTMLVideoElement | null) => {
-      localVideoStream.current = node;
-      if (node && localStream) {
-        node.srcObject = localStream;
-      }
+      if (node && localStream) node.srcObject = localStream;
     },
     [localStream],
   );
 
   const remoteVideoRef = useCallback(
     (node: HTMLVideoElement | null) => {
-      remoteVideoStream.current = node;
-      if (node && remoteStream) {
-        node.srcObject = remoteStream;
-      }
+      if (!node || !remoteStream) return;
+      node.srcObject = remoteStream;
+      // Autoplay can be refused; without this the peer is silently inaudible
+      // with nothing in the UI to explain it.
+      node.play().catch(() => {
+        toast.info("Click the video to start playback.");
+      });
     },
     [remoteStream],
   );
@@ -132,61 +132,61 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
     }
   };
 
+  // Mirror incoming files into the shared-media history.
   useEffect(() => {
-    if (receivedFileUrl) {
-      const newFile: SharedFile = {
-        id: Math.random().toString(36).substr(2, 9),
-        name: fileNameRef.current || "received-file",
-        url: receivedFileUrl,
-        timestamp: Date.now(),
-        type: "received",
-      };
-      setFileHistory((prev) => [newFile, ...prev]);
-    }
-  }, [receivedFileUrl]);
+    if (receivedFiles.length === 0) return;
+    const latest = receivedFiles[receivedFiles.length - 1];
+
+    setFileHistory((prev) =>
+      prev.some((f) => f.id === latest.id)
+        ? prev
+        : [
+            {
+              id: latest.id,
+              name: latest.name,
+              url: latest.url,
+              timestamp: Date.now(),
+              type: "received",
+            },
+            ...prev,
+          ],
+    );
+  }, [receivedFiles]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files && files.length > 0) {
-      setFile(Array.from(files));
-    }
+    if (files && files.length > 0) setSelectedFile(files[0]);
   };
 
   const handleSendFile = async () => {
-    if (!selectedFiles || selectedFiles.length === 0) return;
-    const fileName = selectedFiles[0].name;
-    const fileUrl = URL.createObjectURL(selectedFiles[0]); // Temporary URL for history representation
+    if (!selectedFile) return;
 
-    await send();
+    const { name } = selectedFile;
+    await sendFile(selectedFile);
 
-    const newFile: SharedFile = {
-      id: Math.random().toString(36).substr(2, 9),
-      name: fileName,
-      url: fileUrl,
-      timestamp: Date.now(),
-      type: "sent",
-    };
-    setFileHistory((prev) => [newFile, ...prev]);
+    setFileHistory((prev) => [
+      {
+        id: `${Date.now()}-sent`,
+        name,
+        url: "",
+        timestamp: Date.now(),
+        type: "sent",
+      },
+      ...prev,
+    ]);
 
-    setFile(null);
+    setSelectedFile(null);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleDownloadFile = () => {
-    if (!receivedFileUrl) return;
-    const a = document.createElement("a");
-    a.href = receivedFileUrl;
-    a.download = fileNameRef.current || "received-file";
-    a.click();
-  };
+  const latestReceived = receivedFiles[receivedFiles.length - 1] ?? null;
+  const isSending = sendProgress !== null;
+  const uploadProgress = sendProgress ?? 0;
 
-  const uploadProgress =
-    totalSize > 0 ? Math.min((uploadedSize / totalSize) * 100, 100) : 0;
-
-  const hasRemoteStream =
-    remoteStream && remoteStream.getTracks().length > 0;
-  const hasLocalStream =
-    localStream && localStream.getTracks().length > 0;
+  // Counting tracks was true even for disabled ones, so "Peer camera off"
+  // never showed and users just saw an unexplained black rectangle.
+  const hasRemoteStream = Boolean(remoteStream);
+  const hasLocalStream = Boolean(localStream);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -203,13 +203,54 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
           ) : (
             <Badge variant="outline" className="text-muted-foreground gap-1.5 py-0.5 rounded-none">
               <WifiOff className="size-3" />
-              Waiting for peer
+              {connectionState === "disconnected"
+                ? "Reconnecting..."
+                : connectionState === "rejected"
+                  ? "Room full"
+                  : "Waiting for peer"}
             </Badge>
           )}
         </div>
         <Badge variant="secondary" className="tabular-nums py-0.5 rounded-none">
           {totalUserCount} {totalUserCount === 1 ? "user" : "users"}
         </Badge>
+
+        {!isInCall ? (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2 text-xs gap-1.5"
+                onClick={startCall}
+                disabled={!peerConnected && totalUserCount < 2}
+              >
+                <Phone className="size-3.5" />
+                Call
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              {totalUserCount < 2
+                ? "Waiting for someone to join"
+                : "Start a voice/video call"}
+            </TooltipContent>
+          </Tooltip>
+        ) : (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2 text-xs gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={endCall}
+              >
+                <PhoneOff className="size-3.5" />
+                Hang up
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">End the call</TooltipContent>
+          </Tooltip>
+        )}
         
         <div className="ml-auto">
           <Popover>
@@ -296,9 +337,11 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                   playsInline
                   className="w-full h-full object-cover"
                 />
-                {!hasRemoteStream && (
+                {!isRemoteVideoOn && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-[11px] text-white/50">Peer camera off</p>
+                    <p className="text-[11px] text-white/50">
+                      {hasRemoteStream ? "Peer camera off" : "Waiting for peer video"}
+                    </p>
                   </div>
                 )}
                 <Badge variant="secondary" className="absolute bottom-1 left-1.5 text-[10px] py-0 px-1.5 bg-black/60 text-white/80 border-0">
@@ -369,9 +412,9 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
         </>
       )}
 
-      {(selectedFiles || receivedFileUrl || sendingFile) && (
+      {(selectedFile || latestReceived || isSending || receiveProgress !== null) && (
         <div className="shrink-0 p-3 bg-muted/20 border-b space-y-2">
-          {selectedFiles && selectedFiles.length > 0 && !sendingFile && (
+          {selectedFile && !isSending && (
             <div className="flex items-center gap-3 bg-background border px-3 py-2.5 rounded-md shadow-sm">
               <div className="size-9 rounded bg-[#FA6000]/10 flex items-center justify-center shrink-0 shadow-inner">
                 <FileIcon className="size-5 text-[#FA6000]" />
@@ -379,7 +422,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
               <div className="flex-1 min-w-0 flex flex-col justify-center">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-xs font-semibold truncate text-foreground">
-                    {selectedFiles[0].name}
+                    {selectedFile.name}
                   </span>
                 </div>
               </div>
@@ -399,7 +442,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                   variant="ghost"
                   className="size-8 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors shrink-0"
                   onClick={() => {
-                    setFile(null);
+                    setSelectedFile(null);
                     if (fileInputRef.current) fileInputRef.current.value = "";
                   }}
                 >
@@ -409,7 +452,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
             </div>
           )}
 
-          {sendingFile && (
+          {isSending && (
             <div className="bg-background border rounded-md p-3 shadow-sm space-y-2">
               <div className="flex items-center gap-2">
                 <div className="size-6 rounded bg-[#FA6000]/10 flex items-center justify-center shrink-0">
@@ -426,7 +469,24 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
             </div>
           )}
 
-          {receivedFileUrl && (
+          {receiveProgress !== null && (
+            <div className="bg-background border rounded-md p-3 shadow-sm space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="size-6 rounded bg-emerald-500/10 flex items-center justify-center shrink-0">
+                  <Loader2 className="size-3.5 animate-spin text-emerald-600" />
+                </div>
+                <span className="text-xs font-semibold text-foreground flex-1 truncate">
+                  Receiving file...
+                </span>
+                <span className="text-[10px] font-mono font-bold text-muted-foreground">
+                  {Math.round(receiveProgress)}%
+                </span>
+              </div>
+              <Progress value={receiveProgress} className="h-1 bg-muted" />
+            </div>
+          )}
+
+          {latestReceived && (
             <div className="flex items-center gap-3 bg-background border px-3 py-2 rounded-md shadow-sm animate-in fade-in slide-in-from-top-1 duration-300 overflow-hidden">
               <div className="size-8 rounded bg-emerald-500/10 flex items-center justify-center shrink-0 shadow-inner">
                 <Download className="size-4 text-emerald-600" />
@@ -434,7 +494,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold truncate text-foreground">
-                    {fileNameRef.current || "Received file"}
+                    {latestReceived.name}
                   </span>
                 </div>
               </div>
@@ -443,7 +503,12 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                   size="sm"
                   variant="outline"
                   className="h-7 px-2.5 text-[11px] border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/10 hover:text-emerald-700 text-emerald-600 transition-all shadow-sm flex items-center gap-1.5"
-                  onClick={handleDownloadFile}
+                  onClick={() => {
+                    const a = document.createElement("a");
+                    a.href = latestReceived.url;
+                    a.download = latestReceived.name;
+                    a.click();
+                  }}
                 >
                   <Download className="size-3" />
                   Download
@@ -452,9 +517,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                   size="icon"
                   variant="ghost"
                   className="size-7 text-muted-foreground hover:bg-muted shrink-0"
-                  onClick={() => {
-                    // roomConnection.clearReceivedFile() logic
-                  }}
+                  onClick={() => dismissFile(latestReceived.id)}
                 >
                   <X className="size-4" />
                 </Button>
@@ -472,8 +535,10 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                 
               </div>
             ) : (
-              peerMessages.map((msg: any, i: number) => {
-                const isUser = msg.role === "user";
+              peerMessages.map((msg, i) => {
+                // Inbound messages used to be labelled "assistant", so a peer's
+                // message rendered with the AI chat's styling.
+                const isUser = msg.role === "self";
                 const showGap =
                   i === 0 || peerMessages[i - 1]?.role !== msg.role;
 
