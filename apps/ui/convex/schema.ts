@@ -9,8 +9,11 @@ export default defineSchema({
 
   Project: defineTable({
     name: v.string(),
-    ownerId: v.id("User"), // ✅ link to user
-  }).index("by_owner", ["ownerId"]),
+    ownerId: v.id("User"),
+    // Users invited to collaborate. Optional so existing rows stay valid.
+    members: v.optional(v.array(v.id("User"))),
+  })
+    .index("by_owner", ["ownerId"]),
 
   Node: defineTable({
     projectId: v.id("Project"),

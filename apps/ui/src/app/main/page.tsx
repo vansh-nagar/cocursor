@@ -36,6 +36,7 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Id } from "../../../convex/_generated/dataModel";
+import { PROJECT_LIMIT } from "@/lib/constants";
 
 
 const type = [
@@ -70,7 +71,7 @@ const Page = () => {
     null,
   );
   const projectCount = projects?.length ?? 0;
-  const isAtProjectLimit = projectCount >= 5;
+  const isAtProjectLimit = projectCount >= PROJECT_LIMIT;
 
   const formatCreationTime = (timestampMs: number) =>
     new Intl.DateTimeFormat("en-US", {
@@ -83,7 +84,7 @@ const Page = () => {
 
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
-    createUser({ name: user.fullName ?? "Unknown", clerkId: user.id });
+    createUser({ name: user.fullName ?? undefined });
   }, [isLoaded, user?.id, user?.fullName, createUser]);
 
   const handleEnterRoom = async (event: React.FormEvent) => {
@@ -119,7 +120,7 @@ const Page = () => {
     }
   };
 
-  const visibleProjects = projects?.slice(0, 5) ?? [];
+  const visibleProjects = projects ?? [];
 
   return (
     <div className="flex justify-center items-center min-h-screen sm:h-screen sm:overflow-hidden w-full relative py-12 px-6 sm:px-0">
@@ -179,8 +180,8 @@ const Page = () => {
               </DialogFooter>
               {isAtProjectLimit && (
                 <p className="text-xs text-muted-foreground">
-                  You reached the 5 project limit. Delete a project to create a
-                  new one.
+                  You reached the {PROJECT_LIMIT} project limit. Delete a project to
+                  create a new one.
                 </p>
               )}
             </form>
@@ -251,10 +252,10 @@ const Page = () => {
             </div>
           ))}
         </div>
-        {(projects?.length ?? 0) > 5 && (
+        {isAtProjectLimit && (
           <p className="mt-4 w-full text-xs text-muted-foreground">
-            You reached the 5 project limit. Delete a project to create a new
-            one.
+            You reached the {PROJECT_LIMIT} project limit. Delete a project to
+            create a new one.
           </p>
         )}
       </div>

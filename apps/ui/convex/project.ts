@@ -1,56 +1,50 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import {
-  templateToNodes,
-  nodesToTemplate,
-  Template,
-} from "./lib/templateToNodes";
+import { templateToNodes, nodesToTemplate } from "./lib/templateToNodes";
+import { requireProjectAccess, requireProjectOwner, requireUser } from "./lib/auth";
 import { projectFiles } from "../src/data/project-file";
+import { PROJECT_LIMIT } from "../src/lib/constants";
 
-// Get all projects
+// List the signed-in user's projects, newest first
 export const list = query({
-  handler: async (ctx, _) => {
+  handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
     const user = await ctx.db
       .query("User")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity?.subject ?? ""))
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
       .unique();
 
-    if (!identity || !user) return [];
+    if (!user) return [];
 
-    const projects = await ctx.db
+    return await ctx.db
       .query("Project")
       .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+      .order("desc")
       .collect();
-
-    return projects;
   },
 });
 
-// Get a single project by ID
+// Get a single project plus its file tree
 export const get = query({
   args: { id: v.id("Project") },
   handler: async (ctx, args) => {
-    const project = await ctx.db.get(args.id);
-    if (!project) return null;
+    const { project } = await requireProjectAccess(ctx, args.id);
 
     const nodes = await ctx.db
       .query("Node")
       .withIndex("by_project", (q) => q.eq("projectId", args.id))
       .collect();
 
-    const fileTree = nodesToTemplate(nodes);
-
-    console.log(fileTree);
-
     return {
       ...project,
-      fileTree,
+      fileTree: nodesToTemplate(nodes),
     };
   },
 });
 
-// Create a new project
+// Create a new project, seeded from a template or from supplied files
 export const create = mutation({
   args: {
     name: v.string(),
@@ -59,49 +53,50 @@ export const create = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const user = await ctx.db
-      .query("User")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity?.subject ?? ""))
-      .unique();
+    const user = await requireUser(ctx);
 
-    if (!identity || !user)
+    const name = args.name.trim();
+    if (!name) {
+      throw new Error("Project name cannot be empty");
+    }
+
+    // Server-side limit. The UI also checks, but Convex functions are a public
+    // HTTP surface — a client-only check is not a limit.
+    const existing = await ctx.db
+      .query("Project")
+      .withIndex("by_owner", (q) => q.eq("ownerId", user._id))
+      .collect();
+
+    if (existing.length >= PROJECT_LIMIT) {
       throw new Error(
-        "Unauthorized: User must be logged in to create a project",
+        `Project limit reached (${PROJECT_LIMIT}). Delete a project to create another.`,
       );
+    }
 
     const projectId = await ctx.db.insert("Project", {
-      name: args.name,
-      ownerId: user?._id,
+      name,
+      ownerId: user._id,
+      members: [],
     });
 
-    // Create initial files if provided, otherwise seed from template
-    if (args.initialFiles && args.initialFiles.length > 0) {
-      for (const file of args.initialFiles) {
-        await ctx.db.insert("Node", {
-          projectId,
-          name: file.path.split("/").pop() || file.path,
-          type: "file",
-          path: file.path,
-          content: file.content,
-        });
-      }
-    } else {
-      const template = projectFiles;
-      console.log("Seeding new project with template:", template);
-      if (template) {
-        const nodes = templateToNodes(template);
+    const seedNodes =
+      args.initialFiles && args.initialFiles.length > 0
+        ? args.initialFiles.map((file) => ({
+            name: file.path.split("/").pop() || file.path,
+            type: "file" as const,
+            path: file.path.startsWith("/") ? file.path : `/${file.path}`,
+            content: file.content,
+          }))
+        : templateToNodes(projectFiles);
 
-        for (const node of nodes) {
-          await ctx.db.insert("Node", {
-            projectId,
-            name: node.name,
-            type: node.type,
-            path: node.path,
-            content: node.content,
-          });
-        }
-      }
+    for (const node of seedNodes) {
+      await ctx.db.insert("Node", {
+        projectId,
+        name: node.name,
+        type: node.type,
+        path: node.path,
+        content: node.content,
+      });
     }
 
     const project = await ctx.db.get(projectId);
@@ -110,18 +105,16 @@ export const create = mutation({
       .withIndex("by_project", (q) => q.eq("projectId", projectId))
       .collect();
 
-    return {
-      ...project,
-      files,
-    };
+    return { ...project, files };
   },
 });
 
-// Delete a project and all its files
+// Delete a project and all its files. Owner only.
 export const remove = mutation({
   args: { id: v.id("Project") },
   handler: async (ctx, args) => {
-    // Delete all nodes (files/folders) for this project
+    await requireProjectOwner(ctx, args.id);
+
     const nodes = await ctx.db
       .query("Node")
       .withIndex("by_project", (q) => q.eq("projectId", args.id))
@@ -131,7 +124,6 @@ export const remove = mutation({
       await ctx.db.delete(node._id);
     }
 
-    // Delete the project
     await ctx.db.delete(args.id);
 
     return { success: true };
