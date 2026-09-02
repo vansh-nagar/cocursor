@@ -28,21 +28,10 @@ const linkVariants: Variants = {
 
 // --- Links Data ---
 const mainLinks = [
-  { href: "#hero", label: "Overview" },
   { href: "#features", label: "Features" },
   { href: "#pricing", label: "Pricing" },
-];
-
-const subLinks = [
-  { href: "/docs", label: "Documentation" },
-  { href: "/changelog", label: "Changelog" },
-  { href: "/blog", label: "Blog" },
+  { href: "/docs", label: "Docs" },
   { href: "#faq", label: "FAQs" },
-];
-
-const socialLinks = [
-  { href: "https://x.com/cocursor", label: "Twitter" },
-  { href: "https://github.com/cocursor", label: "GitHub" },
 ];
 
 const Navbar = () => {

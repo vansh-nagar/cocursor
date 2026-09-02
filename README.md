@@ -1,79 +1,102 @@
 # Cocursor
 
-**Orcha** is a collaborative, AI-powered code editor inspired by Cursor.  
-It enables real-time collaboration, AI-assisted coding, and an interactive development environment directly in the browser.
+A collaborative, AI-powered code editor that runs entirely in the browser. Write code with an
+AI agent that can actually edit your files, run it in a real Node.js container without
+installing anything, and share the room with someone else.
 
----
+## What it does
 
-## Features
+**In-browser dev environment.** Each project boots its own Node.js container (WebContainer) in
+your tab: a real shell, `npm install`, a dev server and a live preview. Nothing runs on your
+machine and nothing runs on ours.
 
-### 🧠 AI-Assisted Coding
-- Inline AI suggestions (ghost text)
-- Context-aware code generation
-- Inline prompt box (`Ctrl + I` style workflow)
-- Agent-based AI chat for multi-step tasks
+**An AI agent that edits code.** The agent can list, read, write, rename and delete files and
+run commands in your container. It sees your project's file list and the file you have open.
+Deleting files and running commands ask for your approval first; every tool call shows its
+input and result. Inline suggestions appear as you type (Tab to accept), and Ctrl+I takes an
+instruction in words and previews its change before applying it.
 
-### 👥 Real-Time Collaboration
-- Multiple users editing the same project
-- Cursor presence & live updates
-- Conflict-free file syncing
+**Live collaboration for two.** Share a room link and you'll see each other's cursors and edits
+as they happen. Concurrent changes to the same file are merged rather than overwriting each
+other (operational transform via `@codemirror/collab`, with the collab server as authority).
+The same panel carries chat, a voice/video call and direct peer-to-peer file transfer.
 
-### 🖥️ In-Browser Development Environment
-- WebContainer-powered file system
-- Run terminal commands securely
-- Live preview of running apps
-- Instant file updates reflected in runtime
+**Export to GitHub.** One commit, private by default.
 
-### 📁 Project & File Management
-- Virtual file system (folders + files)
-- Persistent storage (DB-backed)
-- Change tracking & syncing
+## Stack
 
-### ⚡ Developer Experience
-- Fast UI with proper loading states
-- Keyboard-first workflows
-- Minimal latency updates
+| Layer | Choice |
+|---|---|
+| App | Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, shadcn/ui |
+| Editor | CodeMirror 6 (`@codemirror/collab` for sync), xterm.js |
+| Runtime | WebContainer API |
+| Data | Convex (reactive DB, auth-checked queries and mutations) |
+| Auth | Clerk |
+| AI | AI SDK v6 + Groq, with client-executed tools |
+| Realtime | `apps/collab-api` — Express + `ws` signalling and document authority |
+| Jobs | Inngest |
+| Monorepo | Turborepo + Bun |
 
----
+## Layout
 
-## Tech Stack
+```
+apps/
+  ui/           Next.js app (port 3001) + convex/ backend functions
+  collab-api/   WebSocket signalling + collab document authority (port 8080)
+packages/       shared eslint / tsconfig
+```
 
-### Frontend
-- Next.js (App Router)
-- TypeScript
-- Tailwind CSS
-- xterm.js (terminal)
-- AI SDK + custom UI components
+## Running it
 
-### Backend
-- Node.js
-- AI agents (LLM-powered)
-- Database for projects & files
-- WebSocket / real-time sync layer
+```bash
+bun install
+cp apps/ui/.env.example apps/ui/.env.local   # then fill it in
+bunx convex dev                              # once, to create a deployment
+bun dev                                      # UI on :3001, collab-api on :8080
+```
 
-### Infra
-- WebContainer API (sandboxed runtime)
-- Server Actions / API routes
-- Edge + Server execution
+`apps/ui/.env.example` documents every variable and where to get it. Two notes that cost time
+otherwise:
 
----
+- `CLERK_JWT_ISSUER_DOMAIN` belongs to the **Convex** environment, not Next. Set it with
+  `bunx convex env set`, using the issuer URL of a Clerk JWT template named exactly `convex`.
+- `GROQ_API_KEY` is read implicitly by the AI SDK. Without it, every AI request fails.
 
-## Architecture Overview
+For background jobs, run `bun run --cwd apps/ui inngest` alongside the dev server.
 
-```text
-Client (Editor UI)
- ├─ Code Editor
- ├─ Terminal (xterm)
- ├─ AI UI (chat, inline, ghost text)
- └─ Collaboration Layer
-        ↓
-Backend
- ├─ AI Orchestrator (agents)
- ├─ File Sync Engine
- ├─ Command Executor
- └─ Database
-        ↓
-WebContainer
- ├─ Virtual FS
- ├─ Dev Server
- └─ Runtime Processes
+## Architecture
+
+```
+                        Browser
+  ┌──────────────────────────────────────────────────────┐
+  │  Landing        Dashboard          IDE (/room/:id)    │
+  │                                    ├ CodeMirror       │
+  │                                    ├ xterm terminal   │
+  │                                    ├ Live preview     │
+  │                                    └ Chat: AI | Peer  │
+  └───┬───────────────┬──────────────────────┬───────────┘
+      │               │                      │
+  Convex          collab-api            /api/agent-call
+  (projects,      (signalling,          (Groq; declares
+   files, auth)    doc authority,        tools, runs none)
+      │            presence)                  │
+      │               │              tools execute in the
+      └───────────────┴──────────────  browser, against ↓
+                                       ┌──────────────────┐
+                                       │  WebContainer    │
+                                       │  fs · shell · dev│
+                                       └──────────────────┘
+```
+
+The agent's tools are declared server-side without an `execute` function, so AI SDK v6 hands
+the calls to the browser. That's the only place they can run — WebContainer has no server-side
+existence — and it means agent writes go through the same path the file explorer uses, so the
+container, the database and your open tabs can't drift apart.
+
+## Limits
+
+- 5 projects per account, 2 people per room.
+- The container lives in the tab: files persist, installed packages don't.
+- Binary files are skipped on GitHub export.
+- Calls between different networks need a TURN server (`NEXT_PUBLIC_TURN_*`); STUN alone covers
+  the same machine and the same LAN.

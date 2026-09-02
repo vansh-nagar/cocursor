@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -21,6 +21,8 @@ import CodeEditor from "@/components/ide-component/code-editor";
 import PreviewFrame from "@/components/ide-component/PreviewFrame";
 import { motion, AnimatePresence } from "motion/react";
 import { useIDEStore } from "@/stores/ideStore";
+import { useAgentToolRunner } from "@/hooks/agent-tool-runner";
+import { projectRootNameOf } from "@/lib/project-paths";
 import { useTopbar } from "@/hooks/topbar";
 import { useExplorer } from "@/hooks/explorer";
 import { useKeyShortcutListeners } from "@/hooks/key-shortcut-listners";
@@ -30,6 +32,7 @@ import ActivityBar from "@/components/ide-component/activity-bar";
 import SearchPanel from "@/components/ide-component/SearchPanel";
 import { useQuery } from "convex/react";
 import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 import { FileSystemTree } from "@webcontainer/api";
 import { useWsRtcConnection } from "@/hooks/rtc-ws";
 import type { ImperativePanelHandle } from "react-resizable-panels";
@@ -41,7 +44,14 @@ interface IDEComponentProps {
 const IDEComponent = ({ projectId }: IDEComponentProps) => {
   // Fetch project data from Convex
 
-  const roomConnection = useWsRtcConnection({ roomId: projectId || "" });
+  // Collaboration mounts only when the chat panel is open. It used to mount
+  // for every project page, opening a socket and joining a room whether or not
+  // anyone wanted to collaborate.
+  const [collabEnabled, setCollabEnabled] = useState(false);
+  const roomConnection = useWsRtcConnection({
+    roomId: projectId || "",
+    enabled: collabEnabled && Boolean(projectId),
+  });
 
   console.log("Fetched project data:", projectId);
 
@@ -53,6 +63,7 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     loadingMessage,
     previewDevice,
     setPreviewDevice,
+    resetForProject,
   } = useIDEStore();
 
   const {
@@ -75,6 +86,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     handleCreateFolder,
     handleDeleteNode,
     handleRenameNode,
+    getFileContent,
+    persistFile,
   } = useExplorer({
     projectId,
     currentTabId,
@@ -98,40 +111,97 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     currentTabId,
   });
 
-  const folderPreviewRef = useRef<FolderPreviewRef>(null);
+  useEffect(() => {
+    if (showAiChat) setCollabEnabled(true);
+  }, [showAiChat]);
 
-  const { initializeWebContainer, webContainerRef } = useWebContainer({
-    projectId,
-  });
+  const folderPreviewRef = useRef<FolderPreviewRef>(null);
+  const [isTerminalMaximized, setIsTerminalMaximized] = useState(false);
+
+  const { initializeWebContainer, runCommand } = useWebContainer({ projectId });
 
   const getProjectData = useQuery(
     api.project.get,
-    projectId ? { id: projectId as any } : "skip",
+    projectId ? { id: projectId as Id<"Project"> } : "skip",
   );
-  useEffect(() => {
-    if (getProjectData) {
-      initializeWebContainer(getProjectData.fileTree as FileSystemTree).catch(
-        (error) => {
-          console.error("[IDE] Failed to initialize WebContainer:", error);
-        },
-      );
-    }
-  }, [initializeWebContainer, getProjectData]);
 
-  // Teardown WebContainer only on unmount
+  // Rebind the (singleton) store to this project before anything reads it.
+  // Client-side navigation between rooms never reloads the page, so without
+  // this the previous project's tree, preview URL and editor view leak in.
   useEffect(() => {
-    return () => {
-      if (webContainerRef.current) {
-        try {
-          webContainerRef.current.teardown();
-        } catch (e) {
-          console.warn("WebContainer teardown failed:", e);
-        }
-      }
-    };
-  }, []);
+    resetForProject(projectId ?? null);
+  }, [projectId, resetForProject]);
+
+  // getProjectData gets a fresh object identity on every Convex push (any file
+  // save re-runs project.get), so guard on the tree itself rather than the
+  // wrapper object to avoid re-initialising on every remote change.
+  const fileTree = getProjectData?.fileTree;
+  useEffect(() => {
+    if (!fileTree) return;
+    initializeWebContainer(fileTree as FileSystemTree).catch((error) => {
+      console.error("[IDE] Failed to initialize WebContainer:", error);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initializeWebContainer, Boolean(fileTree)]);
+
+  // Teardown is owned by useWebContainer, which also clears the ref and the
+  // module-level boot state so re-entering a room can boot again.
 
   const currentTab = openTabs.find((tab) => tab.id === currentTabId);
+
+  const currentTabRef = useRef(currentTab);
+  useEffect(() => {
+    currentTabRef.current = currentTab;
+  }, [currentTab]);
+
+  // Sent to the model on every turn. Stable identity so the chat transport is
+  // not rebuilt on each render.
+  const buildProjectContext = useCallback(() => {
+    const tree = useIDEStore.getState().fileStructure;
+    const root = projectRootNameOf(tree);
+    const tab = currentTabRef.current;
+
+    const walk = (node: FileSystemTree, base = ""): string[] => {
+      const out: string[] = [];
+      for (const [name, child] of Object.entries(node)) {
+        const path = base ? `${base}/${name}` : name;
+        if ("directory" in child) out.push(...walk(child.directory, path));
+        else out.push(path);
+      }
+      return out;
+    };
+
+    const strip = (p: string) =>
+      root && p.startsWith(`${root}/`) ? p.slice(root.length + 1) : p;
+
+    return {
+      projectName: getProjectData?.name,
+      root: root || "/",
+      files: walk(tree).map(strip).sort(),
+      activeFilePath: tab ? strip(tab.path) : null,
+      activeFileContent: tab?.content ?? null,
+    };
+  }, [getProjectData?.name]);
+
+  const explorerActions = useMemo(
+    () => ({ getFileContent, handleCreateFile, handleDeleteNode, handleRenameNode }),
+    [getFileContent, handleCreateFile, handleDeleteNode, handleRenameNode],
+  );
+
+  const runTool = useAgentToolRunner({
+    projectId,
+    explorer: explorerActions,
+    persistFile,
+    runCommand,
+    // Keep an open tab in sync when the agent rewrites the file being viewed.
+    onFileWritten: (uiPath, content) => {
+      setOpenTabs((tabs) =>
+        tabs.map((t) =>
+          t.path === uiPath ? { ...t, content, isDirty: false } : t,
+        ),
+      );
+    },
+  });
 
   const handleEditorChange = useCallback(
     (content: string) => {
@@ -144,7 +214,6 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
 
   // Refs for imperative panel control
   const explorerPanelRef = useRef<ImperativePanelHandle>(null);
-  const terminalPanelRef = useRef<ImperativePanelHandle>(null);
   const aiChatPanelRef = useRef<ImperativePanelHandle>(null);
 
   // Sync panel collapse/expand with state
@@ -157,16 +226,6 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
       if (!panel.isCollapsed()) panel.collapse();
     }
   }, [showExplorer, showSearch]);
-
-  useEffect(() => {
-    const panel = terminalPanelRef.current;
-    if (!panel) return;
-    if (showTerminal) {
-      if (panel.isCollapsed()) panel.expand();
-    } else {
-      if (!panel.isCollapsed()) panel.collapse();
-    }
-  }, [showTerminal]);
 
   useEffect(() => {
     const panel = aiChatPanelRef.current;
@@ -351,6 +410,15 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                                 filePath={currentTab.path}
                                 projectId={projectId}
                                 onChange={handleEditorChange}
+                                collab={
+                                  collabEnabled && roomConnection.isConnected
+                                    ? {
+                                        roomId: projectId!,
+                                        send: roomConnection.send,
+                                        subscribe: roomConnection.subscribe,
+                                      }
+                                    : undefined
+                                }
                               />
                             </div>
                           ) : (
@@ -371,8 +439,18 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                     </div>
                   </div>
 
-                  <div className={`h-[220px] border-t border-border shrink-0 ${!showTerminal ? "hidden" : ""}`}>
-                    <TerminalComponent />
+                  <div
+                    className={`border-t border-border shrink-0 ${
+                      isTerminalMaximized ? "h-[60vh]" : "h-[220px]"
+                    } ${!showTerminal ? "hidden" : ""}`}
+                  >
+                    <TerminalComponent
+                      onClose={() => setShowTerminal(false)}
+                      onToggleMaximize={() =>
+                        setIsTerminalMaximized((prev) => !prev)
+                      }
+                      isMaximized={isTerminalMaximized}
+                    />
                   </div>
                 </div>
               </div>
@@ -398,6 +476,8 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                 onClose={() => setShowAiChat(false)}
                 projectId={projectId}
                 roomConnection={roomConnection}
+                buildProjectContext={buildProjectContext}
+                runTool={runTool}
               />
             </ResizablePanel>
           </ResizablePanelGroup>

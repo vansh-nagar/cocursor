@@ -19,13 +19,13 @@ const faqItems = [
     id: "item-2",
     question: "How does the AI assistance work?",
     answer:
-      "Cocursor features inline AI suggestions (ghost text), a context-aware prompt box (Ctrl+I), and an autonomous AI agent. The agent doesn't just suggest code; it can understand your entire project, plan features, and execute multi-step refactors.",
+      "Three ways. Pause while typing and a suggestion appears in grey — press Tab to accept it. Press Ctrl+I to describe a change in words and review the result before applying it. Or use the agent panel, which can read and write files across your whole project and run commands in your container, asking permission before anything destructive.",
   },
   {
     id: "item-3",
     question: "How does real-time collaboration work?",
     answer:
-      "Multiple users can edit the same project simultaneously. You'll see real-time cursor presence, live updates, and conflict-free file syncing, making it feel like you're coding together in the same room.",
+      "Share your room link and a second person can edit the project with you. You'll see their cursor and their changes as they type, and concurrent edits to the same file are merged rather than overwriting each other. The same panel gives you chat, a voice and video call, and direct file transfer.",
   },
   {
     id: "item-4",
@@ -37,7 +37,7 @@ const faqItems = [
     id: "item-5",
     question: "Is my code secure in Cocursor?",
     answer:
-      "Yes. Coding and execution happen in a isolated sandbox via WebContainers. Your projects are stored securely, and collaboration features use modern encrypted sync layers to ensure your data stays private.",
+      "Your code runs in an isolated WebContainer sandbox in your own browser, never on a shared server. Projects are private to your account: every read and write checks that you own the project. Collaboration is peer-to-peer and encrypted by WebRTC, and calls and file transfers are never recorded. One thing to know: when you use the AI features, the relevant code is sent to the model provider to generate a response.",
   },
 ];
 

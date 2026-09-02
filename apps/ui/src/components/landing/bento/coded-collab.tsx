@@ -16,7 +16,7 @@ const CodedCollab = () => {
   const [line3, setLine3] = useState("};");
   const [line4, setLine4] = useState("");
   
-  const [saaraPos, setSaaraPos] = useState({ x: 40, y: 20 });
+  const [durgeshPos, setDurgeshPos] = useState({ x: 40, y: 20 });
   const [vanshPos, setVanshPos] = useState({ x: 120, y: 80 });
   
   const [editingLine, setEditingLine] = useState<number | null>(null);
@@ -36,8 +36,8 @@ const CodedCollab = () => {
 
       await new Promise(r => setTimeout(r, 2000));
 
-      // 1. Saara moves to line 2 to change "Cocursor" to "Fast"
-      setSaaraPos({ x: 100, y: 24 });
+      // 1. Durgesh moves to line 2 to change "Cocursor" to "Fast"
+      setDurgeshPos({ x: 100, y: 24 });
       setEditingLine(2);
       
       const line2Base = "  return \"";
@@ -95,15 +95,15 @@ const CodedCollab = () => {
         </CodeLine>
         <CodeLine num={5}>{" "}</CodeLine>
 
-        {/* Saara Cursor */}
+        {/* Durgesh Cursor */}
         <motion.div
-           animate={{ x: saaraPos.x, y: saaraPos.y }}
+           animate={{ x: durgeshPos.x, y: durgeshPos.y }}
            transition={{ duration: 0.5, ease: "easeInOut" }}
            className="absolute z-20 pointer-events-none"
         >
           <div className="flex flex-col items-start">
              <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M1 1L15 5.66667L8.66667 8.33333L6 14.6667L1 1Z" fill="#FA6000" stroke="white" strokeWidth="0.5" /></svg>
-             <div className="bg-[#FA6000] text-white text-[8px] px-1 rounded-[1px] font-medium shadow-lg">Saara</div>
+             <div className="bg-[#FA6000] text-white text-[8px] px-1 rounded-[1px] font-medium shadow-lg">Durgesh</div>
           </div>
         </motion.div>
 

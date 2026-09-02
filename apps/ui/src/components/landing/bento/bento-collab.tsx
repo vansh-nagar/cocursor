@@ -66,7 +66,7 @@ const BentoFollowerA = () => {
             "inset 1px -1px 5px rgba(255, 255, 255, 0.4), inset -1px -1px 5px rgba(255, 255, 255, 0.4)",
         }}
       >
-        saara
+        durgesh
       </span>
     </motion.div>
   );
@@ -114,7 +114,7 @@ const BentoCollab = () => {
   return (
     <div className="border  bg-background flex flex-col justify-between rounded-3xl relative p-4 sm:p-6 md:p-8 overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-0">
       <div className="w-full mt-2 mb-6">
-        {/* <CodedCollab /> */}
+        <CodedCollab />
       </div>
 
       <BentoTextSection

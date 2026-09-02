@@ -2,9 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { Github, Twitter, MessageCircle, ArrowUpRight, Mail, MessageSquare } from "lucide-react";
-import OrangeButton from "./button/orange-button";
+import { Github, ArrowUpRight } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -24,25 +22,25 @@ const Footer = () => {
       links: [
         { name: "Documentation", href: "/docs" },
         { name: "Changelog", href: "/changelog" },
-        { name: "Support", href: "mailto:support@cocursor.com" },
-        { name: "API Reference", href: "/api-docs" },
+        { name: "FAQs", href: "/#faq" },
+        { name: "Support", href: "mailto:support@cocursor.ai" },
       ],
     },
     {
-      title: "Company",
+      title: "Legal",
       links: [
-        { name: "About", href: "/about" },
-        { name: "Blog", href: "/blog" },
-        { name: "Privacy Policy", href: "/privacy" },
+        { name: "Privacy", href: "/privacy" },
         { name: "Terms of Service", href: "/terms" },
       ],
     },
   ];
 
   const socialLinks = [
-    { name: "Twitter", icon: <Twitter size={18} />, href: "https://twitter.com/cocursor" },
-    { name: "GitHub", icon: <Github size={18} />, href: "https://github.com/cocursor" },
-    { name: "Discord", icon: <MessageCircle size={18} />, href: "https://discord.gg/cocursor" },
+    {
+      name: "GitHub",
+      icon: <Github size={18} />,
+      href: "https://github.com/vansh-nagar/cocursor",
+    },
   ];
 
   return (
@@ -75,8 +73,8 @@ const Footer = () => {
               </span>
             </Link>
             <p className="text-zinc-500 text-sm leading-relaxed mb-6">
-              The collaborative AI workspace built for modern software teams.
-              Code, review, and deploy in one unified environment.
+              A browser IDE with an AI agent that edits your code and a room
+              you can share. No setup, nothing to install.
             </p>
             <div className="flex gap-4">
               {socialLinks.map((social) => (
@@ -120,7 +118,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-zinc-900/50 flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-zinc-500 text-sm">
-            © {currentYear} Cocursor Inc. All rights reserved.
+            © {currentYear} Cocursor
           </div>
 
         </div>

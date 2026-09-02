@@ -78,12 +78,10 @@ const MessagingPanel = () => (
         transition={{ delay: 0.2, ...smoothTransition }}
         className="flex items-start gap-2"
       >
-        <div className="w-8 h-8 rounded-full bg-background border border-border overflow-hidden shrink-0">
-          <img
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&h=128&facepad=2"
-            alt="Peer 1"
-            className="w-full h-full object-cover"
-          />
+        <div className="w-8 h-8 rounded-full bg-muted border border-border shrink-0 flex items-center justify-center">
+          <span className="text-[11px] font-medium text-muted-foreground">
+            DU
+          </span>
         </div>
         <div className="bg-background border border-border rounded-sm px-4 py-2.5">
           <p className="text-foreground text-sm">Ready to start the session?</p>
@@ -176,7 +174,7 @@ const VideoPanel = () => {
     >
       <div className="w-full max-w-sm">
         <div className="grid grid-cols-1 gap-4">
-          {/* Remote Peer - Saara */}
+          {/* Remote Peer - Durgesh */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -184,16 +182,14 @@ const VideoPanel = () => {
             className="relative aspect-video bg-background rounded-xl border border-border overflow-hidden"
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 rounded-full bg-background border border-border overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=128&h=128&facepad=2"
-                  alt="Saara"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-16 h-16 rounded-full bg-muted border border-border flex items-center justify-center">
+                <span className="text-lg font-medium text-muted-foreground">
+                  DU
+                </span>
               </div>
             </div>
             <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-xs rounded text-[10px] text-white font-medium">
-              Saara
+              Durgesh
             </div>
           </motion.div>
 
