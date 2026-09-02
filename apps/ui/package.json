@@ -7,12 +7,15 @@
     "build": "next build",
     "start": "next start",
     "inngest": "npx --ignore-scripts=false inngest-cli@latest dev",
-    "lint": "eslint"
+    "lint": "eslint",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@ai-sdk/groq": "^3.0.15",
     "@ai-sdk/react": "^3.0.51",
     "@clerk/nextjs": "^6.37.3",
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/collab": "^6.1.1",
     "@codemirror/commands": "^6.10.1",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-html": "^6.4.11",
