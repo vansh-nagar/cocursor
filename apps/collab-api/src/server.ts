@@ -9,7 +9,7 @@ import type {
 } from "./types";
 
 const PORT = Number(process.env.PORT ?? 8080);
-const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3001")
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS ?? "http://localhost:3100")
   .split(",")
   .map((o) => o.trim())
   .filter(Boolean);

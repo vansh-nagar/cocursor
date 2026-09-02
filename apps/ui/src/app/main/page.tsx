@@ -32,7 +32,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useQuery, useMutation } from "convex/react";
+import { useMutation } from "convex/react";
+import { useAuthedQuery } from "@/hooks/use-authed-query";
 import { api } from "../../../convex/_generated/api";
 import { useUser } from "@clerk/nextjs";
 import { Id } from "../../../convex/_generated/dataModel";
@@ -60,7 +61,7 @@ const type = [
 const Page = () => {
   const { user, isLoaded } = useUser();
   const router = useRouter();
-  const projects = useQuery(api.project.list, {});
+  const projects = useAuthedQuery(api.project.list, {});
   const createUser = useMutation(api.user.createUserIfExists);
   const createProject = useMutation(api.project.create);
   const deleteProject = useMutation(api.project.remove);

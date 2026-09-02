@@ -3,7 +3,8 @@ import { FileSystemTree } from "@webcontainer/api";
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { toast } from "sonner";
 import { TabInfo } from "./topbar";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
+import { useAuthedQuery } from "@/hooks/use-authed-query";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel";
 import {
@@ -33,7 +34,7 @@ export const useExplorer = ({
   const { fileStructure, setFileStructure, setActiveTab } = useIDEStore();
 
   // Fetch project data from Convex
-  const project = useQuery(
+  const project = useAuthedQuery(
     api.project.get,
     projectId ? { id: projectId as Id<"Project"> } : "skip",
   );

@@ -30,7 +30,7 @@ import { useWebContainer } from "@/hooks/webcontainer";
 import Chat from "@/components/ide-component/Chat";
 import ActivityBar from "@/components/ide-component/activity-bar";
 import SearchPanel from "@/components/ide-component/SearchPanel";
-import { useQuery } from "convex/react";
+import { useAuthedQuery } from "@/hooks/use-authed-query";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { FileSystemTree } from "@webcontainer/api";
@@ -120,7 +120,7 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
 
   const { initializeWebContainer, runCommand } = useWebContainer({ projectId });
 
-  const getProjectData = useQuery(
+  const getProjectData = useAuthedQuery(
     api.project.get,
     projectId ? { id: projectId as Id<"Project"> } : "skip",
   );

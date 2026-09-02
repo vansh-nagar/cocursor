@@ -41,7 +41,7 @@ The same panel carries chat, a voice/video call and direct peer-to-peer file tra
 
 ```
 apps/
-  ui/           Next.js app (port 3001) + convex/ backend functions
+  ui/           Next.js app (port 3100) + convex/ backend functions
   collab-api/   WebSocket signalling + collab document authority (port 8080)
 packages/       shared eslint / tsconfig
 ```
@@ -52,7 +52,7 @@ packages/       shared eslint / tsconfig
 bun install
 cp apps/ui/.env.example apps/ui/.env.local   # then fill it in
 bun run convex dev                           # once, to create a deployment
-bun dev                                      # UI on :3001, collab-api on :8080
+bun dev                                      # UI on :3100, collab-api on :8080
 ```
 
 `apps/ui/.env.example` documents every variable and where to get it. Two notes that cost time

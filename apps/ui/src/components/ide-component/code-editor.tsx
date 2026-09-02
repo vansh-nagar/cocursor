@@ -24,7 +24,7 @@ import { ghostText } from "@/lib/ghost-text";
 import { InlinePrompt } from "./inline-prompt";
 import { toDbPath } from "@/lib/project-paths";
 import type { ClientMessage, ServerMessage } from "@/lib/collab-protocol";
-import { useQuery } from "convex/react";
+import { useAuthedQuery } from "@/hooks/use-authed-query";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
@@ -115,7 +115,7 @@ export default function CodeEditor({
   );
 
   // Use the direct query for real-time sync if projectId is provided
-  const remoteContent = useQuery(
+  const remoteContent = useAuthedQuery(
     api.node.getContent,
     projectId
       ? {

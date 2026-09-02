@@ -2,9 +2,9 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
 import { Loader2 } from "lucide-react";
 import { api } from "../../../convex/_generated/api";
+import { useAuthedQuery } from "@/hooks/use-authed-query";
 
 /**
  * /room has no project to open.
@@ -15,7 +15,7 @@ import { api } from "../../../convex/_generated/api";
  */
 export default function RoomPage() {
   const router = useRouter();
-  const projects = useQuery(api.project.list, {});
+  const projects = useAuthedQuery(api.project.list, {});
 
   useEffect(() => {
     if (projects === undefined) return; // still loading

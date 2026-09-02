@@ -3,9 +3,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useIDEStore } from "@/stores/ideStore";
 import { projectRootOf } from "@/lib/project-paths";
-import { Terminal } from "xterm";
-import { FitAddon } from "xterm-addon-fit";
-import "xterm/css/xterm.css";
+// @xterm/* (v6), not the legacy xterm@5 packages. xterm 5's Viewport queues a
+// refresh via requestAnimationFrame and never cancels it on dispose, so any
+// teardown with a frame in flight crashed in Viewport._innerRefresh reading
+// `dimensions` off an already-disposed renderer. v6 rewrote that viewport.
+import { Terminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
+import "@xterm/xterm/css/xterm.css";
 import { Terminal as TerminalIcon, X, Maximize2, Trash2, Folder } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
@@ -40,7 +44,14 @@ const TerminalComponent: React.FC<TerminalComponentProps> = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const startShell = async (terminal: Terminal) => {
+  /**
+   * Boots the interactive shell for `terminal`.
+   *
+   * `signal` is aborted by the effect cleanup. Every step here is async, so
+   * without it a shell spawned for an already torn-down terminal keeps piping
+   * output into a disposed xterm instance.
+   */
+  const startShell = async (terminal: Terminal, signal: AbortSignal) => {
     if (!webContainerRef.current) return;
 
     try {
@@ -55,21 +66,36 @@ const TerminalComponent: React.FC<TerminalComponentProps> = ({
         cwd: projectRootOf(useIDEStore.getState().fileStructure),
       });
 
+      // Torn down while jsh was still starting: the cleanup that aborted us ran
+      // before shellProcessRef was set, so nothing else will ever kill this.
+      if (signal.aborted) {
+        shellProcess.kill();
+        return;
+      }
+
       shellProcessRef.current = shellProcess;
 
-      shellProcess.output.pipeTo(
-        new WritableStream({
-          write(data) {
-            terminal.write(data);
-            terminal.scrollToBottom();
-          },
-        })
-      );
+      shellProcess.output
+        .pipeTo(
+          new WritableStream({
+            write(data) {
+              if (signal.aborted) return;
+              terminal.write(data);
+              terminal.scrollToBottom();
+            },
+          }),
+          { signal },
+        )
+        .catch(() => {
+          // Aborting the pipe on teardown rejects here. Expected, not an error.
+        });
 
       const input = shellProcess.input.getWriter();
       inputWriterRef.current = input;
 
       terminal.onData((data) => {
+        if (signal.aborted) return;
+
         // Handle basic command line tracking for suggestions
         if (data === "\r") {
           setCurrentLine("");
@@ -79,12 +105,15 @@ const TerminalComponent: React.FC<TerminalComponentProps> = ({
         } else {
           setCurrentLine((prev) => prev + data);
         }
-        
-        input.write(data);
+
+        input.write(data).catch(() => {
+          // The writer closes with the shell process.
+        });
       });
 
       return shellProcess;
     } catch (error) {
+      if (signal.aborted) return;
       console.error("Failed to start shell:", error);
       terminal.writeln("\r\n\x1b[31mFailed to start interactive shell.\x1b[0m");
     }
@@ -149,6 +178,15 @@ const TerminalComponent: React.FC<TerminalComponentProps> = ({
   useEffect(() => {
     if (!terminalRef.current) return;
 
+    // Everything below can outlive this effect: the App Router runs StrictMode
+    // in dev (mount -> cleanup -> mount), and isContainerBooted flipping tears
+    // the terminal down mid-flight. Any xterm call made after dispose() lands in
+    // the animation frame xterm has already queued, where the render service is
+    // gone -- that is Viewport._innerRefresh reading `dimensions` of undefined.
+    let disposed = false;
+    let fitFrame: number | null = null;
+    const shellAbort = new AbortController();
+
     const term = new Terminal({
       cursorBlink: true,
       fontSize: 13,
@@ -188,7 +226,7 @@ const TerminalComponent: React.FC<TerminalComponentProps> = ({
     term.loadAddon(fitAddon);
 
     const fitTerminal = () => {
-      if (!term || !terminalRef.current || !term.element || terminalRef.current.clientWidth === 0) {
+      if (disposed || !terminalRef.current || !term.element || terminalRef.current.clientWidth === 0) {
         return;
       }
       try {
@@ -211,22 +249,34 @@ const TerminalComponent: React.FC<TerminalComponentProps> = ({
     const initTimer = setTimeout(fitTerminal, 150);
 
     const resizeObserver = new ResizeObserver(() => {
-      requestAnimationFrame(fitTerminal);
+      // disconnect() stops new callbacks but not a frame already queued, so the
+      // handle is kept and cancelled in the cleanup below.
+      if (fitFrame !== null) cancelAnimationFrame(fitFrame);
+      fitFrame = requestAnimationFrame(() => {
+        fitFrame = null;
+        fitTerminal();
+      });
     });
     resizeObserver.observe(terminalRef.current);
 
     if (isContainerBooted) {
-      startShell(term);
+      startShell(term, shellAbort.signal);
     }
 
     return () => {
+      disposed = true;
+      shellAbort.abort();
       clearTimeout(initTimer);
+      if (fitFrame !== null) cancelAnimationFrame(fitFrame);
       resizeObserver.disconnect();
       if (shellProcessRef.current) {
         shellProcessRef.current.kill();
+        shellProcessRef.current = null;
       }
+      inputWriterRef.current = null;
       term.dispose();
       termRef.current = null;
+      fitAddonRef.current = null;
     };
   }, [isContainerBooted]);
 
