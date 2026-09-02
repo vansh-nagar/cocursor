@@ -111,13 +111,12 @@ const Follower2 = () => {
         </defs>
       </svg>
 
-      <button
-        type="button"
-        className="border absolute top-8 -right-10 flex justify-center items-center px-2 py-1 bg-background text-xs"
-        aria-label="Follower action"
+      <span
+        aria-hidden="true"
+        className="border absolute top-4 left-3.5 sm:top-6 sm:left-5 md:top-8 md:left-6 flex justify-center items-center px-2 py-1 bg-background text-xs whitespace-nowrap select-none"
       >
         durgesh
-      </button>
+      </span>
     </motion.div>
   );
 };

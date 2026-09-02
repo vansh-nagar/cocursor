@@ -77,12 +77,12 @@ const Follower1 = () => {
 </filter>
 </defs>
 </svg>
-      <button
-      className='border absolute top-8 -left-10 flex justify-center items-center px-2 py-1 bg-background text-xs'
-        type="button"
-        aria-label="Follower action"
-       
-      >vansh</button>
+      <span
+        aria-hidden="true"
+        className="border absolute top-4 right-3.5 sm:top-6 sm:right-5 md:top-8 md:right-6 flex justify-center items-center px-2 py-1 bg-background text-xs whitespace-nowrap select-none"
+      >
+        vansh
+      </span>
     </motion.div>
   )
 }
