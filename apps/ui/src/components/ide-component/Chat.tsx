@@ -2,16 +2,26 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Users, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
-import AiChat from "./ai-chat";
+import AiChat, { type AiChatProps } from "./ai-chat";
+import type { RoomConnection } from "@/hooks/rtc-ws";
 import PeerChat from "./peer-chat";
 
 interface ChatProps {
   onClose: () => void;
   projectId?: string;
-  roomConnection: any;
+  roomConnection: RoomConnection;
+  /** Forwarded to the agent so it can see and edit the project. */
+  buildProjectContext: AiChatProps["buildProjectContext"];
+  runTool: AiChatProps["runTool"];
 }
 
-const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
+const Chat: React.FC<ChatProps> = ({
+  onClose,
+  projectId,
+  roomConnection,
+  buildProjectContext,
+  runTool,
+}) => {
   const { totalUserCount, peerConnected } = roomConnection;
   const [activeTab, setActiveTab] = useState<"ai" | "peer">("ai");
 
@@ -67,7 +77,11 @@ const Chat: React.FC<ChatProps> = ({ onClose, projectId, roomConnection }) => {
           )}
         >
           <div className="h-full">
-            <AiChat />
+            <AiChat
+              projectId={projectId}
+              buildProjectContext={buildProjectContext}
+              runTool={runTool}
+            />
           </div>
         </div>
         <div
