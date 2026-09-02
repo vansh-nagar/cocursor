@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/provider/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "@/provider/convex-client-provider";
+import EnvWarning from "@/components/mine/env-warning";
+import { findEnvProblems } from "@/lib/env-check";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -80,14 +82,19 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${geistMono.variable} antialiased bg-black dark`}
       >
-        <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
-          <ConvexClientProvider>
-            <ThemeProvider attribute="class" disableTransitionOnChange>
-              <Toaster />
-              {children}
-            </ThemeProvider>
-          </ConvexClientProvider>
-        </ClerkProvider>
+        {process.env.NODE_ENV !== "production" &&
+        findEnvProblems().length > 0 ? (
+          <EnvWarning />
+        ) : (
+          <ClerkProvider signInUrl="/sign-in" signUpUrl="/sign-up">
+            <ConvexClientProvider>
+              <ThemeProvider attribute="class" disableTransitionOnChange>
+                <Toaster />
+                {children}
+              </ThemeProvider>
+            </ConvexClientProvider>
+          </ClerkProvider>
+        )}
       </body>
     </html>
   );
