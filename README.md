@@ -51,7 +51,7 @@ packages/       shared eslint / tsconfig
 ```bash
 bun install
 cp apps/ui/.env.example apps/ui/.env.local   # then fill it in
-bunx convex dev                              # once, to create a deployment
+bun run convex dev                           # once, to create a deployment
 bun dev                                      # UI on :3001, collab-api on :8080
 ```
 
@@ -59,10 +59,15 @@ bun dev                                      # UI on :3001, collab-api on :8080
 otherwise:
 
 - `CLERK_JWT_ISSUER_DOMAIN` belongs to the **Convex** environment, not Next. Set it with
-  `bunx convex env set`, using the issuer URL of a Clerk JWT template named exactly `convex`.
+  `bun run convex env set CLERK_JWT_ISSUER_DOMAIN <issuer>`, using the issuer URL of a Clerk JWT
+  template named exactly `convex`. Without that template, Convex never receives a token and every
+  authenticated query fails.
+- The `convex` and `inngest` binaries are installed under `apps/ui`, not the workspace root, so
+  running them from the repo root gives "command not found". The root `convex` / `inngest` scripts
+  above forward to the right workspace.
 - `GROQ_API_KEY` is read implicitly by the AI SDK. Without it, every AI request fails.
 
-For background jobs, run `bun run --cwd apps/ui inngest` alongside the dev server.
+For background jobs, run `bun run inngest` alongside the dev server.
 
 ## Architecture
 
