@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Github, Loader2, CheckCircle2, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { FileSystemTree } from "@webcontainer/api";
+import { projectRootNameOf } from "@/lib/project-paths";
+import { Switch } from "@/components/ui/switch";
 
 interface ExportGithubDialogProps {
   fileStructure: FileSystemTree;
@@ -32,20 +34,77 @@ const ExportGithubDialog = ({
   const [token, setToken] = useState("");
   const [exportedUrl, setExportedUrl] = useState<string | null>(null);
 
+  const [isPrivate, setIsPrivate] = useState(true);
+
+  /**
+   * Flattens the tree to repo-relative paths.
+   *
+   * `stripRoot` removes the project's single top-level directory, so the repo
+   * has package.json at its root instead of nesting everything under
+   * "vanilla-web-app/" — which stopped GitHub detecting it as a Node project.
+   */
   const flattenFiles = (
     tree: FileSystemTree,
-    basePath: string = ""
+    basePath: string = "",
   ): { path: string; content: string }[] => {
     let files: { path: string; content: string }[] = [];
     for (const [name, node] of Object.entries(tree)) {
       const currentPath = basePath ? `${basePath}/${name}` : name;
-      if ("file" in node && "contents" in node.file && typeof node.file.contents === "string") {
+      if (
+        "file" in node &&
+        "contents" in node.file &&
+        typeof node.file.contents === "string"
+      ) {
         files.push({ path: currentPath, content: node.file.contents });
       } else if ("directory" in node) {
         files = [...files, ...flattenFiles(node.directory, currentPath)];
       }
     }
     return files;
+  };
+
+  /** Counts files skipped because their contents are binary, so we can warn. */
+  const countBinaryFiles = (tree: FileSystemTree): number => {
+    let n = 0;
+    for (const node of Object.values(tree)) {
+      if (
+        "file" in node &&
+        "contents" in node.file &&
+        typeof node.file.contents !== "string"
+      ) {
+        n += 1;
+      } else if ("directory" in node) {
+        n += countBinaryFiles(node.directory);
+      }
+    }
+    return n;
+  };
+
+  const gh = async <T = Record<string, unknown>,>(
+    url: string,
+    authHeader: string,
+    init?: RequestInit,
+  ): Promise<T> => {
+    const res = await fetch(url, {
+      ...init,
+      headers: {
+        Authorization: authHeader,
+        Accept: "application/vnd.github+json",
+        "Content-Type": "application/json",
+        ...(init?.headers ?? {}),
+      },
+    });
+
+    if (!res.ok) {
+      const body: { message?: string } = await res.json().catch(() => ({}));
+      throw new Error(
+        body.message
+          ? `${body.message} (${res.status})`
+          : `GitHub request failed (${res.status})`,
+      );
+    }
+
+    return (res.status === 204 ? null : await res.json()) as T;
   };
 
   const handleExport = async () => {
@@ -57,91 +116,143 @@ const ExportGithubDialog = ({
       toast.error("Please provide a repository name");
       return;
     }
+    if (!/^[A-Za-z0-9._-]+$/.test(repoName)) {
+      toast.error(
+        "Repository name may only contain letters, numbers, dot, hyphen and underscore",
+      );
+      return;
+    }
+    if (!fileStructure || Object.keys(fileStructure).length === 0) {
+      toast.error("No project files to export");
+      return;
+    }
 
     setLoading(true);
-    const authHeader = token.startsWith("ghp_") || token.startsWith("github_pat_") 
-      ? `token ${token}` 
-      : `Bearer ${token}`;
+    const authHeader =
+      token.startsWith("ghp_") || token.startsWith("github_pat_")
+        ? `token ${token}`
+        : `Bearer ${token}`;
+
+    const toastId = toast.loading("Preparing export...");
 
     try {
-      const userRes = await fetch("https://api.github.com/user", {
-        headers: { Authorization: authHeader },
-      });
-      if (!userRes.ok) {
-        const errData = await userRes.json().catch(() => ({}));
-        throw new Error(errData.message || "Invalid GitHub token or insufficient permissions");
-      }
-      const user = await userRes.json();
+      const user = await gh<{ login: string }>(
+        "https://api.github.com/user",
+        authHeader,
+      );
       const username = user.login;
 
-      const createRes = await fetch("https://api.github.com/user/repos", {
+      // Strip the single top-level project directory, if there is one.
+      const rootName = projectRootNameOf(fileStructure);
+      const rootNode = rootName ? fileStructure[rootName] : undefined;
+      const subtree =
+        rootNode && "directory" in rootNode ? rootNode.directory : fileStructure;
+
+      const files = flattenFiles(subtree);
+      if (files.length === 0) {
+        throw new Error("No text files to export");
+      }
+
+      const skipped = countBinaryFiles(subtree);
+
+      // Create the repo. 422 "already exists" is fine — we push into it.
+      try {
+        await gh("https://api.github.com/user/repos", authHeader, {
+          method: "POST",
+          body: JSON.stringify({
+            name: repoName,
+            private: isPrivate,
+            auto_init: false,
+            description: "Exported from Cocursor",
+          }),
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "";
+        if (!message.includes("already exists")) throw err;
+      }
+
+      const base = `https://api.github.com/repos/${username}/${repoName}/git`;
+
+      toast.loading(`Uploading ${files.length} files...`, { id: toastId });
+
+      // Find the current head, if the repo already has commits.
+      let parentSha: string | undefined;
+      let baseTreeSha: string | undefined;
+      let defaultBranch = "main";
+
+      try {
+        const repo = await gh<{ default_branch?: string }>(
+          `https://api.github.com/repos/${username}/${repoName}`,
+          authHeader,
+        );
+        defaultBranch = repo.default_branch || "main";
+
+        const ref = await gh<{ object: { sha: string } }>(
+          `${base}/ref/heads/${defaultBranch}`,
+          authHeader,
+        );
+        parentSha = ref.object.sha;
+
+        const parentCommit = await gh<{ tree: { sha: string } }>(
+          `${base}/commits/${parentSha}`,
+          authHeader,
+        );
+        baseTreeSha = parentCommit.tree.sha;
+      } catch {
+        // Empty repository — this will be the initial commit.
+      }
+
+      // One tree, one commit, one ref update — instead of two REST calls per
+      // file, which hit GitHub's secondary rate limit on any real project.
+      const tree = await gh<{ sha: string }>(`${base}/trees`, authHeader, {
         method: "POST",
-        headers: {
-          Authorization: authHeader,
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
-          name: repoName,
-          private: false,
-          auto_init: false,
-          description: "Exported from Cocursor IDE",
+          ...(baseTreeSha ? { base_tree: baseTreeSha } : {}),
+          tree: files.map((f) => ({
+            path: f.path,
+            mode: "100644",
+            type: "blob",
+            content: f.content,
+          })),
         }),
       });
 
-      if (!createRes.ok) {
-        const errData = await createRes.json().catch(() => ({}));
-        if (createRes.status === 422 && errData.errors?.some((e: any) => e.message?.includes("already exists"))) {
-          console.log("Repository already exists, proceeding to update files.");
-        } else {
-          throw new Error(errData.message || `Failed to create repository (${createRes.status})`);
-        }
-      }
+      const commit = await gh<{ sha: string }>(`${base}/commits`, authHeader, {
+        method: "POST",
+        body: JSON.stringify({
+          message: "Export from Cocursor",
+          tree: tree.sha,
+          parents: parentSha ? [parentSha] : [],
+        }),
+      });
 
-      const files = flattenFiles(fileStructure);
-      const toastId = toast.loading(`Uploading ${files.length} files to GitHub...`);
-
-      for (const file of files) {
-        try {
-          const fileCheckRes = await fetch(
-            `https://api.github.com/repos/${username}/${repoName}/contents/${file.path}`,
-            {
-              headers: { Authorization: authHeader },
-            }
-          );
-          
-          let sha;
-          if (fileCheckRes.ok) {
-            const fileData = await fileCheckRes.json();
-            sha = fileData.sha;
-          }
-
-          const encodedContent = btoa(unescape(encodeURIComponent(file.content)));
-
-          await fetch(
-            `https://api.github.com/repos/${username}/${repoName}/contents/${file.path}`,
-            {
-              method: "PUT",
-              headers: {
-                Authorization: authHeader,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                message: sha ? `Update ${file.path} from Cocursor` : `Create ${file.path} from Cocursor`,
-                content: encodedContent,
-                sha: sha,
-              }),
-            }
-          );
-        } catch (fileErr) {
-          console.error(`Failed to upload ${file.path}:`, fileErr);
-        }
+      if (parentSha) {
+        await gh(`${base}/refs/heads/${defaultBranch}`, authHeader, {
+          method: "PATCH",
+          body: JSON.stringify({ sha: commit.sha }),
+        });
+      } else {
+        await gh(`${base}/refs`, authHeader, {
+          method: "POST",
+          body: JSON.stringify({
+            ref: `refs/heads/${defaultBranch}`,
+            sha: commit.sha,
+          }),
+        });
       }
 
       setExportedUrl(`https://github.com/${username}/${repoName}`);
-      toast.success("Project exported successfully!", { id: toastId });
-    } catch (error: any) {
+      toast.success(
+        skipped > 0
+          ? `Exported ${files.length} files. ${skipped} binary file${skipped === 1 ? "" : "s"} skipped.`
+          : `Exported ${files.length} files.`,
+        { id: toastId },
+      );
+    } catch (error) {
       console.error("Export error:", error);
-      toast.error(error.message || "Export failed");
+      toast.error(error instanceof Error ? error.message : "Export failed", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
@@ -164,10 +275,25 @@ const ExportGithubDialog = ({
           <div className="text-sm text-zinc-400 mt-2 space-y-2">
             <p>This will create a new repository and upload your project files.</p>
             <div className="bg-zinc-900/50 p-3 rounded-lg border border-zinc-700/50 space-y-2">
-              <p className="font-medium text-zinc-200 text-xs uppercase tracking-wider">Required Token Permissions:</p>
+              <p className="font-medium text-zinc-200 text-xs uppercase tracking-wider">
+                Required token permissions
+              </p>
               <ul className="text-[11px] list-disc pl-4 space-y-1">
-                <li><span className="text-orange-400 font-medium">Classic Token:</span> select the <b>'repo'</b> checkbox.</li>
-                <li><span className="text-orange-400 font-medium">Fine-grained Token:</span> must have <b>'All Repositories'</b> access and <b>'Administration'</b> + <b>'Contents'</b> Write permissions.</li>
+                <li>
+                  <span className="text-orange-400 font-medium">
+                    Fine-grained token (recommended):
+                  </span>{" "}
+                  <b>Administration: Write</b> (to create the repo) and{" "}
+                  <b>Contents: Write</b>. Scope it to <b>only this repository</b>
+                  {" "}once it exists.
+                </li>
+                <li>
+                  <span className="text-orange-400 font-medium">
+                    Classic token:
+                  </span>{" "}
+                  <b>&apos;repo&apos;</b> — note this grants access to every
+                  repository on your account, so prefer a fine-grained token.
+                </li>
               </ul>
             </div>
           </div>
@@ -226,6 +352,24 @@ const ExportGithubDialog = ({
             </div>
           </div>
         )}
+
+        <div className="flex items-center justify-between rounded-lg border border-zinc-700/50 bg-zinc-900/50 p-3">
+          <div className="space-y-0.5">
+            <Label htmlFor="repo-private" className="text-sm">
+              Private repository
+            </Label>
+            <p className="text-[11px] text-zinc-400">
+              {isPrivate
+                ? "Only you will be able to see this repository."
+                : "Anyone on GitHub will be able to see this repository."}
+            </p>
+          </div>
+          <Switch
+            id="repo-private"
+            checked={isPrivate}
+            onCheckedChange={setIsPrivate}
+          />
+        </div>
 
         <DialogFooter className="pt-2">
           {!exportedUrl && (

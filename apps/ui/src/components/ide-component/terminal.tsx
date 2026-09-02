@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useIDEStore } from "@/stores/ideStore";
+import { projectRootOf } from "@/lib/project-paths";
 import { Terminal } from "xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "xterm/css/xterm.css";
@@ -9,7 +10,19 @@ import { Terminal as TerminalIcon, X, Maximize2, Trash2, Folder } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "motion/react";
 
-const TerminalComponent: React.FC = () => {
+interface TerminalComponentProps {
+  /** Hide the terminal panel. */
+  onClose?: () => void;
+  /** Toggle between the default and expanded panel height. */
+  onToggleMaximize?: () => void;
+  isMaximized?: boolean;
+}
+
+const TerminalComponent: React.FC<TerminalComponentProps> = ({
+  onClose,
+  onToggleMaximize,
+  isMaximized = false,
+}) => {
   const {
     webContainerRef,
     isContainerBooted,
@@ -37,7 +50,9 @@ const TerminalComponent: React.FC = () => {
           cols: terminal.cols,
           rows: terminal.rows,
         },
-        cwd: "/vanilla-web-app", // Start in the web app directory
+        // Derived from the project tree. Hardcoding the template's folder name
+        // made the shell fail to spawn for any differently-seeded project.
+        cwd: projectRootOf(useIDEStore.getState().fileStructure),
       });
 
       shellProcessRef.current = shellProcess;
@@ -88,7 +103,10 @@ const TerminalComponent: React.FC = () => {
         try {
           // We assume we are in the project dir or use absolute-ish paths
           // For simplicity, we list the current dir contents
-          const entries = await webContainerRef.current.fs.readdir("/vanilla-web-app", { withFileTypes: true });
+          const entries = await webContainerRef.current.fs.readdir(
+            projectRootOf(useIDEStore.getState().fileStructure),
+            { withFileTypes: true },
+          );
           const dirs = entries
             .filter((e: any) => e.isDirectory())
             .map((e: any) => e.name)
@@ -121,7 +139,7 @@ const TerminalComponent: React.FC = () => {
     const lastPart = parts[parts.length - 1];
     
     // Send backspaces for the partial name
-    const bss = "\b".repeat(lastPart.length);
+    const bss = "\u007f".repeat(lastPart.length);
     inputWriterRef.current.write(bss + dir + "/");
     
     setShowSuggestions(false);
@@ -239,17 +257,21 @@ const TerminalComponent: React.FC = () => {
           >
             <Trash2 className="w-3.5 h-3.5" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-6 w-6 text-neutral-400 rounded-none"
+            onClick={onToggleMaximize}
+            title={isMaximized ? "Restore Terminal" : "Maximize Terminal"}
           >
             <Maximize2 className="w-3.5 h-3.5" />
           </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="h-6 w-6 rounded-none text-neutral-400"
+            onClick={onClose}
+            title="Close Terminal"
           >
             <X className="w-3.5 h-3.5" />
           </Button>

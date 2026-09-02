@@ -5,7 +5,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { File, X, Eye, Code, Monitor, Tablet, Smartphone } from "lucide-react";
+import { File, X, Eye, Code, Monitor, Tablet, Smartphone, Save } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { motion } from "motion/react";
 import OrangeButton from "../landing/button/orange-button";
@@ -62,6 +62,8 @@ const NavBar: React.FC<NavBarProps> = ({
   fileStructure,
   projectName,
 }) => {
+  const hasUnsavedChanges = openTabs.some((tab) => tab.isDirty);
+
   const devices = [
     { id: "desktop", icon: Monitor, label: "Desktop" },
     { id: "tablet", icon: Tablet, label: "Tablet" },
@@ -108,6 +110,20 @@ const NavBar: React.FC<NavBarProps> = ({
             ))}
       </div>
       <div className="flex items-center gap-2 ml-2 h-full">
+        {/* handleSaveCurrentFile was passed in and destructured but never
+            rendered, so Ctrl+S was the only way to save anything. */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSaveCurrentFile}
+          disabled={!hasUnsavedChanges}
+          className="text-xs rounded-none"
+          title="Save file (Ctrl+S)"
+        >
+          <Save className="h-3 w-3 mr-1" />
+          {hasUnsavedChanges ? "Save" : "Saved"}
+        </Button>
+
         <ButtonGroup className="border rounded-md overflow-hidden">
           <Button
             variant="ghost"

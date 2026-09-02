@@ -14,8 +14,14 @@ export const useTopbar = () => {
   const handleCloseTab = (tabId: string) => {
     const tabToClose = openTabs.find((tab) => tab.id === tabId);
 
+    // Autosave normally clears isDirty within a second of the last keystroke,
+    // so a still-dirty tab here means the save failed or is mid-flight.
+    // The prompt used to say "Save changes to X?" while OK *discarded* them.
     if (tabToClose?.isDirty) {
-      if (!confirm(`Save changes to ${tabToClose.name}?`)) return;
+      const discard = confirm(
+        `${tabToClose.name} has unsaved changes that could not be saved. Close it and discard them?`,
+      );
+      if (!discard) return;
     }
 
     const newTabs = openTabs.filter((tab) => tab.id !== tabId);

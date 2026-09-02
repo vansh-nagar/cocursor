@@ -1,5 +1,6 @@
 "use client";
 
+import { projectRootNameOf } from "@/lib/project-paths";
 import React, { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -76,19 +77,23 @@ const FolderPreview = forwardRef<FolderPreviewRef, FolderPreviewProps>(({
   onDeleteNode,
   onRenameNode,
 }, ref) => {
+  // The project's top-level directory, derived from the tree rather than
+  // assuming the "vanilla-web-app" template folder name.
+  const rootName = projectRootNameOf(fileStructure);
+
   useImperativeHandle(ref, () => ({
     startNewFile: () => {
-      if (!expandedFolders.has("vanilla-web-app")) {
-        onToggleFolder("vanilla-web-app");
+      if (rootName && !expandedFolders.has(rootName)) {
+        onToggleFolder(rootName);
       }
-      setInlineInput({ parentPath: "vanilla-web-app", type: "file" });
+      setInlineInput({ parentPath: rootName, type: "file" });
       setNewItemName("");
     },
     startNewFolder: () => {
-      if (!expandedFolders.has("vanilla-web-app")) {
-        onToggleFolder("vanilla-web-app");
+      if (rootName && !expandedFolders.has(rootName)) {
+        onToggleFolder(rootName);
       }
-      setInlineInput({ parentPath: "vanilla-web-app", type: "folder" });
+      setInlineInput({ parentPath: rootName, type: "folder" });
       setNewItemName("");
     },
   }));
