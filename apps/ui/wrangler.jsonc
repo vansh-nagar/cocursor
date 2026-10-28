@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cocursor",
+  "main": "worker.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      // Lets the worker call itself, which OpenNext uses for some caching paths.
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "cocursor"
+    }
+  ],
+  "observability": { "enabled": true }
+}

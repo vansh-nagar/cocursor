@@ -40,3 +40,8 @@ yarn-error.log*
 .agent
 .agents
 .cursorrules
+# OpenNext / Wrangler
+.open-next
+.wrangler
+.dev.vars*
+!.dev.vars.example
