@@ -26,31 +26,33 @@ export async function requireUser(ctx: Ctx): Promise<Doc<"User">> {
 }
 
 /**
- * Resolves the signed-in user and asserts they may access `projectId`.
- * Access means: they own the project, or they are listed as a member.
+ * Asserts the caller is signed in and `projectId` exists.
+ *
+ * The room link is the share mechanism: anyone signed in who has it may read
+ * and edit the project. It used to require owner-or-member, but nothing ever
+ * added members, so every shared link crashed the IDE for the second person.
+ * Owner-only operations use requireProjectOwner below.
  *
  * Every query and mutation that takes a projectId must call this — Convex
  * functions are a public HTTP surface, so middleware.ts does not protect them.
+ * It checks the identity rather than the User row, because someone who opens a
+ * shared link directly has never visited /main, which is what creates the row.
  */
 export async function requireProjectAccess(
   ctx: Ctx,
   projectId: Id<"Project">,
-): Promise<{ user: Doc<"User">; project: Doc<"Project"> }> {
-  const user = await requireUser(ctx);
+): Promise<{ project: Doc<"Project"> }> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (!identity) {
+    throw new Error("Unauthorized: not signed in");
+  }
 
   const project = await ctx.db.get(projectId);
   if (!project) {
     throw new Error("Project not found");
   }
 
-  const isOwner = project.ownerId === user._id;
-  const isMember = (project.members ?? []).includes(user._id);
-
-  if (!isOwner && !isMember) {
-    throw new Error("Forbidden: you do not have access to this project");
-  }
-
-  return { user, project };
+  return { project };
 }
 
 /**

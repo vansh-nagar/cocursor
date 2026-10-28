@@ -53,6 +53,20 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
     enabled: collabEnabled && Boolean(projectId),
   });
 
+  // Must keep one identity per connection. CodeEditor's effects depend on this
+  // object; built inline it was new every render, so each render tore down the
+  // doc session and re-sent doc-open, whose reply re-rendered again — an
+  // endless loop that froze the tab as soon as a file was opened in a room.
+  const collabIsLive = collabEnabled && roomConnection.isConnected;
+  const { send: collabSend, subscribe: collabSubscribe } = roomConnection;
+  const editorCollab = useMemo(
+    () =>
+      collabIsLive && projectId
+        ? { roomId: projectId, send: collabSend, subscribe: collabSubscribe }
+        : undefined,
+    [collabIsLive, projectId, collabSend, collabSubscribe],
+  );
+
   console.log("Fetched project data:", projectId);
 
   const {
@@ -410,15 +424,7 @@ const IDEComponent = ({ projectId }: IDEComponentProps) => {
                                 filePath={currentTab.path}
                                 projectId={projectId}
                                 onChange={handleEditorChange}
-                                collab={
-                                  collabEnabled && roomConnection.isConnected
-                                    ? {
-                                        roomId: projectId!,
-                                        send: roomConnection.send,
-                                        subscribe: roomConnection.subscribe,
-                                      }
-                                    : undefined
-                                }
+                                collab={editorCollab}
                               />
                             </div>
                           ) : (
