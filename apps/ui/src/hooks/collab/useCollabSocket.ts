@@ -84,7 +84,11 @@ export function useCollabSocket({
       if (cancelled) return;
 
       setState("connecting");
-      const socket = new WebSocket(url);
+      // The deployed server routes each room to its own Durable Object, so it
+      // needs the room before the join message. The local server ignores it.
+      const socketUrl = new URL(url);
+      socketUrl.searchParams.set("room", roomIdRef.current ?? "");
+      const socket = new WebSocket(socketUrl);
       socketRef.current = socket;
 
       socket.onopen = () => {

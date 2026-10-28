@@ -1,0 +1,15 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cocursor-collab",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-10-01",
+  "vars": {
+    // Comma-separated. Set to the deployed UI origin(s).
+    "ALLOWED_ORIGINS": "https://cocursor.cocursor.workers.dev,http://localhost:3100"
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "ROOMS", "class_name": "CollabRoom" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["CollabRoom"] }],
+  "observability": { "enabled": true }
+}

@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit && tsc -p tsconfig.worker.json",
+    "deploy": "wrangler deploy",
+    "dev:worker": "wrangler dev"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +24,8 @@
     "ws": "^8.18.3"
   },
   "devDependencies": {
-    "@types/node": "^26.4.1"
+    "@cloudflare/workers-types": "^5.20261028.1",
+    "@types/node": "^26.4.1",
+    "wrangler": "^4.154.0"
   }
 }
