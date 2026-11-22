@@ -164,6 +164,12 @@ export default function SignUpPage() {
                   />
                 </div>
 
+                {/* Clerk renders its bot check into this element. Without it
+                    the widget cannot mount, so signUp.create() falls back to
+                    an invisible challenge that never resolves and the form
+                    hangs on "Creating account..." forever. */}
+                <div id="clerk-captcha" />
+
                 <Button
                   type="submit"
                   className="w-full bg-orange-500 hover:bg-orange-600 text-white"
