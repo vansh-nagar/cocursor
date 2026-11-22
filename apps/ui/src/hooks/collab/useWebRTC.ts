@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { iceServers } from "@/lib/collab-protocol";
+import { iceServers, type ServerMessage } from "@/lib/collab-protocol";
 import type { CollabSocket } from "./useCollabSocket";
 
 export interface ReceivedFile {
@@ -16,6 +16,9 @@ export interface ReceivedFile {
 const CHUNK_SIZE = 16 * 1024;
 const BUFFER_HIGH = 8 * 1024 * 1024;
 const BUFFER_LOW = 2 * 1024 * 1024;
+
+/** How long to wait for ICE to connect before telling the user it failed. */
+const ICE_TIMEOUT_MS = 20_000;
 
 /** Control frames on the data channel, kept distinct from binary payload. */
 const CTRL = {
@@ -35,10 +38,16 @@ interface IncomingTransfer {
 /**
  * One-to-one WebRTC: media, chat data channel and file transfer.
  *
- * Uses perfect negotiation, so adding or replacing a track after the initial
- * offer actually reaches the peer. Without an onnegotiationneeded handler every
- * later track change was a silent no-op on the wire, which is why the camera
- * never came back after being switched off.
+ * The connection is deliberately peer-to-peer only. Media and files travel
+ * directly between the two browsers over STUN-discovered candidates; no relay
+ * server is required or assumed, so the feature works with nothing deployed
+ * beyond the signalling socket. The cost of that choice is that two peers
+ * behind different symmetric NATs cannot reach each other at all, so the
+ * failure is detected and reported in words instead of hanging on a black
+ * rectangle.
+ *
+ * Negotiation follows the perfect-negotiation pattern: one peer is impolite
+ * (the one the server asks to offer) and wins glare, the other rolls back.
  */
 export function useWebRTC({
   socket,
@@ -53,11 +62,28 @@ export function useWebRTC({
   const channelRef = useRef<RTCDataChannel | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
 
+  // One sender per kind for the whole session. Re-calling addTrack on a second
+  // call added a second sender per kind, which produced duplicate m-lines, a
+  // remote stream that changed identity mid-call, and a peer that saw nothing
+  // the second time a call was placed.
+  const sendersRef = useRef<{
+    audio: RTCRtpSender | null;
+    video: RTCRtpSender | null;
+  }>({ audio: null, video: null });
+
   // Perfect negotiation bookkeeping.
   const makingOffer = useRef(false);
-  const politeRef = useRef(false);
+  const politeRef = useRef(true);
   const ignoreOffer = useRef(false);
   const pendingCandidates = useRef<RTCIceCandidateInit[]>([]);
+
+  // Signalling messages are handled one at a time. They used to run as
+  // overlapping async callbacks, so an offer and the candidates behind it could
+  // call setRemoteDescription concurrently and throw InvalidStateError, which
+  // is the single most common reason a first call never connected.
+  const signalQueue = useRef<Promise<void>>(Promise.resolve());
+
+  const iceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
@@ -66,6 +92,9 @@ export function useWebRTC({
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [isVideoEnabled, setIsVideoEnabled] = useState(false);
   const [isRemoteVideoOn, setIsRemoteVideoOn] = useState(false);
+  const [connectionQuality, setConnectionQuality] = useState<
+    "idle" | "connecting" | "direct" | "failed"
+  >("idle");
 
   const [receivedFiles, setReceivedFiles] = useState<ReceivedFile[]>([]);
   const [sendProgress, setSendProgress] = useState<number | null>(null);
@@ -76,67 +105,16 @@ export function useWebRTC({
   const incoming = useRef<Map<string, IncomingTransfer>>(new Map());
   const objectUrls = useRef<Set<string>>(new Set());
 
-  const ensurePeerConnection = useCallback(() => {
-    if (pcRef.current) return pcRef.current;
-
-    const pc = new RTCPeerConnection({ iceServers: iceServers() });
-    pcRef.current = pc;
-
-    pc.onicecandidate = (e) => {
-      if (e.candidate) {
-        send({ type: "candidate", roomId, candidate: e.candidate.toJSON() });
-      }
-    };
-
-    pc.onnegotiationneeded = async () => {
-      try {
-        makingOffer.current = true;
-        await pc.setLocalDescription();
-        if (pc.localDescription) {
-          send({ type: "offer", roomId, offer: pc.localDescription });
-        }
-      } catch (err) {
-        console.error("[rtc] negotiation failed:", err);
-      } finally {
-        makingOffer.current = false;
-      }
-    };
-
-    pc.ontrack = (e) => {
-      const [stream] = e.streams;
-      setRemoteStream(stream);
-      setIsInCall(true);
-
-      const track = e.track;
-      if (track.kind === "video") {
-        // Track enabled/muted state, so "camera off" can be distinguished from
-        // "connecting" instead of showing an unexplained black rectangle.
-        setIsRemoteVideoOn(!track.muted);
-        track.onmute = () => setIsRemoteVideoOn(false);
-        track.onunmute = () => setIsRemoteVideoOn(true);
-        track.onended = () => setIsRemoteVideoOn(false);
-      }
-    };
-
-    pc.onconnectionstatechange = () => {
-      const s = pc.connectionState;
-      if (s === "connected") {
-        setPeerConnected(true);
-      } else if (s === "disconnected" || s === "failed" || s === "closed") {
-        setPeerConnected(false);
-        setIsInCall(false);
-        setRemoteStream(null);
-        setIsRemoteVideoOn(false);
-      }
-    };
-
-    pc.ondatachannel = (e) => attachChannel(e.channel);
-
-    return pc;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [roomId, send]);
-
   const attachChannel = useCallback((channel: RTCDataChannel) => {
+    // Keep whichever channel is actually usable. Both peers may create one
+    // during glare; the loser's would otherwise overwrite an open channel with
+    // a connecting one and the first file send would fail.
+    const existing = channelRef.current;
+    if (existing && existing !== channel && existing.readyState === "open") {
+      channel.close();
+      return;
+    }
+
     channel.binaryType = "arraybuffer";
     channel.bufferedAmountLowThreshold = BUFFER_LOW;
     channelRef.current = channel;
@@ -214,9 +192,148 @@ export function useWebRTC({
     };
   }, []);
 
-  /** Acquires mic and camera. Only ever called from an explicit user action. */
+  /**
+   * Reports why a connection failed, using the candidates actually gathered.
+   *
+   * Without a relay the only routes are host (same machine), server-reflexive
+   * (same network, or a cooperative NAT) and peer-reflexive. When none of them
+   * pair up, the honest answer is that the two networks cannot see each other —
+   * not that "something went wrong".
+   */
+  const explainFailure = useCallback(async (pc: RTCPeerConnection) => {
+    let sawRemoteCandidate = false;
+    try {
+      const stats = await pc.getStats();
+      stats.forEach((report) => {
+        if (report.type === "remote-candidate") sawRemoteCandidate = true;
+      });
+    } catch {
+      // Stats are best-effort; the message below is still the right one.
+    }
+
+    toast.error(
+      sawRemoteCandidate
+        ? "Could not open a direct connection. Cocursor calls are peer-to-peer, so both of you need to be reachable from each other — the same Wi-Fi network works, two different mobile networks usually will not."
+        : "The other browser never sent its network details. Ask them to reload the room and try the call again.",
+    );
+  }, []);
+
+  const ensurePeerConnection = useCallback(() => {
+    if (pcRef.current && pcRef.current.connectionState !== "closed") {
+      return pcRef.current;
+    }
+
+    const pc = new RTCPeerConnection({
+      iceServers: iceServers(),
+      // Gather ahead of the first offer so the handshake is not waiting on
+      // STUN round-trips when the user presses Call.
+      iceCandidatePoolSize: 4,
+    });
+    pcRef.current = pc;
+    sendersRef.current = { audio: null, video: null };
+
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        send({ type: "candidate", roomId, candidate: e.candidate.toJSON() });
+      }
+    };
+
+    pc.onnegotiationneeded = () => {
+      // Queued behind any in-flight remote description, so an offer is never
+      // built while the connection is mid-way through applying one.
+      signalQueue.current = signalQueue.current
+        .then(async () => {
+          try {
+            makingOffer.current = true;
+            await pc.setLocalDescription();
+            if (pc.localDescription) {
+              send({ type: "offer", roomId, offer: pc.localDescription });
+            }
+          } finally {
+            makingOffer.current = false;
+          }
+        })
+        .catch((err) => console.error("[rtc] negotiation failed:", err));
+    };
+
+    pc.ontrack = (e) => {
+      const [stream] = e.streams;
+      if (stream) setRemoteStream(stream);
+      setIsInCall(true);
+
+      const track = e.track;
+      if (track.kind === "video") {
+        // Track enabled/muted state, so "camera off" can be distinguished from
+        // "connecting" instead of showing an unexplained black rectangle.
+        setIsRemoteVideoOn(!track.muted);
+        track.onmute = () => setIsRemoteVideoOn(false);
+        track.onunmute = () => setIsRemoteVideoOn(true);
+        track.onended = () => setIsRemoteVideoOn(false);
+      }
+    };
+
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+
+      if (s === "connected") {
+        if (iceTimer.current) clearTimeout(iceTimer.current);
+        iceTimer.current = null;
+        setPeerConnected(true);
+        setConnectionQuality("direct");
+        return;
+      }
+
+      if (s === "connecting") {
+        setConnectionQuality("connecting");
+        // A handshake that never completes used to sit at "connecting"
+        // indefinitely with no explanation anywhere in the UI.
+        if (iceTimer.current) clearTimeout(iceTimer.current);
+        iceTimer.current = setTimeout(() => {
+          if (pc.connectionState !== "connected") {
+            setConnectionQuality("failed");
+            void explainFailure(pc);
+          }
+        }, ICE_TIMEOUT_MS);
+        return;
+      }
+
+      if (s === "failed") {
+        setConnectionQuality("failed");
+        setPeerConnected(false);
+        // One restart attempt: a candidate can be lost to a transient network
+        // change, and re-gathering recovers it. The impolite peer drives it so
+        // the two sides do not restart against each other.
+        if (!politeRef.current) pc.restartIce();
+        else void explainFailure(pc);
+        return;
+      }
+
+      if (s === "disconnected" || s === "closed") {
+        setPeerConnected(false);
+        setIsInCall(false);
+        setRemoteStream(null);
+        setIsRemoteVideoOn(false);
+        setConnectionQuality(s === "closed" ? "idle" : "connecting");
+      }
+    };
+
+    pc.ondatachannel = (e) => attachChannel(e.channel);
+
+    return pc;
+  }, [roomId, send, attachChannel, explainFailure]);
+
+  /**
+   * Acquires mic and camera and binds them to this session's two senders.
+   *
+   * Only ever called from an explicit user action, and safe to call again
+   * after a hang-up: the second call replaces the track on the existing sender
+   * rather than adding another one.
+   */
   const startMedia = useCallback(async (): Promise<MediaStream | null> => {
-    if (localStreamRef.current) return localStreamRef.current;
+    const live = localStreamRef.current;
+    if (live && live.getTracks().some((t) => t.readyState === "live")) {
+      return live;
+    }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -224,15 +341,25 @@ export function useWebRTC({
         audio: true,
       });
 
-      // Start muted, but keep one sender per kind for the whole session so
-      // toggling only ever calls replaceTrack.
+      // Start muted. The call button unmutes audio; video stays off until the
+      // user asks for it.
       stream.getTracks().forEach((t) => (t.enabled = false));
 
       localStreamRef.current = stream;
       setLocalStream(stream);
 
       const pc = ensurePeerConnection();
-      stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+      const senders = sendersRef.current;
+
+      for (const track of stream.getTracks()) {
+        const kind = track.kind as "audio" | "video";
+        const existing = senders[kind];
+        if (existing) {
+          await existing.replaceTrack(track);
+        } else {
+          senders[kind] = pc.addTrack(track, stream);
+        }
+      }
 
       return stream;
     } catch (err) {
@@ -248,7 +375,8 @@ export function useWebRTC({
   const startCall = useCallback(async () => {
     const pc = ensurePeerConnection();
 
-    if (!channelRef.current) {
+    const channel = channelRef.current;
+    if (!channel || channel.readyState === "closed") {
       attachChannel(pc.createDataChannel("data-transfer"));
     }
 
@@ -258,7 +386,9 @@ export function useWebRTC({
     // Unmute audio by default once the user has chosen to call.
     stream.getAudioTracks().forEach((t) => (t.enabled = true));
     setIsAudioEnabled(true);
+    setIsVideoEnabled(false);
     setIsInCall(true);
+    if (pc.connectionState !== "connected") setConnectionQuality("connecting");
     // onnegotiationneeded sends the offer.
   }, [ensurePeerConnection, attachChannel, startMedia]);
 
@@ -270,13 +400,11 @@ export function useWebRTC({
     setIsVideoEnabled(false);
     setIsInCall(false);
 
-    const pc = pcRef.current;
-    if (pc) {
-      // Drop our media but keep the connection for chat and files.
-      pc.getSenders().forEach((sender) => {
-        if (sender.track) sender.replaceTrack(null).catch(() => {});
-      });
-    }
+    // Drop our media but keep the senders and the connection, so chat and file
+    // transfer survive a hang-up and the next call reuses the same m-lines.
+    const senders = sendersRef.current;
+    senders.audio?.replaceTrack(null).catch(() => {});
+    senders.video?.replaceTrack(null).catch(() => {});
   }, []);
 
   const toggleAudio = useCallback(() => {
@@ -298,8 +426,7 @@ export function useWebRTC({
     }
     // Enable/disable the existing track rather than adding a new one. Adding a
     // second track left the original disabled track first in the stream, so the
-    // self-view rendered black and the peer needed a renegotiation that the
-    // missing onnegotiationneeded handler never triggered.
+    // self-view rendered black and the peer needed a renegotiation.
     const next = !tracks[0].enabled;
     tracks.forEach((t) => (t.enabled = next));
     setIsVideoEnabled(next);
@@ -383,39 +510,52 @@ export function useWebRTC({
 
   // Signalling.
   useEffect(() => {
-    return subscribe(async (message) => {
-      const pc = pcRef.current;
+    /** Applies every candidate that arrived before its description did. */
+    const flushCandidates = async (pc: RTCPeerConnection) => {
+      for (const c of pendingCandidates.current.splice(0)) {
+        await pc.addIceCandidate(c).catch(() => {});
+      }
+    };
 
+    const handle = async (message: ServerMessage) => {
       switch (message.type) {
         case "joined":
-          // Deterministic roles: whoever is asked to offer is impolite.
+          // Default role. The server promotes exactly one peer to impolite
+          // below, and does so after this message on the same socket.
           politeRef.current = true;
-          break;
+          return;
 
         case "send-offer": {
           politeRef.current = false;
-          // Open the data channel so chat and files work without a call.
+          // Open the data channel so chat and files work without a call. This
+          // also triggers negotiation, which is what connects the two peers.
           const conn = ensurePeerConnection();
-          if (!channelRef.current) {
+          const channel = channelRef.current;
+          if (!channel || channel.readyState === "closed") {
             attachChannel(conn.createDataChannel("data-transfer"));
           }
-          break;
+          return;
         }
 
         case "offer": {
           const conn = ensurePeerConnection();
-          const offerCollision =
+
+          const collision =
             makingOffer.current || conn.signalingState !== "stable";
-          ignoreOffer.current = !politeRef.current && offerCollision;
+          ignoreOffer.current = !politeRef.current && collision;
           if (ignoreOffer.current) return;
 
-          await conn.setRemoteDescription(message.offer);
-          // Candidates that arrived while we were awaiting the description —
-          // previously these threw InvalidStateError and were lost, which is
-          // why calls failed most often on the very first connection.
-          for (const c of pendingCandidates.current.splice(0)) {
-            await conn.addIceCandidate(c).catch(() => {});
+          if (collision) {
+            // Polite peer yields: discard our own half-finished offer so the
+            // remote one can be applied. Skipping this left the connection in
+            // have-local-offer and the handshake never completed.
+            await conn
+              .setLocalDescription({ type: "rollback" })
+              .catch(() => {});
           }
+
+          await conn.setRemoteDescription(message.offer);
+          await flushCandidates(conn);
           await conn.setLocalDescription();
           if (conn.localDescription) {
             send({ type: "answer", roomId, answer: conn.localDescription });
@@ -424,15 +564,17 @@ export function useWebRTC({
         }
 
         case "answer": {
-          if (!pc) return;
-          await pc.setRemoteDescription(message.answer).catch(() => {});
-          for (const c of pendingCandidates.current.splice(0)) {
-            await pc.addIceCandidate(c).catch(() => {});
-          }
+          const pc = pcRef.current;
+          // An answer that arrives when we are not expecting one (a duplicate,
+          // or the loser of a glare) must be dropped, not applied.
+          if (!pc || pc.signalingState !== "have-local-offer") return;
+          await pc.setRemoteDescription(message.answer);
+          await flushCandidates(pc);
           return;
         }
 
         case "candidate": {
+          const pc = pcRef.current;
           if (!pc || !pc.remoteDescription) {
             pendingCandidates.current.push(message.candidate);
             return;
@@ -448,24 +590,37 @@ export function useWebRTC({
           setIsInCall(false);
           setRemoteStream(null);
           setIsRemoteVideoOn(false);
+          setConnectionQuality("idle");
+          pendingCandidates.current.length = 0;
           return;
       }
+    };
+
+    return subscribe((message) => {
+      // Serialized: the WebRTC API is a state machine, and two descriptions
+      // applied at once throw rather than queue.
+      signalQueue.current = signalQueue.current
+        .then(() => handle(message))
+        .catch((err) => console.error("[rtc] signalling:", err));
     });
   }, [subscribe, ensurePeerConnection, attachChannel, send, roomId]);
 
   // Full teardown: tracks, channel, connection, and every object URL.
   useEffect(() => {
     const urls = objectUrls.current;
+    const transfers = incoming.current;
     return () => {
+      if (iceTimer.current) clearTimeout(iceTimer.current);
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
       localStreamRef.current = null;
       channelRef.current?.close();
       channelRef.current = null;
       pcRef.current?.close();
       pcRef.current = null;
+      sendersRef.current = { audio: null, video: null };
       urls.forEach((url) => URL.revokeObjectURL(url));
       urls.clear();
-      incoming.current.clear();
+      transfers.clear();
     };
   }, []);
 
@@ -477,6 +632,7 @@ export function useWebRTC({
     isAudioEnabled,
     isVideoEnabled,
     isRemoteVideoOn,
+    connectionQuality,
     startCall,
     endCall,
     toggleAudio,

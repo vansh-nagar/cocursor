@@ -78,6 +78,7 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
     isVideoEnabled,
     isInCall,
     isRemoteVideoOn,
+    connectionQuality,
     startCall,
     endCall,
     toggleAudio,
@@ -198,7 +199,17 @@ const PeerChat = ({ projectId, roomConnection }: PeerChatProps) => {
                 <span className="aspect-square animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative aspect-square inline-flex size-1.5 rounded-full bg-emerald-500" />
               </span>
-              Connected
+              Peer-to-peer
+            </Badge>
+          ) : connectionQuality === "connecting" ? (
+            <Badge variant="outline" className="text-amber-600 border-amber-500/30 bg-amber-500/10 gap-1.5 py-0.5">
+              <Loader2 className="size-3 animate-spin" />
+              Connecting…
+            </Badge>
+          ) : connectionQuality === "failed" ? (
+            <Badge variant="outline" className="text-destructive border-destructive/30 bg-destructive/10 gap-1.5 py-0.5">
+              <WifiOff className="size-3" />
+              No direct route
             </Badge>
           ) : (
             <Badge variant="outline" className="text-muted-foreground gap-1.5 py-0.5 rounded-none">

@@ -75,11 +75,29 @@ export function collabWsUrl(): string {
   return "ws://localhost:8080";
 }
 
-/** ICE servers, with an optional TURN relay for cross-network calls. */
+/**
+ * ICE servers for a peer-to-peer-only call.
+ *
+ * Calls carry no relay by design: audio, video and files go straight from one
+ * browser to the other, so the feature costs nothing to run and needs no
+ * infrastructure beyond this signalling socket. STUN is only used to learn
+ * each peer's public address — the media itself never touches those servers.
+ *
+ * Several STUN hosts are listed because a single unreachable one otherwise
+ * delays gathering until the handshake has already timed out. A TURN relay can
+ * still be configured for calls between two networks that cannot see each
+ * other, but nothing requires it and it is empty in every default setup.
+ */
 export function iceServers(): RTCIceServer[] {
   const servers: RTCIceServer[] = [
-    { urls: "stun:stun.l.google.com:19302" },
-    { urls: "stun:stun1.l.google.com:19302" },
+    {
+      urls: [
+        "stun:stun.l.google.com:19302",
+        "stun:stun1.l.google.com:19302",
+        "stun:stun2.l.google.com:19302",
+        "stun:stun.cloudflare.com:3478",
+      ],
+    },
   ];
 
   const turnUrl = process.env.NEXT_PUBLIC_TURN_URL;
